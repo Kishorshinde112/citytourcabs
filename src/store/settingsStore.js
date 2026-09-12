@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 
 const DEFAULT_SETTINGS = {
-  phone: '9833309061',
-  helpPhone: '8380803217',
-  email: 'mumbaicitycabs24@gmail.com',
+  phone: '7021001921',
+  helpPhone: '9967672660',
+  email: 'citytourcabs8@gmail.com',
 };
 
 const useSettingsStore = create((set, get) => ({

@@ -104,7 +104,7 @@ export default function ThankYouPage() {
             Call Us Now
           </a>
           <a
-            href={`https://wa.me/91${phone}?text=Hi%20CityCabs24%2C%20I%20just%20submitted%20a%20booking%20(Ref%3A%20${bookingId}).%20Please%20confirm%20my%20cab%20for%20${encodeURIComponent(booking.tourName || 'my trip')}.`}
+            href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs%2C%20I%20just%20submitted%20a%20booking%20(Ref%3A%20${bookingId}).%20Please%20confirm%20my%20cab%20for%20${encodeURIComponent(booking.tourName || 'my trip')}.`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-black text-sm transition shadow-lg"

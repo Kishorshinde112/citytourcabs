@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
-import logoImg from '../../assets/citycabs24-logo.png';
+import logoImg from '../../assets/citytourcabs-logo.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ export default function Login() {
     setError('');
 
     // Credentials check for admin portal
-    if (email.trim().toLowerCase() === 'mumbaicitycabs24@gmail.com' && password === 'Shahrukh@123') {
+    if (email.trim().toLowerCase() === 'mumbaicitytourcabs@gmail.com' && password === 'Shahrukh@123') {
       localStorage.setItem('adminAuth', 'true');
       localStorage.setItem('adminToken', 'dummy-token-123');
       navigate('/admin');
@@ -37,11 +37,11 @@ export default function Login() {
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-3 group mb-4">
             <div className="w-14 h-14 rounded-full overflow-hidden border border-indigo-500/40 p-0.5 shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform bg-white flex items-center justify-center">
-              <img src={logoImg} alt="CityCabs24 Logo" className="w-full h-full object-contain" />
+              <img src={logoImg} alt="City Tour Cabs Logo" className="w-full h-full object-contain" />
             </div>
             <div className="text-left">
               <span className="font-display font-black text-2xl tracking-tight text-white">
-                CityCabs<span className="text-indigo-500">24</span>
+                CityTour<span className="text-indigo-500">Cabs</span>
               </span>
               <span className="block text-[10px] uppercase font-bold tracking-widest text-slate-400">
                 Management Portal
@@ -76,7 +76,7 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="mumbaicitycabs24@gmail.com"
+                  placeholder="mumbaicitytourcabs@gmail.com"
                   required
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 />

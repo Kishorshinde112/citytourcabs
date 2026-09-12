@@ -1,8 +1,8 @@
-# CityCabs24 - Premium Cab & Guided Tour Booking Platform 🚖
+# City Tour Cabs - Premium Cab & Guided Tour Booking Platform 🚖
 
 A modern, high-performance web application for cab booking and guided sightseeing tours across Mumbai, Pune, Lonavala, Shirdi, Konkan, and outstation routes.
 
-🌐 **Live URL**: [https://citycabs24.com](https://citycabs24.com) / [https://cabs.kishorlab.dev](https://cabs.kishorlab.dev)
+🌐 **Live URL**: [https://cabs.kishorlab.dev](https://cabs.kishorlab.dev) / [https://citytourcabs.in](https://citytourcabs.in)
 
 ---
 

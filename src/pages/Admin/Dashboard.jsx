@@ -118,7 +118,7 @@ export default function Dashboard() {
 
                           {phoneNum && (
                             <a
-                              href={`https://wa.me/91${phoneNum}?text=Hello%20${encodeURIComponent(booking.name || 'Customer')},%20regarding%20your%20CityCabs24%20booking%20${booking.id}`}
+                              href={`https://wa.me/91${phoneNum}?text=Hello%20${encodeURIComponent(booking.name || 'Customer')},%20regarding%20your%20City Tour Cabs%20booking%20${booking.id}`}
                               target="_blank"
                               rel="noreferrer"
                               className="p-1 rounded bg-emerald-100 text-emerald-800 hover:bg-emerald-200 text-[10px] font-bold flex items-center gap-1"

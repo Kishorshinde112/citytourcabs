@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, Outlet, Navigate, useNavigate, Link } from 'react-router-dom';
 import { LayoutDashboard, Settings as SettingsIcon, LogOut, Car, Menu, X, ExternalLink, Shield, Compass, Image as ImageIcon } from 'lucide-react';
 import useSettingsStore from '../../store/settingsStore';
-import logoImg from '../../assets/citycabs24-logo.png';
+import logoImg from '../../assets/citytourcabs-logo.png';
 
 export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -25,11 +25,11 @@ export default function AdminLayout() {
       <div className="p-5 flex items-center justify-between border-b border-slate-800">
         <Link to="/admin" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden border border-indigo-400/40 p-0.5 shadow-md bg-white flex items-center justify-center">
-            <img src={logoImg} alt="CityCabs24 Logo" className="w-full h-full object-contain" />
+            <img src={logoImg} alt="City Tour Cabs Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="font-display font-black text-lg tracking-tight text-white leading-tight">
-              CityCabs<span className="text-indigo-400">24</span>
+              CityTour<span className="text-indigo-400">Cabs</span>
             </div>
             <div className="text-[10px] uppercase tracking-wider font-bold text-indigo-500/90">
               Admin Console
@@ -116,11 +116,11 @@ export default function AdminLayout() {
       <div className="p-4 border-t border-slate-800 space-y-3">
         <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-xs">
           <div className="text-slate-400 text-[11px]">Admin Help & Support Line:</div>
-          <a href={`tel:+91${helpPhone || '8380803217'}`} className="font-bold text-indigo-400 mt-0.5 block hover:underline">
-            +91 {helpPhone || '8380803217'}
+          <a href={`tel:+91${helpPhone || '9967672660'}`} className="font-bold text-indigo-400 mt-0.5 block hover:underline">
+            +91 {helpPhone || '9967672660'}
           </a>
           <a
-            href={`https://wa.me/91${helpPhone || '8380803217'}?text=Hello%20need%20help%20with%20CityCabs24%20Admin`}
+            href={`https://wa.me/91${helpPhone || '9967672660'}?text=Hello%20need%20help%20with%20City Tour Cabs%20Admin`}
             target="_blank"
             rel="noreferrer"
             className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 mt-1 font-medium"
@@ -171,7 +171,7 @@ export default function AdminLayout() {
             </button>
             <div>
               <h1 className="text-base font-bold text-slate-900 leading-tight">Admin Console</h1>
-              <p className="text-xs text-slate-500 hidden sm:block">CityCabs24 Driver & Customer Operations</p>
+              <p className="text-xs text-slate-500 hidden sm:block">City Tour Cabs Driver & Customer Operations</p>
             </div>
           </div>
 

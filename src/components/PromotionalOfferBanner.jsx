@@ -25,7 +25,7 @@ export default function PromotionalOfferBanner({ onOpenBookModal }) {
 
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href={`https://wa.me/91${phone}?text=Hi%20CityCabs24,%20I%20want%20to%20claim%20my%20first%20ride%20discount%20and%20free%20itinerary.`}
+            href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20want%20to%20claim%20my%20first%20ride%20discount%20and%20free%20itinerary.`}
             target="_blank"
             rel="noreferrer"
             className="px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"

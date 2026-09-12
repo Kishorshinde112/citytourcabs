@@ -37,7 +37,7 @@ export default function BookingContactForm() {
     });
 
     // Also trigger WhatsApp message for instantaneous conversion
-    const text = `*🚖 CityCabs24 - Website Booking Inquiry*\n\n` +
+    const text = `*🚖 City Tour Cabs - Website Booking Inquiry*\n\n` +
       `*Name:* ${formData.name}\n` +
       `*Phone:* ${formData.phone}\n` +
       `*Email:* ${formData.email || 'N/A'}\n` +
@@ -82,7 +82,7 @@ export default function BookingContactForm() {
             {/* Quick Contact Card */}
             <div className="bg-zinc-900 rounded-3xl p-7 text-white shadow-xl border border-zinc-800 space-y-6">
               <h3 className="text-2xl font-bold font-display text-white">
-                CityCabs24 Head Desk
+                City Tour Cabs Head Desk
               </h3>
               <p className="text-zinc-400 text-xs sm:text-sm">
                 Serving all of Mumbai, Thane, Navi Mumbai, Pune, Nashik, and major Maharashtra tourist circuits.
@@ -103,7 +103,7 @@ export default function BookingContactForm() {
                 </a>
 
                 <a
-                  href={`https://wa.me/91${phone}?text=Hi%20CityCabs24,%20I%20want%20to%20inquire%20about%20a%20cab%20tour.`}
+                  href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20want%20to%20inquire%20about%20a%20cab%20tour.`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-3.5 p-3 rounded-2xl bg-zinc-950/80 hover:bg-zinc-800 border border-zinc-800 transition group"

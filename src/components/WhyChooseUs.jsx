@@ -48,7 +48,7 @@ export default function WhyChooseUs({ onOpenBookModal }) {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight text-white">
-            Why Choose CityCabs24?
+            Why Choose City Tour Cabs?
           </h2>
 
           <p className="text-zinc-400 text-sm sm:text-base mt-2.5">

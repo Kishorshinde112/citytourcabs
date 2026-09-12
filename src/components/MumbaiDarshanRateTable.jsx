@@ -43,7 +43,7 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
     let dur = durationKey === '8h_80km' ? '8 hrs / 80 Kms' : durationKey === '10h_100km' ? '10 hrs / 100 Kms' : '12 hrs / 120 Kms';
     let fare = car.isTempo ? `₹${car.rates['12h_100km']}/- (12h/100km)` : `₹${car.rates[durationKey]}/-`;
 
-    const text = `*🚖 CityCabs24 - Mumbai Sightseeing Inquiry*\n\n` +
+    const text = `*🚖 City Tour Cabs - Mumbai Sightseeing Inquiry*\n\n` +
       `*Car Type:* ${car.carType}\n` +
       `*Package Selected:* ${car.isTempo ? 'Full Day 12h/100km' : dur}\n` +
       `*Fixed Fare:* ${fare}\n` +

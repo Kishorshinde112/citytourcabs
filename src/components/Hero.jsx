@@ -41,17 +41,17 @@ export default function Hero({ onSelectTour, onOpenBookModal }) {
         <div className="pt-4 flex flex-wrap justify-center items-center gap-4">
           <a
             href="/mumbai-darshan"
-            className="px-7 py-3.5 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold text-sm shadow-xl shadow-yellow-400/20 transition transform hover:-translate-y-0.5 flex items-center gap-2"
+            className="px-7 py-3.5 rounded-xl bg-[#1D84C6] hover:bg-[#1578BC] text-white font-extrabold text-sm shadow-xl shadow-blue-500/20 transition transform hover:-translate-y-0.5 flex items-center gap-2"
           >
             <span>Explore Mumbai Tours</span>
-            <ArrowRight className="w-4 h-4 text-black" />
+            <ArrowRight className="w-4 h-4 text-white" />
           </a>
 
           <a
             href={`tel:+91${phone}`}
-            className="px-7 py-3.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-white font-bold text-sm border border-yellow-400/40 backdrop-blur-md transition flex items-center gap-2"
+            className="px-7 py-3.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm shadow-xl shadow-orange-600/20 transition flex items-center gap-2"
           >
-            <Phone className="w-4 h-4 text-yellow-400" />
+            <Phone className="w-4 h-4 text-white" />
             <span>Call Now</span>
           </a>
         </div>

@@ -22,7 +22,7 @@ export default function AboutSection({ onOpenBookModal }) {
             </h2>
 
             <p className="text-zinc-400 leading-relaxed text-sm sm:text-base">
-              At <strong className="text-white">CityCabs24</strong>, we believe travel should be joyful, dependable, and personalized. In a world full of impersonal ride-hailing apps with sudden surge prices and canceling drivers, we stand for classic hospitality, guaranteed vehicle quality, and driver-guides who treat you like family.
+              At <strong className="text-white">City Tour Cabs</strong>, we believe travel should be joyful, dependable, and personalized. In a world full of impersonal ride-hailing apps with sudden surge prices and canceling drivers, we stand for classic hospitality, guaranteed vehicle quality, and driver-guides who treat you like family.
             </p>
 
             <div className="space-y-3 pt-2">
@@ -65,7 +65,7 @@ export default function AboutSection({ onOpenBookModal }) {
 
             <div className="pt-4 flex flex-wrap items-center gap-4">
               <a
-                href={`https://wa.me/91${phone}?text=Hi%20CityCabs24,%20I%20would%20like%20to%20know%20more%20about%20your%20services.`}
+                href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20would%20like%20to%20know%20more%20about%20your%20services.`}
                 target="_blank"
                 rel="noreferrer"
                 className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition flex items-center gap-2"
@@ -96,7 +96,7 @@ export default function AboutSection({ onOpenBookModal }) {
                   🚖
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg font-display text-white">CityCabs24 Promise</h3>
+                  <h3 className="font-bold text-lg font-display text-white">City Tour Cabs Promise</h3>
                   <p className="text-xs text-yellow-400">Fast. Safe. Affordable. Always at your doorstep.</p>
                 </div>
               </div>

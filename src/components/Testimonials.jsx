@@ -83,7 +83,7 @@ export default function Testimonials() {
           </div>
 
           <a
-            href={`https://wa.me/91${phone}?text=Hi%20CityCabs24,%20I%20want%20to%20book%20a%20cab%20tour.`}
+            href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20want%20to%20book%20a%20cab%20tour.`}
             target="_blank"
             rel="noreferrer"
             className="px-4 py-2 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold text-xs shadow transition whitespace-nowrap"

@@ -5,17 +5,17 @@ import { Save, CheckCircle2, Phone, Mail, Sparkles, MessageCircle, Info, Headpho
 export default function Settings() {
   const { phone, helpPhone, email, updateSettings } = useSettingsStore();
   const [formData, setFormData] = useState({
-    phone: phone || '9833309061',
-    helpPhone: helpPhone || '8380803217',
-    email: email || 'mumbaicitycabs24@gmail.com',
+    phone: phone || '7021001921',
+    helpPhone: helpPhone || '9967672660',
+    email: email || 'mumbaicitytourcabs@gmail.com',
   });
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     setFormData({
-      phone: phone || '9833309061',
-      helpPhone: helpPhone || '8380803217',
-      email: email || 'mumbaicitycabs24@gmail.com',
+      phone: phone || '7021001921',
+      helpPhone: helpPhone || '9967672660',
+      email: email || 'mumbaicitytourcabs@gmail.com',
     });
   }, [phone, helpPhone, email]);
 
@@ -74,7 +74,7 @@ export default function Settings() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="9833309061"
+                  placeholder="7021001921"
                   required
                   className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 />
@@ -98,7 +98,7 @@ export default function Settings() {
                   name="helpPhone"
                   value={formData.helpPhone}
                   onChange={handleChange}
-                  placeholder="8380803217"
+                  placeholder="9967672660"
                   required
                   className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 />
@@ -122,7 +122,7 @@ export default function Settings() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="mumbaicitycabs24@gmail.com"
+                  placeholder="mumbaicitytourcabs@gmail.com"
                   required
                   className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 />

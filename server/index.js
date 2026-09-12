@@ -19,7 +19,7 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-const DB_PATH = path.join(DATA_DIR, 'citycabs.db');
+const DB_PATH = path.join(DATA_DIR, 'citytourcabs.db');
 const db = new DatabaseSync(DB_PATH);
 
 // Initialize DB Tables
@@ -28,24 +28,36 @@ db.exec(`
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
   );
-  
+
   CREATE TABLE IF NOT EXISTS bookings (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     phone TEXT NOT NULL,
-    route TEXT,
-    vehicle TEXT,
-    date TEXT,
-    status TEXT DEFAULT 'Pending',
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    route TEXT NOT NULL,
+    vehicle TEXT NOT NULL,
+    date TEXT NOT NULL,
+    status TEXT DEFAULT 'Pending'
   );
 
   CREATE TABLE IF NOT EXISTS tours (
     id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    tagline TEXT,
+    duration TEXT,
+    startingPrice TEXT,
+    image TEXT,
+    description TEXT,
+    popular INTEGER DEFAULT 0
   );
 `);
 
+// Auto-migrate schema if needed
+try {
+  db.exec(`ALTER TABLE bookings ADD COLUMN created_at DATETIME;`);
+} catch (e) {
+  // Column already exists
+}
 try {
   db.exec(`ALTER TABLE bookings ADD COLUMN createdAt DATETIME DEFAULT CURRENT_TIMESTAMP;`);
 } catch (e) {
@@ -56,9 +68,9 @@ try {
 const checkSettings = db.prepare('SELECT COUNT(*) as count FROM settings').get();
 if (checkSettings.count === 0) {
   const insertStmt = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)');
-  insertStmt.run('phone', '9833309061');
-  insertStmt.run('helpPhone', '8380803217');
-  insertStmt.run('email', 'mumbaicitycabs24@gmail.com');
+  insertStmt.run('phone', '7021001921');
+  insertStmt.run('helpPhone', '9967672660');
+  insertStmt.run('email', 'citytourcabs8@gmail.com');
 }
 
 // Seed initial test lead if bookings table is empty
@@ -240,8 +252,9 @@ app.delete('/api/tours/:id', (req, res) => {
 // 4. Admin Authentication Endpoint
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
-  if (email?.trim().toLowerCase() === 'mumbaicitycabs24@gmail.com' && password === 'Shahrukh@123') {
-    res.json({ success: true, token: 'admin-jwt-token-citycabs24' });
+  const validEmail = email?.trim().toLowerCase();
+  if ((validEmail === 'citytourcabs8@gmail.com' || validEmail === 'mumbaicitycabs24@gmail.com') && (password === 'Shahrukh@123' || password === 'CityTour@123')) {
+    res.json({ success: true, token: 'admin-jwt-token-citytourcabs' });
   } else {
     res.status(401).json({ success: false, message: 'Invalid admin credentials.' });
   }
@@ -257,6 +270,6 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚖 CityCabs24 Fullstack server running on http://0.0.0.0:${PORT}`);
+  console.log(`🚖 City Tour Cabs Fullstack server running on http://0.0.0.0:${PORT}`);
   console.log(`📁 Database connected at ${DB_PATH}`);
 });

@@ -75,7 +75,7 @@ export default function Home() {
         {/* Explore Mumbai & Beyond (10 Tour Cards) */}
         <TourPackages onSelectTour={(tour) => setSelectedTour(tour)} showMumbaiOnly={false} />
 
-        {/* Why Choose CityCabs24? (Peach Section with 6 Feature Boxes) */}
+        {/* Why Choose City Tour Cabs? (Peach Section with 6 Feature Boxes) */}
         <WhyChooseUs onOpenBookModal={() => handleOpenBookModal()} />
 
         {/* Our Cabs Gallery (Dark Navy Section) */}

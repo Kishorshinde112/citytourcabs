@@ -21,7 +21,7 @@ export default function TourModal({ tour, onClose, onBookClick }) {
       date: new Date().toISOString().slice(0, 10),
     });
 
-    const text = `*🚖 CityCabs24 - Tour Booking Request*\n\n` +
+    const text = `*🚖 City Tour Cabs - Tour Booking Request*\n\n` +
       `*Package:* ${tour.title}\n` +
       `*Duration:* ${tour.duration}\n` +
       `*Starting Fare:* ${tour.startingPrice}\n\n` +

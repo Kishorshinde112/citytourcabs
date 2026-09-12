@@ -35,7 +35,7 @@ export default function FloatingActions({ onOpenBookModal }) {
 
         {/* WhatsApp Pulse Floating Button */}
         <a
-          href={`https://wa.me/91${phone}?text=Hi%20CityCabs24,%20I%20would%20like%20to%20book%20a%20cab%20tour.`}
+          href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20would%20like%20to%20book%20a%20cab%20tour.`}
           target="_blank"
           rel="noreferrer"
           className="w-12 h-12 rounded-full bg-yellow-400 hover:bg-yellow-500 text-black shadow-2xl flex items-center justify-center transition transform hover:scale-110 border border-yellow-300"
@@ -56,7 +56,7 @@ export default function FloatingActions({ onOpenBookModal }) {
         </a>
 
         <a
-          href={`https://wa.me/91${phone}?text=Hi%20CityCabs24,%20I%20want%20to%20book%20a%20cab.`}
+          href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20want%20to%20book%20a%20cab.`}
           target="_blank"
           rel="noreferrer"
           className="flex-1 py-3 px-2 rounded-xl bg-zinc-900 text-yellow-400 border border-yellow-400/40 font-black text-xs flex items-center justify-center gap-1.5 shadow"

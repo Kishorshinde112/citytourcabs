@@ -76,7 +76,7 @@ export default function FaqSection() {
           </div>
           <div className="flex items-center gap-2">
             <a
-              href={`https://wa.me/91${phone}?text=Hi%20CityCabs24,%20I%20have%20a%20question%20regarding%20cab%20booking.`}
+              href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20have%20a%20question%20regarding%20cab%20booking.`}
               target="_blank"
               rel="noreferrer"
               className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow"

@@ -1,9 +1,9 @@
 services:
-  citycabs24:
+  citytourcabs:
     build:
       context: .
-    image: citycabs24:latest
-    container_name: citycabs24
+    image: citytourcabs:latest
+    container_name: citytourcabs
     restart: unless-stopped
     volumes:
       - ./data:/app/data
@@ -13,16 +13,16 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
-      - "traefik.http.routers.citycabs24-http.entrypoints=web"
-      - "traefik.http.routers.citycabs24-http.rule=Host(`citycabs24.com`) || Host(`www.citycabs24.com`) || Host(`cabs.kishorlab.dev`)"
-      - "traefik.http.routers.citycabs24-http.service=citycabs24-svc"
-      - "traefik.http.routers.citycabs24-http.middlewares=redirect-to-https@file"
-      - "traefik.http.routers.citycabs24-https.entrypoints=websecure"
-      - "traefik.http.routers.citycabs24-https.rule=Host(`citycabs24.com`) || Host(`www.citycabs24.com`) || Host(`cabs.kishorlab.dev`)"
-      - "traefik.http.routers.citycabs24-https.service=citycabs24-svc"
-      - "traefik.http.routers.citycabs24-https.tls=true"
-      - "traefik.http.routers.citycabs24-https.tls.certresolver=letsencrypt"
-      - "traefik.http.services.citycabs24-svc.loadbalancer.server.port=80"
+      - "traefik.http.routers.citytourcabs-http.entrypoints=web"
+      - "traefik.http.routers.citytourcabs-http.rule=Host(`cabs.kishorlab.dev`) || Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`)"
+      - "traefik.http.routers.citytourcabs-http.service=citytourcabs-svc"
+      - "traefik.http.routers.citytourcabs-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.citytourcabs-https.entrypoints=websecure"
+      - "traefik.http.routers.citytourcabs-https.rule=Host(`cabs.kishorlab.dev`) || Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`)"
+      - "traefik.http.routers.citytourcabs-https.service=citytourcabs-svc"
+      - "traefik.http.routers.citytourcabs-https.tls=true"
+      - "traefik.http.routers.citytourcabs-https.tls.certresolver=letsencrypt"
+      - "traefik.http.services.citytourcabs-svc.loadbalancer.server.port=80"
 
 networks:
   dokploy-network:
