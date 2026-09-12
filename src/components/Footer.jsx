@@ -49,7 +49,7 @@ export default function Footer({ onOpenPrivacyModal, onOpenBookModal }) {
                 </a>
               </li>
               <li>
-                <a className="text-sm hover:text-orange-600 transition-colors" href="/#about">
+                <a className="text-sm hover:text-orange-600 transition-colors" href="/about">
                   About Us
                 </a>
               </li>
@@ -118,12 +118,21 @@ export default function Footer({ onOpenPrivacyModal, onOpenBookModal }) {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <p className="text-sm text-gray-400">© 2026 CityTourCabs. All rights reserved.</p>
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400">
-              <button
-                onClick={onOpenPrivacyModal}
-                className="hover:text-orange-600 transition-colors cursor-pointer"
+              <a
+                href="/privacy-policy"
+                className="hover:text-orange-600 transition-colors"
               >
                 Privacy Policy
-              </button>
+              </a>
+              <span>•</span>
+              <a
+                href="https://www.pivisions.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-orange-600 transition-colors"
+              >
+                Site design by PiVisions
+              </a>
             </div>
           </div>
         </div>

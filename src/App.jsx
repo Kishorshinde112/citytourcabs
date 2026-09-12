@@ -12,6 +12,8 @@ import JyotirlingaPage from './pages/Public/JyotirlingaPage';
 import KonkanDarshanPage from './pages/Public/KonkanDarshanPage';
 import LonavalaTripPage from './pages/Public/LonavalaTripPage';
 import AlibaugPage from './pages/Public/AlibaugPage';
+import AboutPage from './pages/Public/AboutPage';
+import PrivacyPolicyPage from './pages/Public/PrivacyPolicyPage';
 import ThankYouPage from './pages/Public/ThankYouPage';
 import ToursManager from './pages/Admin/ToursManager';
 import AdminLayout from './pages/Admin/AdminLayout';
@@ -25,6 +27,8 @@ export default function App() {
       <Routes>
         {/* Public Website */}
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/tours" element={<ToursPage />} />
 
         {/* Tour Pages */}

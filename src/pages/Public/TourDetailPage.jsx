@@ -1,206 +1,141 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import FloatingActions from '../../components/FloatingActions';
-import QuickBookModal from '../../components/QuickBookModal';
-import PrivacyModal from '../../components/PrivacyModal';
-import AutoEnquiryModal from '../../components/AutoEnquiryModal';
-import TourModal from '../../components/TourModal';
-import { Phone, Check, Sparkles, ArrowRight } from 'lucide-react';
-import useSettingsStore from '../../store/settingsStore';
-import useContentStore from '../../store/contentStore';
+import React, { useState, useEffect } from "react";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import FloatingActions from "../../components/FloatingActions";
+import QuickBookModal from "../../components/QuickBookModal";
+import AutoEnquiryModal from "../../components/AutoEnquiryModal";
+import useSettingsStore from "../../store/settingsStore";
+import tourPagesData from "../../data/tourPagesData.json";
 
-export default function TourDetailPage({
-  tourId,
-  tourName,
-  subtitle,
-  heroImage,
-  description,
-  rules,
-  attractionTitle = 'Top Attractions',
-  attractions = [],
-  rateColumns = [],
-  rates = [],
-  tripType,
-}) {
+export default function TourDetailPage({ slug }) {
+  const data = tourPagesData[slug] || {};
   const { phone } = useSettingsStore();
-  const { tours } = useContentStore();
-
-  const matchedTour = tours?.find(t =>
-    (tourId && t.id === tourId) ||
-    (t.title && tourName && (
-      t.title.toLowerCase().includes(tourName.toLowerCase()) ||
-      tourName.toLowerCase().includes(t.title.toLowerCase())
-    ))
-  );
-  const displayHeroImage = matchedTour?.banner || heroImage;
 
   const [bookModalOpen, setBookModalOpen] = useState(false);
   const [bookModalInitialData, setBookModalInitialData] = useState({});
-  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [autoEnquiryOpen, setAutoEnquiryOpen] = useState(false);
-  const [selectedTour, setSelectedTour] = useState(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+    if (data.title) {
+      document.title = `${data.title} | City Tour Cabs`;
+    }
     const timer = setTimeout(() => setAutoEnquiryOpen(true), 5000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [slug, data.title]);
 
   const handleOpenBookModal = (extra = {}) => {
-    setBookModalInitialData({ dropCity: tourName, tripType: tripType || 'Tour Package', ...extra });
+    setBookModalInitialData({
+      dropCity: data.title,
+      tripType: data.title || "Tour Package",
+      ...extra,
+    });
     setBookModalOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans flex flex-col pb-14 sm:pb-0">
-      <Navbar
-        onOpenBookModal={() => handleOpenBookModal()}
-        onSelectTour={(tour) => setSelectedTour(tour)}
-      />
+    <div className="min-h-screen bg-white text-gray-900 font-sans flex flex-col">
+      {/* Navigation */}
+      <Navbar onOpenBookModal={() => handleOpenBookModal()} />
+
       <main className="flex-1">
-        {/* Hero */}
-        <section className="relative h-[300px] md:h-[420px] overflow-hidden">
-          <img src={displayHeroImage} alt={tourName} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/55 flex flex-col items-center justify-center text-center px-4 space-y-3">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-lg">{tourName}</h1>
-            {subtitle && <p className="text-lg sm:text-2xl text-zinc-200 font-medium max-w-2xl">{subtitle}</p>}
-            <div className="pt-2 flex flex-wrap justify-center items-center gap-3">
-              <a href="#rate-card" className="px-6 py-2.5 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold text-xs sm:text-sm shadow-lg shadow-yellow-400/20 transition flex items-center gap-1.5">
-                <span>View Rate Card</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
-              <button type="button" onClick={() => setAutoEnquiryOpen(true)} className="px-6 py-2.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-yellow-400 border border-yellow-400/50 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 cursor-pointer shadow">
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                <span>Submit Enquiry (Get Discount)</span>
-              </button>
-              <a href={`tel:+91${phone}`} className="px-5 py-2.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-white border border-zinc-700 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow">
-                <Phone className="w-3.5 h-3.5 text-yellow-400" />
-                <span>Call Desk</span>
-              </a>
+        {/* Banner Section */}
+        <section className="relative h-[300px] md:h-[400px] overflow-hidden">
+          <img
+            src={data.heroImage}
+            alt={data.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <div className="text-center text-white px-4">
+              <h1 className="text-3xl md:text-5xl font-bold font-display mb-4 text-white">
+                {data.title}
+              </h1>
+              <p className="text-xl md:text-2xl max-w-3xl mx-auto text-gray-100 font-sans">
+                {data.subtitle}
+              </p>
             </div>
           </div>
         </section>
 
-        {/* 2-column content */}
-        <section className="py-12 bg-zinc-950">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-12 gap-10 items-start">
+        {/* Content Section */}
+        <div className="container mx-auto px-4 py-16">
+          <div className="tour-flex-layout mb-16">
+            {/* Left Column */}
+            <div className="tour-flex-left">
+              <div
+                className="tour-content"
+                dangerouslySetInnerHTML={{ __html: data.leftHtml || "" }}
+              />
+            </div>
 
-              {/* LEFT */}
-              <div className="lg:col-span-7 space-y-8">
-                <div>
-                  <h3 className="text-lg font-bold text-yellow-400">🚗 Get drivers who act as a guide</h3>
-                  {description && <p className="text-sm text-zinc-400 mt-2 leading-relaxed">{description}</p>}
-                  <div className="border-b border-dashed border-zinc-800 my-6" />
-                </div>
-
-                {rules && rules.length > 0 && (
-                  <div>
-                    <h2 className="text-xl font-bold text-white mb-4">Important Information</h2>
-                    <div className="space-y-3">
-                      {rules.map((rule, idx) => (
-                        <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                          <Check className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
-                          <span>{rule}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="border-b border-dashed border-zinc-800 my-6" />
-                  </div>
-                )}
-
-                {attractions && attractions.length > 0 && (
-                  <div>
-                    <h2 className="text-xl font-bold text-white mb-4">{attractionTitle}</h2>
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4">
-                      {attractions.map((place, idx) => (
-                        <div key={idx} className="flex items-start gap-3">
-                          <span className="text-xl shrink-0 mt-0.5">{place.emoji}</span>
-                          <div>
-                            <span className="font-bold text-yellow-400 text-sm">{place.name}</span>
-                            {place.desc && <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">{place.desc}</p>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* RIGHT */}
-              <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-                <div id="rate-card" className="scroll-mt-24 bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
-                  <div className="bg-yellow-400 text-black p-4 font-black text-base">Rate Card</div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-yellow-500/20 text-yellow-400 text-[11px] font-extrabold border-b border-zinc-800">
-                          <th className="p-3 text-left border-r border-zinc-800">Vehicle</th>
-                          {rateColumns.map((col, i) => (
-                            <th key={i} className="p-3 text-center border-r border-zinc-800 last:border-r-0">{col}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-800 text-zinc-200 font-medium">
-                        {rates.map((row, idx) => (
-                          <tr key={idx} className="hover:bg-zinc-800/80 transition">
-                            <td className="p-3 font-bold border-r border-zinc-800 text-yellow-400">{row.vehicle}</td>
-                            {row.cols.map((val, i) => (
-                              <td key={i} className="p-3 text-center border-r border-zinc-800 last:border-r-0">{val}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div className="bg-zinc-900 rounded-2xl border-2 border-yellow-400 p-6 space-y-4 shadow-2xl shadow-yellow-400/10">
-                  <h3 className="text-lg font-black text-white flex items-center justify-between">
-                    <span>Quick Booking</span>
-                    <span className="text-xs bg-yellow-400 text-black px-2 py-0.5 rounded font-extrabold">Instant</span>
+            {/* Right Column */}
+            <div className="tour-flex-right">
+              <div className="sticky top-24 space-y-6">
+                {/* Rate Card Table */}
+                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                  <h3 className="mb-4 text-[18px] font-bold text-gray-900">
+                    Rate Card
                   </h3>
-                  <p className="text-xs text-zinc-400">Get instant driver &amp; cab confirmation for your {tourName}</p>
-                  <button onClick={() => handleOpenBookModal()} className="w-full py-3.5 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-black text-base shadow-lg shadow-yellow-400/20 transition cursor-pointer">
+                  <div
+                    className="rate-table-html"
+                    dangerouslySetInnerHTML={{ __html: data.rightHtml || "" }}
+                  />
+                </div>
+
+                {/* Quick Booking Card */}
+                <div className="bg-orange-50 rounded-lg p-6 border-2 border-orange-200">
+                  <h3 className="mb-4 text-[18px] font-bold text-orange-600">
+                    Quick Booking
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Get instant confirmation for your {data.title}
+                  </p>
+                  <button
+                    onClick={() => handleOpenBookModal()}
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors shadow-xs cursor-pointer"
+                  >
                     Book Now
                   </button>
-                  <button type="button" onClick={() => setAutoEnquiryOpen(true)} className="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-yellow-400 border border-yellow-400/30 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                    <span>Submit Enquiry Now</span>
-                  </button>
-                  <div className="pt-2 text-xs text-zinc-400 flex items-center justify-between border-t border-zinc-800">
-                    <span>Or call us directly:</span>
-                    <a href={`tel:+91${phone}`} className="font-bold text-yellow-400 hover:underline flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-yellow-400" />
-                      <span>+91 {phone}</span>
+                  <div className="mt-4 pt-4 border-t border-orange-200">
+                    <p className="text-sm text-gray-600 mb-2">
+                      Or call us directly:
+                    </p>
+                    <a
+                      href={`tel:+91${phone}`}
+                      className="text-[#1A96EB] hover:text-[#1578BC] transition-colors block"
+                    >
+                      📞 +91 {phone}{" "}
+                      <span className="ml-2 text-xs text-gray-500">
+                        | City Tour Cabs
+                      </span>
                     </a>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
-        </section>
+        </div>
       </main>
 
-      <Footer onOpenPrivacyModal={() => setPrivacyModalOpen(true)} onSelectTour={(tour) => setSelectedTour(tour)} />
+      {/* Footer */}
+      <Footer onOpenBookModal={() => handleOpenBookModal()} />
+
+      {/* Floating Actions */}
       <FloatingActions onOpenBookModal={() => handleOpenBookModal()} />
 
-      {selectedTour && (
-        <TourModal
-          tour={selectedTour}
-          onClose={() => setSelectedTour(null)}
-          onBookClick={() => {
-            const t = selectedTour;
-            setSelectedTour(null);
-            handleOpenBookModal({ dropCity: t.title, tripType: 'Tour Package' });
-          }}
-        />
-      )}
+      {/* Quick Booking Modal */}
+      <QuickBookModal
+        isOpen={bookModalOpen}
+        onClose={() => setBookModalOpen(false)}
+        initialData={bookModalInitialData}
+      />
 
-      <QuickBookModal isOpen={bookModalOpen} onClose={() => setBookModalOpen(false)} initialData={bookModalInitialData} />
-      <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
-      <AutoEnquiryModal isOpen={autoEnquiryOpen} onClose={() => setAutoEnquiryOpen(false)} />
+      {/* Auto Enquiry Modal */}
+      <AutoEnquiryModal
+        isOpen={autoEnquiryOpen}
+        onClose={() => setAutoEnquiryOpen(false)}
+      />
     </div>
   );
 }

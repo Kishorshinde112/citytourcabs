@@ -70,7 +70,7 @@ export default function Navbar({ onOpenBookModal }) {
                 Home
               </a>
 
-              <a href="/#about" className="text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium">
+              <a href="/about" className="text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium">
                 About
               </a>
 
@@ -112,6 +112,16 @@ export default function Navbar({ onOpenBookModal }) {
                 Contact Us
               </a>
             </nav>
+
+            {/* Desktop Book Now Button */}
+            <div className="hidden md:block">
+              <button
+                onClick={onOpenBookModal}
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all text-white h-9 px-4 py-2 bg-[#1A96EB] hover:bg-[#1578BC] cursor-pointer shadow-xs"
+              >
+                Book Now
+              </button>
+            </div>
 
             {/* Mobile Hamburger Toggle */}
             <div className="flex md:hidden items-center gap-2">
@@ -164,7 +174,7 @@ export default function Navbar({ onOpenBookModal }) {
               Home
             </a>
             <a
-              href="/#about"
+              href="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB]"
             >

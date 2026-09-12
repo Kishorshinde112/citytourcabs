@@ -67,3 +67,77 @@
 .glow-green {
   box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.5);
 }
+
+/* Tour Flex Layout */
+.tour-flex-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+@media (min-width: 1024px) {
+  .tour-flex-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+  .tour-flex-left {
+    flex-basis: 60%;
+    max-width: 60%;
+    min-width: 0;
+  }
+  .tour-flex-right {
+    flex-basis: 40%;
+    max-width: 40%;
+    min-width: 0;
+  }
+}
+
+/* Rate Table Styles */
+.rate-table-html table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+  font-size: 1rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  table-layout: fixed;
+}
+.rate-table-html th, .rate-table-html td {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  word-break: break-word;
+}
+.rate-table-html th {
+  background: #1a96eb;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.rate-table-html tr:last-child td {
+  border-bottom: none;
+}
+.rate-table-html tr:hover td {
+  background: #e0f2fe;
+}
+.rate-table-html td {
+  color: #374151;
+}
+@media (max-width: 640px) {
+  .rate-table-html {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  .rate-table-html table {
+    font-size: 0.85rem;
+  }
+  .rate-table-html th, .rate-table-html td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  .rate-table-html th {
+    font-size: 0.9rem;
+  }
+}
+
