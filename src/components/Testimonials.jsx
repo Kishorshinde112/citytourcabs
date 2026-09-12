@@ -1,95 +1,69 @@
 import React from 'react';
-import { Star, Quote, CheckCircle2, MessageSquare } from 'lucide-react';
-import { TESTIMONIALS_DATA } from '../data/testimonialsData';
-import useSettingsStore from '../store/settingsStore';
+import { Star, Quote } from 'lucide-react';
 
 export default function Testimonials() {
-  const { phone } = useSettingsStore();
+  const reviews = [
+    {
+      name: "Rajesh Sharma",
+      location: "Mumbai",
+      text: "Excellent service! The driver was not only professional but also acted as a great guide. He showed us all the hidden gems of Mumbai that we wouldn't have found on our own."
+    },
+    {
+      name: "Priya Patel",
+      location: "Pune",
+      text: "Our trip to Lonavala was amazing thanks to CityTourCabs. The cab was clean, comfortable, and the driver's knowledge of the area made our journey memorable."
+    },
+    {
+      name: "Amit Desai",
+      location: "Thane",
+      text: "Highly recommend for Shirdi trips! Punctual, courteous driver who made sure we had a comfortable and spiritual journey. Will definitely book again."
+    }
+  ];
+
   return (
-    <section className="py-16 sm:py-24 bg-black text-white relative overflow-hidden border-b border-zinc-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 md:py-24 bg-white text-gray-900">
+      <div className="container mx-auto px-4">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight text-white">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-display">
             What Our Customers Say
           </h2>
-
-          <p className="text-yellow-400/90 font-serif italic text-sm sm:text-base mt-2">
+          <p className="text-gray-600 max-w-2xl mx-auto font-handwritten text-xl">
             Don't just take our word for it - hear from our satisfied customers.
           </p>
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TESTIMONIALS_DATA.map((rev) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {reviews.map((rev, idx) => (
             <div
-              key={rev.id}
-              className="bg-zinc-900 rounded-3xl p-6 sm:p-7 border border-zinc-800 shadow-xl transition-all duration-300 flex flex-col justify-between"
+              key={idx}
+              className="bg-white rounded-xl border border-gray-200 p-6 relative flex flex-col justify-between hover:shadow-md transition-shadow"
             >
               <div>
+                <Quote className="h-8 w-8 text-orange-600 opacity-20 mb-4" />
                 
-                {/* Rating & Verified Trip Tag */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex text-yellow-400">
-                    {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-bold text-yellow-400 bg-yellow-400/10 border border-yellow-400/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-yellow-400" />
-                    Verified Trip
-                  </span>
+                {/* 5 Stars */}
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-orange-400 text-orange-400" />
+                  ))}
                 </div>
 
                 {/* Review Text */}
-                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed italic">
+                <p className="text-gray-600 mb-6 italic text-sm sm:text-base leading-relaxed">
                   "{rev.text}"
                 </p>
-
-                {/* Tour Taken Tag */}
-                <div className="mt-4 inline-block bg-zinc-950 text-zinc-300 border border-zinc-800 text-[11px] font-semibold px-2.5 py-1 rounded-lg">
-                  📍 {rev.trip}
-                </div>
               </div>
 
-              {/* Author Info */}
-              <div className="mt-6 pt-4 border-t border-zinc-800">
-                <h4 className="text-sm font-bold text-white leading-snug">{rev.name}</h4>
-                <p className="text-[11px] text-zinc-400 mt-0.5">{rev.location} • {rev.date}</p>
+              {/* Author */}
+              <div>
+                <p className="text-gray-900 font-semibold">{rev.name}</p>
+                <p className="text-sm text-gray-500">{rev.location}</p>
               </div>
-
             </div>
           ))}
-        </div>
-
-        {/* Google Reviews Trust Strip */}
-        <div className="mt-12 bg-zinc-900 rounded-2xl p-4 border border-zinc-800 max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-yellow-400 text-black font-black flex items-center justify-center font-display text-lg">
-              G
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <span className="font-bold text-white text-sm">4.9 / 5.0 Rating</span>
-              </div>
-              <p className="text-xs text-zinc-400">Based on Google verified taxi & tour reviews</p>
-            </div>
-          </div>
-
-          <a
-            href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs,%20I%20want%20to%20book%20a%20cab%20tour.`}
-            target="_blank"
-            rel="noreferrer"
-            className="px-4 py-2 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold text-xs shadow transition whitespace-nowrap"
-          >
-            Join Happy Travellers
-          </a>
         </div>
 
       </div>

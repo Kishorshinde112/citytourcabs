@@ -56,7 +56,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans flex flex-col selection:bg-yellow-400 selection:text-black pb-14 sm:pb-0">
+    <div className="min-h-screen bg-white text-gray-900 font-sans flex flex-col selection:bg-[#1A96EB] selection:text-white pb-14 sm:pb-0">
 
       {/* Top Navigation */}
       <Navbar 
@@ -66,37 +66,36 @@ export default function Home() {
 
       {/* Main Content Sections */}
       <main className="flex-1">
-        {/* Hero Section */}
-        <Hero
-          onSelectTour={(tour) => setSelectedTour(tour)}
+        {/* Hero Section Slider */}
+        <Hero />
+
+        {/* Explore Mumbai & Beyond (Tour Cards) */}
+        <TourPackages 
+          onSelectTour={(tour) => setSelectedTour(tour)} 
+          showMumbaiOnly={false} 
           onOpenBookModal={(data) => handleOpenBookModal(data)}
         />
 
-        {/* Explore Mumbai & Beyond (10 Tour Cards) */}
-        <TourPackages onSelectTour={(tour) => setSelectedTour(tour)} showMumbaiOnly={false} />
+        {/* Why Choose CityTourCabs? */}
+        <WhyChooseUs />
 
-        {/* Why Choose City Tour Cabs? (Peach Section with 6 Feature Boxes) */}
-        <WhyChooseUs onOpenBookModal={() => handleOpenBookModal()} />
-
-        {/* Our Cabs Gallery (Dark Navy Section) */}
+        {/* Our Cabs Gallery (Fleet) */}
         <FleetSection onOpenBookModal={(data) => handleOpenBookModal(data)} />
 
-        {/* What Our Customers Say */}
+        {/* What Our Customers Say (Testimonials) */}
         <Testimonials />
 
-        {/* Memories from Our Tours */}
+        {/* Memories from Our Tours (Photo Gallery) */}
         <GallerySection />
 
-        {/* About Us */}
-        <AboutSection onOpenBookModal={() => handleOpenBookModal()} />
-
-        {/* Direct Booking & Inquiry Contact Form */}
+        {/* Get In Touch (Booking & Inquiry Contact Form) */}
         <BookingContactForm />
       </main>
 
       {/* Footer */}
       <Footer
         onOpenPrivacyModal={() => setPrivacyModalOpen(true)}
+        onOpenBookModal={() => handleOpenBookModal()}
         onSelectTour={(tour) => setSelectedTour(tour)}
       />
 

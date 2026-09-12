@@ -23,7 +23,15 @@ export default function AutoEnquiryModal({ isOpen, onClose }) {
         setFormData(prev => ({ ...prev, travelDate: today }));
       }
     }
-  }, [isOpen]);
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

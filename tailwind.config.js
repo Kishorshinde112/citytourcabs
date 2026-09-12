@@ -7,34 +7,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-        },
-        navy: {
-          800: '#0f172a',
-          850: '#0b1120',
-          900: '#090d16',
-          950: '#04070e',
+        'brand-blue': {
+          50: '#f0f7fd',
+          100: '#dff0fa',
+          500: '#1A96EB',
+          600: '#1578BC',
+          700: '#11629b',
         },
         primary: {
           blue: '#1A96EB',
-          darkBlue: '#0d6ebd',
+          darkBlue: '#1578BC',
           green: '#10B981',
-          accent: '#FF6600',
+          accent: '#ea580c',
         }
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+        sans: ['"Reddit Sans"', 'Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Reddit Sans"', 'Poppins', 'sans-serif'],
+        handwritten: ['Caveat', 'cursive'],
       },
       boxShadow: {
         'glow': '0 0 25px -5px rgba(245, 158, 11, 0.4)',
