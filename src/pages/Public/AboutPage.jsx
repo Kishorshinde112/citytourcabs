@@ -63,12 +63,12 @@ export default function AboutPage() {
 
               <div className="flex flex-wrap gap-6 justify-center my-8">
                 <img
-                  src="/assets/about-cityscape.png"
+                  src="/assets/about-driver.jpg"
                   alt="Professional driver"
                   className="h-64 sm:h-72 w-full sm:w-[420px] object-cover rounded-2xl shadow-md"
                 />
                 <img
-                  src="/assets/about-driver.jpg"
+                  src="/assets/about-cityscape.png"
                   alt="Mumbai cityscape"
                   className="h-64 sm:h-72 w-full sm:w-[420px] object-cover rounded-2xl shadow-md"
                 />

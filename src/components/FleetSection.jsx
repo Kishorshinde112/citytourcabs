@@ -54,11 +54,11 @@ export default function FleetSection({ onOpenBookModal }) {
         onClick={() => onOpenBookModal && onOpenBookModal({ carType: car.name })}
         className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full flex flex-col cursor-pointer"
       >
-        <div className="relative h-48 overflow-hidden group">
+        <div className="relative h-48 overflow-hidden group bg-white flex items-center justify-center p-2">
           <img
             src={car.image}
             alt={car.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
         </div>

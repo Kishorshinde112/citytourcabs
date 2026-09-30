@@ -20,6 +20,7 @@ import AdminLayout from './pages/Admin/AdminLayout';
 import Login from './pages/Admin/Login';
 import Dashboard from './pages/Admin/Dashboard';
 import Settings from './pages/Admin/Settings';
+import PocketBaseAdmin from './pages/Admin/PocketBaseAdmin';
 
 export default function App() {
   return (
@@ -48,8 +49,11 @@ export default function App() {
         {/* Admin Login */}
         <Route path="/admin/login" element={<Login />} />
 
-        {/* Protected Admin Portal */}
-        <Route path="/admin" element={<AdminLayout />}>
+        {/* 1:1 PocketBase Admin Panel */}
+        <Route path="/admin" element={<PocketBaseAdmin />} />
+
+        {/* Legacy / Alternate Operations View */}
+        <Route path="/admin/ops" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="settings" element={<Settings />} />
           <Route path="tours" element={<ToursManager />} />

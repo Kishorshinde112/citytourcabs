@@ -1,43 +1,87 @@
-import React, { useEffect } from 'react';
-import { Users, Car, CalendarCheck, TrendingUp, RefreshCw, MessageCircle, Phone, Trash2, Calendar, MapPin, CheckCircle2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { 
+  Users, Car, CalendarCheck, TrendingUp, RefreshCw, MessageCircle, 
+  Phone, Trash2, Calendar, MapPin, Download, Search, ChevronLeft, 
+  ChevronRight, Filter, Clock, Navigation
+} from 'lucide-react';
 import useBookingsStore from '../../store/bookingsStore';
 
 export default function Dashboard() {
-  const { bookings, loading, fetchBookings, updateBookingStatus, deleteBooking } = useBookingsStore();
+  const { 
+    bookings, loading, page, limit, total, totalPages, search, statusFilter, counts,
+    fetchBookings, setPage, setSearch, setStatusFilter, setLimit, updateBookingStatus, deleteBooking 
+  } = useBookingsStore();
+
+  const [searchInput, setSearchInput] = useState(search);
 
   useEffect(() => {
     fetchBookings();
   }, []);
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearch(searchInput);
+  };
+
+  const handleExportCsv = () => {
+    window.open('/api/bookings/export', '_blank');
+  };
+
   const stats = [
-    { label: 'Total Bookings', value: bookings.length.toString(), icon: Users, color: 'bg-indigo-600' },
-    { label: 'Pending Action', value: bookings.filter(b => (b.status || 'Pending') === 'Pending').length.toString(), icon: CalendarCheck, color: 'bg-amber-500' },
-    { label: 'Active Fleet', value: '24 Cabs', icon: Car, color: 'bg-emerald-600' },
-    { label: 'System Health', value: '100% Live', icon: TrendingUp, color: 'bg-blue-600' },
+    { label: 'Total Inquiries', value: (counts.all || total).toLocaleString(), icon: Users, color: 'bg-indigo-600', sub: 'Historical & live leads' },
+    { label: 'Pending Follow-up', value: (counts.pending || 0).toLocaleString(), icon: CalendarCheck, color: 'bg-amber-500', sub: 'Needs immediate call' },
+    { label: 'Confirmed Trips', value: (counts.confirmed || 0).toLocaleString(), icon: Car, color: 'bg-emerald-600', sub: 'Driver allocated' },
+    { label: 'Completed Tours', value: (counts.completed || 0).toLocaleString(), icon: TrendingUp, color: 'bg-blue-600', sub: 'Delivered journeys' },
+  ];
+
+  const statusTabs = [
+    { label: 'All Leads', value: 'All', count: counts.all },
+    { label: 'Pending', value: 'Pending', count: counts.pending },
+    { label: 'Confirmed', value: 'Confirmed', count: counts.confirmed },
+    { label: 'Completed', value: 'Completed', count: counts.completed },
+    { label: 'Cancelled', value: 'Cancelled', count: counts.all - counts.pending - counts.confirmed - counts.completed },
   ];
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-12">
+    <div className="space-y-6 max-w-7xl mx-auto pb-16">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      {/* Top Banner & Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
-          <h1 className="text-2xl font-black font-display text-slate-900">Dashboard & Customer Leads</h1>
-          <p className="text-slate-500 text-sm mt-1">Real-time incoming cab inquiries and booking requests from website.</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black font-display text-slate-900">Bookings & Customer Leads</h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black">
+              LIVE
+            </span>
+          </div>
+          <p className="text-slate-500 text-sm mt-1">
+            Real-time inquiries, tour requests, and customer records from all booking widgets.
+          </p>
         </div>
 
-        <button
-          onClick={() => fetchBookings()}
-          disabled={loading}
-          className="px-4 py-2.5 bg-slate-900 hover:bg-indigo-600 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>{loading ? 'Refreshing...' : 'Refresh Leads'}</span>
-        </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            onClick={handleExportCsv}
+            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+            title="Download all customer records in Excel / CSV"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Export to Excel (CSV)</span>
+          </button>
+
+          <button
+            onClick={() => fetchBookings()}
+            disabled={loading}
+            className="px-4 py-2.5 bg-slate-900 hover:bg-indigo-600 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
@@ -45,116 +89,204 @@ export default function Dashboard() {
               <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center text-white shrink-0 shadow-sm`}>
                 <Icon className="w-6 h-6" />
               </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{stat.label}</p>
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 truncate">{stat.label}</p>
                 <p className="text-2xl font-black text-slate-900 font-display">{stat.value}</p>
+                <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">{stat.sub}</p>
               </div>
             </div>
           );
         })}
       </div>
 
+      {/* Controls Bar: Search & Status Filters */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+          
+          {/* Status Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
+            {statusTabs.map((tab) => {
+              const active = statusFilter === tab.value;
+              return (
+                <button
+                  key={tab.value}
+                  onClick={() => setStatusFilter(tab.value)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
+                    active
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && (
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                      active ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-200 text-slate-700'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Search Box */}
+          <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 w-full md:w-80">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search name, phone, route..."
+                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition shrink-0 cursor-pointer"
+            >
+              Search
+            </button>
+          </form>
+
+        </div>
+      </div>
+
       {/* Recent Activity Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-          <h2 className="text-base font-bold font-display text-slate-900 flex items-center gap-2">
-            <CalendarCheck className="w-5 h-5 text-indigo-600" />
-            <span>Live Customer Booking Requests ({bookings.length})</span>
-          </h2>
-          
-          <span className="text-xs text-slate-500 font-medium">
-            Auto-synced with SQLite Database
-          </span>
+        <div className="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center bg-slate-50/70 gap-2">
+          <div className="flex items-center gap-2">
+            <CalendarCheck className="w-4 h-4 text-indigo-600" />
+            <span className="text-sm font-bold text-slate-900">
+              Showing {total > 0 ? (page - 1) * limit + 1 : 0} – {Math.min(page * limit, total)} of {total.toLocaleString()} Leads
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <span>Per page:</span>
+            <select
+              value={limit}
+              onChange={(e) => setLimit(Number(e.target.value))}
+              className="border border-slate-200 rounded-lg px-2 py-1 bg-white text-xs font-bold text-slate-700 outline-none cursor-pointer"
+            >
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
         </div>
 
         {bookings.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 space-y-3">
+          <div className="p-16 text-center text-slate-500 space-y-3">
             <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
               <Users className="w-6 h-6" />
             </div>
-            <div className="font-bold text-slate-700">No bookings received yet</div>
-            <p className="text-xs text-slate-400">New customer bookings placed on the site will appear here automatically.</p>
+            <div className="font-bold text-slate-700 text-sm">No inquiries match your filter</div>
+            <p className="text-xs text-slate-400">Try clearing the search query or status filter.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/70 text-slate-600 text-xs uppercase font-extrabold tracking-wider border-b border-slate-200">
-                  <th className="py-3.5 px-4 sm:px-6">Booking ID & Date</th>
-                  <th className="py-3.5 px-4">Customer Details</th>
-                  <th className="py-3.5 px-4">Trip Route & Vehicle</th>
-                  <th className="py-3.5 px-4">Travel Date</th>
-                  <th className="py-3.5 px-4 text-center">Status / Update</th>
-                  <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
+                  <th className="py-3.5 px-4">Lead ID & Received</th>
+                  <th className="py-3.5 px-4">Customer Contact</th>
+                  <th className="py-3.5 px-4">Destination & Cab</th>
+                  <th className="py-3.5 px-4">Trip Details</th>
+                  <th className="py-3.5 px-4 text-center">Status</th>
+                  <th className="py-3.5 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
                 {bookings.map((booking) => {
-                  const phoneNum = booking.phone || booking.contact || '';
+                  const phoneNum = String(booking.phone || '').replace(/\D/g, '').slice(-10);
+                  const waNum = String(booking.whatsapp || phoneNum).replace(/\D/g, '').slice(-10);
                   const statusVal = booking.status || 'Pending';
 
                   return (
-                    <tr key={booking.id} className="hover:bg-slate-50/80 transition">
+                    <tr key={booking.id} className="hover:bg-slate-50/90 transition">
                       
-                      {/* Booking ID */}
-                      <td className="py-4 px-4 sm:px-6">
-                        <div className="font-mono font-bold text-slate-900">{booking.id}</div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">
-                          {booking.created_at || booking.createdAt || 'Just now'}
+                      {/* Lead ID & Date */}
+                      <td className="py-4 px-4 align-top">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-bold text-slate-900 text-xs">{booking.id}</span>
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-black uppercase ${
+                            booking.type === 'Booking' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {booking.type || 'Inquiry'}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-slate-400" />
+                          <span>{booking.created_at || booking.createdAt || 'N/A'}</span>
                         </div>
                       </td>
 
-                      {/* Customer Details */}
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-slate-900">{booking.name || 'Guest User'}</div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <a
-                            href={`tel:+91${phoneNum}`}
-                            className="text-xs font-semibold text-slate-700 hover:text-indigo-600 flex items-center gap-1"
-                          >
-                            <Phone className="w-3 h-3 text-indigo-500" />
-                            +91 {phoneNum}
-                          </a>
-
+                      {/* Customer Details & Instant Contact Buttons */}
+                      <td className="py-4 px-4 align-top">
+                        <div className="font-bold text-slate-900">{booking.name || 'Valued Guest'}</div>
+                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                           {phoneNum && (
                             <a
-                              href={`https://wa.me/91${phoneNum}?text=Hello%20${encodeURIComponent(booking.name || 'Customer')},%20regarding%20your%20City Tour Cabs%20booking%20${booking.id}`}
+                              href={`tel:+91${phoneNum}`}
+                              className="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-bold flex items-center gap-1 transition"
+                            >
+                              <Phone className="w-3 h-3" />
+                              <span>{phoneNum}</span>
+                            </a>
+                          )}
+
+                          {waNum && (
+                            <a
+                              href={`https://wa.me/91${waNum}?text=Hello%20${encodeURIComponent(booking.name || 'Sir/Madam')},%20Greetings%20from%20City%20Tour%20Cabs!%20Regarding%20your%20inquiry%20for%20${encodeURIComponent(booking.route || 'Tour')}:`}
                               target="_blank"
                               rel="noreferrer"
-                              className="p-1 rounded bg-emerald-100 text-emerald-800 hover:bg-emerald-200 text-[10px] font-bold flex items-center gap-1"
+                              className="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1 transition shadow-xs"
                             >
-                              <MessageCircle className="w-3 h-3 text-emerald-600" />
+                              <MessageCircle className="w-3 h-3" />
                               <span>WhatsApp</span>
                             </a>
                           )}
                         </div>
                       </td>
 
-                      {/* Trip & Vehicle */}
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-slate-800 flex items-center gap-1">
+                      {/* Destination & Vehicle */}
+                      <td className="py-4 px-4 align-top">
+                        <div className="font-bold text-slate-800 flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                          <span>{booking.route || booking.tourName || 'Mumbai Tour'}</span>
+                          <span>{booking.route || 'Sightseeing Tour'}</span>
                         </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5 font-medium">
-                          🚘 {booking.vehicle || booking.carType || 'Standard Vehicle'}
+                        <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1 font-medium">
+                          <span>🚘 {booking.vehicle || 'Standard Vehicle'}</span>
+                          {booking.passengers && <span>• 👥 {booking.passengers} pax</span>}
                         </div>
                       </td>
 
-                      {/* Travel Date */}
-                      <td className="py-4 px-4 font-medium text-slate-700">
-                        <div className="flex items-center gap-1">
+                      {/* Trip Details (Date / Pickup) */}
+                      <td className="py-4 px-4 align-top">
+                        <div className="flex items-center gap-1 font-semibold text-slate-700">
                           <Calendar className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                          <span>{booking.date || booking.travelDate || 'Not specified'}</span>
+                          <span>{booking.date || 'Flexible'}</span>
                         </div>
+                        {booking.pickup_address && (
+                          <div className="text-[11px] text-slate-500 mt-1 truncate max-w-[200px]" title={booking.pickup_address}>
+                            📍 {booking.pickup_address}
+                          </div>
+                        )}
+                        {booking.special_requirements && (
+                          <div className="text-[10px] text-amber-700 mt-0.5 truncate max-w-[200px]" title={booking.special_requirements}>
+                            📝 {booking.special_requirements}
+                          </div>
+                        )}
                       </td>
 
-                      {/* Status Selector */}
-                      <td className="py-4 px-4 text-center">
+                      {/* Status Dropdown */}
+                      <td className="py-4 px-4 text-center align-top">
                         <select
                           value={statusVal}
                           onChange={(e) => updateBookingStatus(booking.id, e.target.value)}
-                          className={`text-xs font-extrabold rounded-xl px-3 py-1.5 outline-none border cursor-pointer transition ${
+                          className={`text-xs font-extrabold rounded-xl px-2.5 py-1.5 outline-none border cursor-pointer transition ${
                             statusVal === 'Confirmed'
                               ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
                               : statusVal === 'Completed'
@@ -171,16 +303,16 @@ export default function Dashboard() {
                         </select>
                       </td>
 
-                      {/* Actions */}
-                      <td className="py-4 px-4 sm:px-6 text-right">
+                      {/* Delete */}
+                      <td className="py-4 px-4 text-right align-top">
                         <button
                           onClick={() => {
-                            if (window.confirm(`Delete booking ${booking.id}?`)) {
+                            if (window.confirm(`Delete lead ${booking.id}?`)) {
                               deleteBooking(booking.id);
                             }
                           }}
-                          className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 border border-rose-100 transition cursor-pointer"
-                          title="Delete booking record"
+                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition cursor-pointer"
+                          title="Delete lead record"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -193,6 +325,36 @@ export default function Dashboard() {
             </table>
           </div>
         )}
+
+        {/* Pagination Bar */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between flex-wrap gap-3">
+            <span className="text-xs text-slate-500">
+              Page <strong className="text-slate-800">{page}</strong> of <strong className="text-slate-800">{totalPages}</strong>
+            </span>
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage(page - 1)}
+                disabled={page <= 1}
+                className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Prev</span>
+              </button>
+
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={page >= totalPages}
+                className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition cursor-pointer"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

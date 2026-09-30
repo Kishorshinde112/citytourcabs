@@ -1,0 +1,10 @@
+# Robots.txt for City Tour Cabs
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemaps
+Sitemap: https://citytourcabs.in/sitemap.xml
+Sitemap: https://www.citytourcabs.in/sitemap.xml

@@ -1,25 +1,41 @@
 import React, { useState } from 'react';
+import useBookingsStore from '../store/bookingsStore';
 
 export default function BookingForm() {
   const [status, setStatus] = useState('');
+  const { addBooking } = useBookingsStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('Sending...');
     
-    // Using Kishor's n8n webhook for leads
-    const formData = {
-      name: e.target.name.value,
-      phone: e.target.phone.value,
-      tour: e.target.tour.value
+    const name = e.target.name.value;
+    const phone = e.target.phone.value;
+    const tour = e.target.tour.value;
+
+    const bookingPayload = {
+      name,
+      phone,
+      whatsapp: phone,
+      route: tour,
+      vehicle: 'Standard Cab',
+      type: 'Booking',
+      date: new Date().toISOString().slice(0, 10),
     };
 
     try {
-      await fetch('https://n8n.kishorlab.dev/webhook/lead-ingestor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
+      // 1. Save directly into local database & live admin panel
+      await addBooking(bookingPayload);
+
+      // 2. Also forward to webhook if available
+      try {
+        fetch('https://n8n.kishorlab.dev/webhook/lead-ingestor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bookingPayload)
+        }).catch(() => {});
+      } catch (err) {}
+
       setStatus('Booking Confirmed! We will call you shortly.');
     } catch (error) {
       setStatus('Error, please try again.');

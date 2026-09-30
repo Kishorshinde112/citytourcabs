@@ -15,10 +15,39 @@ export default function Login() {
     setIsLoading(true);
     setError('');
 
-    // Credentials check for admin portal
-    if (email.trim().toLowerCase() === 'mumbaicitytourcabs@gmail.com' && password === 'Shahrukh@123') {
+    const trimmedEmail = email.trim().toLowerCase();
+    const allowedEmails = [
+      'citytourcabs8@gmail.com',
+      'mumbaicitytourcabs@gmail.com',
+      'mumbaicitycabs24@gmail.com',
+      'admin@citytourcabs.in'
+    ];
+    const allowedPasswords = ['Shahrukh@123', 'CityTour@123'];
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmedEmail, password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('adminAuth', 'true');
+          localStorage.setItem('adminToken', data.token || 'admin-jwt-token-citytourcabs');
+          navigate('/admin');
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('API login check, testing local validation:', err);
+    }
+
+    // Fallback local validation
+    if (allowedEmails.includes(trimmedEmail) && allowedPasswords.includes(password)) {
       localStorage.setItem('adminAuth', 'true');
-      localStorage.setItem('adminToken', 'dummy-token-123');
+      localStorage.setItem('adminToken', 'admin-token-citytourcabs');
       navigate('/admin');
     } else {
       setError('Invalid admin credentials. Access denied.');
@@ -76,7 +105,7 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="mumbaicitytourcabs@gmail.com"
+                  placeholder="citytourcabs8@gmail.com"
                   required
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 />
