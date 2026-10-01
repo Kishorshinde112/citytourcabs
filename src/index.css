@@ -141,3 +141,145 @@
   }
 }
 
+/* AI Chatbot Markdown Formatting Styles */
+.chat-markdown {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.55;
+  color: #1e293b;
+}
+
+.chat-markdown p {
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.chat-markdown p:first-child {
+  margin-top: 0;
+}
+
+.chat-markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3,
+.chat-markdown h4 {
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 0.65rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.chat-markdown h1 {
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.25rem;
+}
+
+.chat-markdown h2 {
+  font-size: 0.88rem;
+  color: #c2410c;
+}
+
+.chat-markdown h3 {
+  font-size: 0.82rem;
+}
+
+.chat-markdown strong,
+.chat-markdown b {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.chat-markdown hr {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 0.6rem 0;
+}
+
+.chat-markdown blockquote {
+  border-left: 3px solid #f97316;
+  background: #fff7ed;
+  padding: 0.35rem 0.6rem;
+  margin: 0.4rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-size: 0.78rem;
+  color: #9a3412;
+}
+
+.chat-markdown ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin: 0.35rem 0;
+}
+
+.chat-markdown ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin: 0.35rem 0;
+}
+
+.chat-markdown li {
+  margin-top: 0.15rem;
+  margin-bottom: 0.15rem;
+}
+
+.chat-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  font-size: 0.74rem;
+  background: #ffffff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.chat-markdown thead th {
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1.5px solid #cbd5e1;
+  white-space: nowrap;
+}
+
+.chat-markdown tbody td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.chat-markdown tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.chat-markdown tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.chat-markdown code {
+  background: #f1f5f9;
+  color: #c2410c;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+  font-size: 0.74rem;
+  font-family: ui-monospace, monospace;
+  border: 1px solid #e2e8f0;
+}
+
+.chat-markdown a {
+  color: #ea580c;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.chat-markdown a:hover {
+  color: #c2410c;
+}

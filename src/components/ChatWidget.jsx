@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bot, Send, X, RotateCcw, Sparkles, MessageCircle, Phone, ArrowRight, Loader2 } from 'lucide-react';
+import { marked } from 'marked';
 import useSettingsStore from '../store/settingsStore';
+
+// Configure marked with GFM tables and line breaks
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+});
 
 export default function ChatWidget() {
   const location = useLocation();
@@ -148,33 +155,20 @@ export default function ChatWidget() {
     '📞 Talk to booking manager',
   ];
 
-  // Helper to render markdown-like text (bold, bullet points)
-  const renderFormattedText = (content) => {
-    const lines = content.split('\n');
-    return lines.map((line, idx) => {
-      // Bold formatter: **text**
-      const parts = line.split(/(\*\*.*?\*\*)/g);
-      const formattedParts = parts.map((part, pIdx) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={pIdx} className="font-semibold text-slate-900">{part.slice(2, -2)}</strong>;
-        }
-        return part;
-      });
-
-      if (line.startsWith('• ') || line.startsWith('- ')) {
-        return (
-          <li key={idx} className="ml-4 list-disc text-slate-700 my-0.5">
-            {formattedParts.slice(1)}
-          </li>
-        );
-      }
-
+  // Helper to render markdown text beautifully with HTML support
+  const renderBotMessage = (content) => {
+    try {
+      const cleanContent = (content || '').replace(/\+91-XXXXXXXXXX/g, `+91 ${phone || '7021001921'}`);
+      const rawHtml = marked.parse(cleanContent);
       return (
-        <p key={idx} className={line.trim() === '' ? 'h-2' : 'my-0.5'}>
-          {formattedParts}
-        </p>
+        <div
+          className="chat-markdown"
+          dangerouslySetInnerHTML={{ __html: rawHtml }}
+        />
       );
-    });
+    } catch (_) {
+      return <div className="text-[12.5px] leading-relaxed whitespace-pre-wrap">{content}</div>;
+    }
   };
 
   return (
@@ -276,16 +270,44 @@ export default function ChatWidget() {
                 )}
 
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 shadow-xs break-words text-[13px] leading-relaxed ${
+                  className={`max-w-[88%] rounded-2xl p-3 shadow-xs break-words text-[13px] leading-relaxed ${
                     msg.sender === 'user'
-                      ? 'bg-orange-600 text-white rounded-tr-xs'
-                      : 'bg-white text-slate-800 border border-slate-200/80 rounded-tl-xs'
+                      ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-tr-xs shadow-orange-500/20'
+                      : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-xs shadow-slate-200/50'
                   }`}
                 >
-                  <div>{renderFormattedText(msg.text)}</div>
+                  {msg.sender === 'user' ? (
+                    <div className="whitespace-pre-wrap font-medium">{msg.text}</div>
+                  ) : (
+                    <div>
+                      {renderBotMessage(msg.text)}
+
+                      {/* Quick Action Buttons for booking or calling if relevant */}
+                      {(msg.text.includes('booking') || msg.text.includes('WhatsApp') || msg.text.includes('Rate') || msg.text.includes('Quote') || msg.text.includes('Rs ') || msg.text.includes('₹') || msg.text.includes('package')) && (
+                        <div className="mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
+                          <a
+                            href={`https://wa.me/91${phone || '7021001921'}?text=${encodeURIComponent('Hi City Tour Cabs, I would like to book a cab / get an instant quote.')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow-xs transition"
+                          >
+                            <MessageCircle className="w-3 h-3" />
+                            <span>WhatsApp Booking</span>
+                          </a>
+                          <a
+                            href={`tel:+91${phone || '7021001921'}`}
+                            className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 transition"
+                          >
+                            <Phone className="w-3 h-3 text-orange-600" />
+                            <span>Call Now</span>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div
-                    className={`text-[10px] mt-1.5 text-right ${
-                      msg.sender === 'user' ? 'text-orange-200' : 'text-slate-400'
+                    className={`text-[10px] mt-1.5 text-right font-medium ${
+                      msg.sender === 'user' ? 'text-orange-100' : 'text-slate-400'
                     }`}
                   >
                     {msg.time}
