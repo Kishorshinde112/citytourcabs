@@ -650,9 +650,9 @@ app.post('/api/chat', async (req, res) => {
         console.warn('Could not read webhook from db:', dbErr.message);
       }
     }
-    // Default to the active n8n CityCabs24 AI Agent webhook
+    // Default to the user's new n8n webhook
     if (!webhookUrl) {
-      webhookUrl = 'https://n8n.kishorlab.dev/webhook/4b17518f-4272-4baa-9865-4f2ab927f353/chat';
+      webhookUrl = 'https://n8n.kishorlab.dev/webhook-test/4d6e3906-3c0c-4c18-bef2-cf30563485c0';
     }
 
     // If webhook URL exists, forward request to webhook
@@ -661,25 +661,54 @@ app.post('/api/chat', async (req, res) => {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 35000); // 35s timeout for AI agent
 
-        const webhookResponse = await fetch(webhookUrl, {
+        const payloadObj = {
+          chatInput: message.trim(),
+          message: message.trim(),
+          query: message.trim(),
+          sessionId: sessionId || `session_${Date.now()}`,
+          action: 'sendMessage',
+          history: history || [],
+          timestamp: new Date().toISOString(),
+          source: 'citytourcabs-widget'
+        };
+
+        let webhookResponse = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'User-Agent': 'CityTourCabs-AI/1.0',
           },
-          body: JSON.stringify({
-            chatInput: message.trim(),
-            message: message.trim(),
-            sessionId: sessionId || `session_${Date.now()}`,
-            action: 'sendMessage',
-            history: history || [],
-            timestamp: new Date().toISOString(),
-            source: 'citytourcabs-widget'
-          }),
+          body: JSON.stringify(payloadObj),
           signal: controller.signal
         });
 
         clearTimeout(timeout);
+
+        // Smart fallback between test and production webhook URL if 404
+        if (!webhookResponse.ok && webhookResponse.status === 404) {
+          let altUrl = null;
+          if (webhookUrl.includes('/webhook-test/')) {
+            altUrl = webhookUrl.replace('/webhook-test/', '/webhook/');
+          } else if (webhookUrl.includes('/webhook/')) {
+            altUrl = webhookUrl.replace('/webhook/', '/webhook-test/');
+          }
+          if (altUrl) {
+            try {
+              const altController = new AbortController();
+              const altTimeout = setTimeout(() => altController.abort(), 35000);
+              const altRes = await fetch(altUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'User-Agent': 'CityTourCabs-AI/1.0' },
+                body: JSON.stringify(payloadObj),
+                signal: altController.signal
+              });
+              clearTimeout(altTimeout);
+              if (altRes && altRes.ok) {
+                webhookResponse = altRes;
+              }
+            } catch (_) {}
+          }
+        }
 
         if (webhookResponse.ok) {
           const rawText = await webhookResponse.text();
