@@ -591,7 +591,7 @@ app.post('/api/auth/login', (req, res) => {
     'admin@kishorlab.dev',
     'admin'
   ];
-  const allowedPasswords = ['Shahrukh@123', 'CityTour@123', 'admin123', 'Admin@123'];
+  const allowedPasswords = ['Nishant@0610', 'Shahrukh@123', 'CityTour@123', 'admin123', 'Admin@123'];
 
   if (allowedEmails.includes(validEmail) && allowedPasswords.includes(password)) {
     res.json({ success: true, token: 'admin-jwt-token-citytourcabs' });
