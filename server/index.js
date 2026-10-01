@@ -658,9 +658,6 @@ app.post('/api/chat', async (req, res) => {
     // If webhook URL exists, forward request to webhook
     if (webhookUrl) {
       try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 35000); // 35s timeout for AI agent
-
         const payloadObj = {
           chatInput: message.trim(),
           message: message.trim(),
@@ -672,45 +669,54 @@ app.post('/api/chat', async (req, res) => {
           source: 'citytourcabs-widget'
         };
 
-        let webhookResponse = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'User-Agent': 'CityTourCabs-AI/1.0',
-          },
-          body: JSON.stringify(payloadObj),
-          signal: controller.signal
-        });
+        // Build list of candidate endpoints (handling /chat, /webhook, /webhook-test)
+        const cleanUrl = webhookUrl.trim();
+        const urlsToTry = [];
+        if (cleanUrl.endsWith('/chat')) {
+          urlsToTry.push(cleanUrl);
+          urlsToTry.push(cleanUrl.slice(0, -5));
+        } else {
+          urlsToTry.push(cleanUrl + '/chat');
+          urlsToTry.push(cleanUrl);
+        }
 
-        clearTimeout(timeout);
-
-        // Smart fallback between test and production webhook URL if 404
-        if (!webhookResponse.ok && webhookResponse.status === 404) {
-          let altUrl = null;
-          if (webhookUrl.includes('/webhook-test/')) {
-            altUrl = webhookUrl.replace('/webhook-test/', '/webhook/');
-          } else if (webhookUrl.includes('/webhook/')) {
-            altUrl = webhookUrl.replace('/webhook/', '/webhook-test/');
-          }
-          if (altUrl) {
-            try {
-              const altController = new AbortController();
-              const altTimeout = setTimeout(() => altController.abort(), 35000);
-              const altRes = await fetch(altUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'User-Agent': 'CityTourCabs-AI/1.0' },
-                body: JSON.stringify(payloadObj),
-                signal: altController.signal
-              });
-              clearTimeout(altTimeout);
-              if (altRes && altRes.ok) {
-                webhookResponse = altRes;
-              }
-            } catch (_) {}
+        const candidateUrls = [];
+        for (const u of urlsToTry) {
+          if (!candidateUrls.includes(u)) candidateUrls.push(u);
+          if (u.includes('/webhook/')) {
+            const testV = u.replace('/webhook/', '/webhook-test/');
+            if (!candidateUrls.includes(testV)) candidateUrls.push(testV);
+          } else if (u.includes('/webhook-test/')) {
+            const prodV = u.replace('/webhook-test/', '/webhook/');
+            if (!candidateUrls.includes(prodV)) candidateUrls.push(prodV);
           }
         }
 
-        if (webhookResponse.ok) {
+        let webhookResponse = null;
+        for (const targetUrl of candidateUrls) {
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 35000); // 35s timeout for AI agent
+            const resCandidate = await fetch(targetUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'User-Agent': 'CityTourCabs-AI/1.0',
+              },
+              body: JSON.stringify(payloadObj),
+              signal: controller.signal
+            });
+            clearTimeout(timeout);
+            if (resCandidate && resCandidate.ok) {
+              webhookResponse = resCandidate;
+              break;
+            }
+          } catch (e) {
+            // try next candidate
+          }
+        }
+
+        if (webhookResponse && webhookResponse.ok) {
           const rawText = await webhookResponse.text();
           let replyText = '';
 
