@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import useSettingsStore from '../../store/settingsStore';
-import { Save, CheckCircle2, Phone, Mail, Sparkles, MessageCircle, Info, Headphones } from 'lucide-react';
+import { Save, CheckCircle2, Phone, Mail, Sparkles, MessageCircle, Info, Headphones, Bot } from 'lucide-react';
 
 export default function Settings() {
-  const { phone, helpPhone, email, updateSettings } = useSettingsStore();
+  const { phone, helpPhone, email, chatbotWebhookUrl, updateSettings } = useSettingsStore();
   const [formData, setFormData] = useState({
     phone: phone || '7021001921',
     helpPhone: helpPhone || '9967672660',
     email: email || 'mumbaicitytourcabs@gmail.com',
+    chatbotWebhookUrl: chatbotWebhookUrl || '',
   });
   const [saved, setSaved] = useState(false);
 
@@ -16,8 +17,9 @@ export default function Settings() {
       phone: phone || '7021001921',
       helpPhone: helpPhone || '9967672660',
       email: email || 'mumbaicitytourcabs@gmail.com',
+      chatbotWebhookUrl: chatbotWebhookUrl || '',
     });
-  }, [phone, helpPhone, email]);
+  }, [phone, helpPhone, email, chatbotWebhookUrl]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
@@ -129,6 +131,34 @@ export default function Settings() {
               </div>
               <p className="text-[11px] text-slate-500">
                 Support email displayed on public website footer and forms.
+              </p>
+            </div>
+
+            {/* AI Chatbot Webhook URL */}
+            <div className="space-y-2 md:col-span-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  AI Chatbot Webhook URL (n8n / AI Agent Webhook)
+                </label>
+                <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  {formData.chatbotWebhookUrl ? 'Webhook Active' : 'Internal Fallback Active'}
+                </span>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <Bot className="w-4 h-4 text-orange-500" />
+                </div>
+                <input
+                  type="url"
+                  name="chatbotWebhookUrl"
+                  value={formData.chatbotWebhookUrl}
+                  onChange={handleChange}
+                  placeholder="https://n8n.kishorlab.dev/webhook/citytourcabs-chat"
+                  className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                />
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Connect your n8n workflow or custom AI assistant. Incoming visitor messages from the corner chat widget will be POSTed here, and the returned response will be rendered in the chat window. If left empty, our intelligent built-in cab assistant responds automatically.
               </p>
             </div>
           </div>

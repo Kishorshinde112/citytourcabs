@@ -21,10 +21,12 @@ import Login from './pages/Admin/Login';
 import Dashboard from './pages/Admin/Dashboard';
 import Settings from './pages/Admin/Settings';
 import PocketBaseAdmin from './pages/Admin/PocketBaseAdmin';
+import ChatWidget from './components/ChatWidget';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ChatWidget />
       <Routes>
         {/* Public Website */}
         <Route path="/" element={<Home />} />

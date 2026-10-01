@@ -596,6 +596,148 @@ app.post('/api/auth/login', (req, res) => {
   }
 });
 
+// 5. AI Chatbot & Webhook Proxy Endpoint
+function generateFallbackChatResponse(query) {
+  const q = (query || '').toLowerCase();
+
+  if (q.includes('mumbai') || q.includes('darshan')) {
+    return "🚖 **Mumbai Darshan Packages:**\n- Full-day guided sightseeing starting at just ₹2,499 (Sedan) / ₹3,499 (Ertiga SUV).\n- Covers Gateway of India, Marine Drive, Haji Ali, Siddhivinayak Temple, Bandra-Worli Sea Link, and more.\n- Includes toll, fuel, and experienced driver-cum-guide.\n\nWould you like to book or know timing options?";
+  }
+
+  if (q.includes('lonavala') || q.includes('khandala')) {
+    return "⛰️ **Lonavala & Khandala Tour:**\n- Same-day return or overnight package.\n- Visit Tiger Point, Bhushi Dam, Lion's Point, Karla Caves & Wax Museum.\n- Fares start from ₹2,799 (Dzire) and ₹3,899 (Ertiga SUV) with transparent pricing.\n\nShall I arrange an instant quote for your travel date?";
+  }
+
+  if (q.includes('shirdi') || q.includes('jyotirlinga') || q.includes('ashtavinayak')) {
+    return "🛕 **Spiritual & Pilgrimage Tours:**\n- **Shirdi Sai Baba Darshan**: 1-day or 2-day comfortable AC cab with pickup from anywhere in Mumbai/Pune.\n- **3 Jyotirlinga Tour**: Trimbakeshwar, Bhimashankar & Grishneshwar (customizable 2-3 days).\n- **Ashtavinayak Darshan**: Complete 8 Ganpati tour package with clean sanitized cabs.\n\nTell me your starting point and dates to get the best package deal!";
+  }
+
+  if (q.includes('alibaug') || q.includes('matheran') || q.includes('mahabaleshwar') || q.includes('konkan') || q.includes('igatpuri')) {
+    return "🏖️ **Weekend & Holiday Getaways:**\n- We cover Alibaug, Matheran Eco-hills, Mahabaleshwar-Panchgani, Igatpuri & scenic Konkan Coastal road trips.\n- Clean AC cabs with drivers who know the best viewpoints and food stops.\n- Drop your preferred destination and passenger count to check availability!";
+  }
+
+  if (q.includes('fare') || q.includes('rate') || q.includes('price') || q.includes('cost') || q.includes('km') || q.includes('fleet')) {
+    return "🚘 **City Tour Cabs Fleet & Pricing:**\n- **Sedan (Swift Dzire/Etios)**: 4 Seater • Affordable, comfortable • Starting ₹13-14/km\n- **SUV (Maruti Ertiga/Carens)**: 6 Seater • Perfect for families • Starting ₹17-18/km\n- **Premium (Innova Crysta)**: 6/7 Seater • Maximum comfort & luxury • Starting ₹22-25/km\n- Zero hidden fees! All local rental & outstation packages have transparent pricing.";
+  }
+
+  if (q.includes('book') || q.includes('contact') || q.includes('call') || q.includes('phone') || q.includes('number') || q.includes('agent') || q.includes('help')) {
+    return "📞 **Instant Booking & Support:**\n- Call / WhatsApp our booking manager directly at: **+91 7021001921** or Helpline **+91 9967672660**.\n- You can also use the 'Book Now' form on this website or chat with us on WhatsApp for 24/7 instant confirmation!";
+  }
+
+  return "Namaste! 🙏 Welcome to **City Tour Cabs**.\n\nI can assist you with:\n1. 🚖 Mumbai Darshan & City Sightseeing\n2. ⛰️ Lonavala, Alibaug, Mahabaleshwar & Matheran getaways\n3. 🛕 Shirdi, Ashtavinayak & Jyotirlinga pilgrimage packages\n4. 🚘 Outstation one-way & round-trip AC cabs\n\nHow can I help you plan your journey today? You can also call us directly at **+91 7021001921**!";
+}
+
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, sessionId, history } = req.body;
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Message cannot be empty.' });
+    }
+
+    // Check if a Webhook URL is configured in settings or environment
+    let webhookUrl = process.env.CHATBOT_WEBHOOK_URL || process.env.CHAT_WEBHOOK_URL;
+    if (!webhookUrl) {
+      try {
+        const row = db.prepare("SELECT value FROM settings WHERE key = 'chatbotWebhookUrl' OR key = 'chatWebhookUrl' OR key = 'chatbot_webhook_url'").get();
+        if (row && row.value && row.value.trim().startsWith('http')) {
+          webhookUrl = row.value.trim();
+        }
+      } catch (dbErr) {
+        console.warn('Could not read webhook from db:', dbErr.message);
+      }
+    }
+
+    // If webhook URL exists, forward request to webhook
+    if (webhookUrl) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
+        const webhookResponse = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'CityTourCabs-AI/1.0',
+          },
+          body: JSON.stringify({
+            message: message.trim(),
+            history: history || [],
+            sessionId: sessionId || `session_${Date.now()}`,
+            timestamp: new Date().toISOString(),
+            source: 'citytourcabs-widget'
+          }),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeout);
+
+        if (webhookResponse.ok) {
+          const contentType = webhookResponse.headers.get('content-type') || '';
+          let replyText = '';
+
+          if (contentType.includes('application/json')) {
+            const data = await webhookResponse.json();
+            if (data.output) replyText = typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
+            else if (data.reply) replyText = typeof data.reply === 'string' ? data.reply : JSON.stringify(data.reply);
+            else if (data.response) replyText = typeof data.response === 'string' ? data.response : JSON.stringify(data.response);
+            else if (data.message) replyText = typeof data.message === 'string' ? data.message : JSON.stringify(data.message);
+            else if (data.text) replyText = typeof data.text === 'string' ? data.text : JSON.stringify(data.text);
+            else if (Array.isArray(data) && data.length > 0) {
+              const first = data[0];
+              replyText = first.output || first.reply || first.message || JSON.stringify(first);
+            } else {
+              replyText = JSON.stringify(data);
+            }
+          } else {
+            replyText = await webhookResponse.text();
+          }
+
+          if (replyText && replyText.trim()) {
+            return res.json({ success: true, reply: replyText.trim(), source: 'webhook' });
+          }
+        } else {
+          console.warn(`Webhook responded with status ${webhookResponse.status}`);
+        }
+      } catch (forwardErr) {
+        console.error('Error forwarding message to webhook:', forwardErr.message);
+      }
+    }
+
+    // Fallback response if webhook is not configured or failed
+    const fallbackReply = generateFallbackChatResponse(message);
+    return res.json({
+      success: true,
+      reply: fallbackReply,
+      source: webhookUrl ? 'fallback_after_webhook_error' : 'internal_assistant'
+    });
+  } catch (err) {
+    console.error('Chat endpoint error:', err);
+    res.status(500).json({ error: 'Internal server error processing chat message.' });
+  }
+});
+
+// Chat status endpoint (lets frontend check if webhook is linked)
+app.get('/api/chat/status', (req, res) => {
+  let webhookUrl = process.env.CHATBOT_WEBHOOK_URL || process.env.CHAT_WEBHOOK_URL;
+  if (!webhookUrl) {
+    try {
+      const row = db.prepare("SELECT value FROM settings WHERE key = 'chatbotWebhookUrl' OR key = 'chatWebhookUrl' OR key = 'chatbot_webhook_url'").get();
+      if (row && row.value && row.value.trim().startsWith('http')) {
+        webhookUrl = row.value.trim();
+      }
+    } catch (e) {}
+  }
+  let host = null;
+  if (webhookUrl) {
+    try { host = new URL(webhookUrl).host; } catch (_) {}
+  }
+  res.json({
+    enabled: true,
+    webhookConfigured: Boolean(webhookUrl),
+    webhookHost: host
+  });
+});
+
 // Serve compiled static assets
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));

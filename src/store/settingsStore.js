@@ -4,6 +4,7 @@ const DEFAULT_SETTINGS = {
   phone: '7021001921',
   helpPhone: '9967672660',
   email: 'citytourcabs8@gmail.com',
+  chatbotWebhookUrl: '',
 };
 
 const useSettingsStore = create((set, get) => ({
@@ -20,6 +21,7 @@ const useSettingsStore = create((set, get) => ({
             phone: data.settings.phone || DEFAULT_SETTINGS.phone,
             helpPhone: data.settings.helpPhone || DEFAULT_SETTINGS.helpPhone,
             email: data.settings.email || DEFAULT_SETTINGS.email,
+            chatbotWebhookUrl: data.settings.chatbotWebhookUrl || data.settings.chatWebhookUrl || '',
           });
         }
       }
@@ -43,6 +45,7 @@ const useSettingsStore = create((set, get) => ({
             phone: data.settings.phone,
             helpPhone: data.settings.helpPhone,
             email: data.settings.email,
+            chatbotWebhookUrl: data.settings.chatbotWebhookUrl || data.settings.chatWebhookUrl || '',
           });
         }
       }
