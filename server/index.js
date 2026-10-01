@@ -634,7 +634,7 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message cannot be empty.' });
     }
 
-    // Check if a Webhook URL is configured in settings or environment
+    // Check if a Webhook URL is configured in settings, environment, or default
     let webhookUrl = process.env.CHATBOT_WEBHOOK_URL || process.env.CHAT_WEBHOOK_URL;
     if (!webhookUrl) {
       try {
@@ -646,12 +646,16 @@ app.post('/api/chat', async (req, res) => {
         console.warn('Could not read webhook from db:', dbErr.message);
       }
     }
+    // Default to the active n8n CityCabs24 AI Agent webhook
+    if (!webhookUrl) {
+      webhookUrl = 'https://n8n.kishorlab.dev/webhook/4b17518f-4272-4baa-9865-4f2ab927f353/chat';
+    }
 
     // If webhook URL exists, forward request to webhook
     if (webhookUrl) {
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+        const timeout = setTimeout(() => controller.abort(), 35000); // 35s timeout for AI agent
 
         const webhookResponse = await fetch(webhookUrl, {
           method: 'POST',
@@ -660,9 +664,11 @@ app.post('/api/chat', async (req, res) => {
             'User-Agent': 'CityTourCabs-AI/1.0',
           },
           body: JSON.stringify({
+            chatInput: message.trim(),
             message: message.trim(),
-            history: history || [],
             sessionId: sessionId || `session_${Date.now()}`,
+            action: 'sendMessage',
+            history: history || [],
             timestamp: new Date().toISOString(),
             source: 'citytourcabs-widget'
           }),
@@ -672,24 +678,48 @@ app.post('/api/chat', async (req, res) => {
         clearTimeout(timeout);
 
         if (webhookResponse.ok) {
-          const contentType = webhookResponse.headers.get('content-type') || '';
+          const rawText = await webhookResponse.text();
           let replyText = '';
 
-          if (contentType.includes('application/json')) {
-            const data = await webhookResponse.json();
-            if (data.output) replyText = typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
-            else if (data.reply) replyText = typeof data.reply === 'string' ? data.reply : JSON.stringify(data.reply);
-            else if (data.response) replyText = typeof data.response === 'string' ? data.response : JSON.stringify(data.response);
-            else if (data.message) replyText = typeof data.message === 'string' ? data.message : JSON.stringify(data.message);
-            else if (data.text) replyText = typeof data.text === 'string' ? data.text : JSON.stringify(data.text);
-            else if (Array.isArray(data) && data.length > 0) {
-              const first = data[0];
-              replyText = first.output || first.reply || first.message || JSON.stringify(first);
-            } else {
-              replyText = JSON.stringify(data);
+          // 1. Handle n8n streaming response lines ({"type":"item","content":"..."})
+          if (rawText.includes('"type":"item"') || rawText.includes('{"type":')) {
+            const lines = rawText.split('\n');
+            let accumulated = '';
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed) continue;
+              try {
+                const parsed = JSON.parse(trimmed);
+                if (parsed.type === 'item' && parsed.content) {
+                  accumulated += parsed.content;
+                } else if (parsed.content && typeof parsed.content === 'string') {
+                  accumulated += parsed.content;
+                }
+              } catch (_) {}
             }
-          } else {
-            replyText = await webhookResponse.text();
+            if (accumulated.trim()) {
+              replyText = accumulated.trim();
+            }
+          }
+
+          // 2. Handle standard JSON response
+          if (!replyText) {
+            try {
+              const data = JSON.parse(rawText);
+              if (data.output) replyText = typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
+              else if (data.reply) replyText = typeof data.reply === 'string' ? data.reply : JSON.stringify(data.reply);
+              else if (data.response) replyText = typeof data.response === 'string' ? data.response : JSON.stringify(data.response);
+              else if (data.message) replyText = typeof data.message === 'string' ? data.message : JSON.stringify(data.message);
+              else if (data.text) replyText = typeof data.text === 'string' ? data.text : JSON.stringify(data.text);
+              else if (Array.isArray(data) && data.length > 0) {
+                const first = data[0];
+                replyText = first.output || first.reply || first.message || JSON.stringify(first);
+              } else {
+                replyText = JSON.stringify(data);
+              }
+            } catch (_) {
+              replyText = rawText;
+            }
           }
 
           if (replyText && replyText.trim()) {
