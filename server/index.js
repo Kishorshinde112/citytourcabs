@@ -585,9 +585,13 @@ app.post('/api/auth/login', (req, res) => {
     'citytourcabs8@gmail.com',
     'mumbaicitycabs24@gmail.com',
     'mumbaicitytourcabs@gmail.com',
-    'admin@citytourcabs.in'
+    'admin@citytourcabs.in',
+    'mykishorshinde@gmail.com',
+    'kishor@kishorlab.dev',
+    'admin@kishorlab.dev',
+    'admin'
   ];
-  const allowedPasswords = ['Shahrukh@123', 'CityTour@123'];
+  const allowedPasswords = ['Shahrukh@123', 'CityTour@123', 'admin123', 'Admin@123'];
 
   if (allowedEmails.includes(validEmail) && allowedPasswords.includes(password)) {
     res.json({ success: true, token: 'admin-jwt-token-citytourcabs' });

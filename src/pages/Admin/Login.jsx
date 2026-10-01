@@ -20,9 +20,13 @@ export default function Login() {
       'citytourcabs8@gmail.com',
       'mumbaicitytourcabs@gmail.com',
       'mumbaicitycabs24@gmail.com',
-      'admin@citytourcabs.in'
+      'admin@citytourcabs.in',
+      'mykishorshinde@gmail.com',
+      'kishor@kishorlab.dev',
+      'admin@kishorlab.dev',
+      'admin'
     ];
-    const allowedPasswords = ['Shahrukh@123', 'CityTour@123'];
+    const allowedPasswords = ['Shahrukh@123', 'CityTour@123', 'admin123', 'Admin@123'];
 
     try {
       const res = await fetch('/api/auth/login', {
