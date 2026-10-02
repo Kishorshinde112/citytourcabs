@@ -122,7 +122,10 @@ export default function TourDetailPage({ slug }) {
       <Footer onOpenBookModal={() => handleOpenBookModal()} />
 
       {/* Floating Actions */}
-      <FloatingActions onOpenBookModal={() => handleOpenBookModal()} />
+      <FloatingActions 
+        onOpenBookModal={() => handleOpenBookModal()} 
+        onOpenEnquiryModal={() => setAutoEnquiryOpen(true)}
+      />
 
       {/* Quick Booking Modal */}
       <QuickBookModal

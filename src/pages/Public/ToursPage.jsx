@@ -6,12 +6,14 @@ import QuickBookModal from '../../components/QuickBookModal';
 import Footer from '../../components/Footer';
 import FloatingActions from '../../components/FloatingActions';
 import PrivacyModal from '../../components/PrivacyModal';
+import AutoEnquiryModal from '../../components/AutoEnquiryModal';
 
 export default function ToursPage() {
   const [selectedTour, setSelectedTour] = useState(null);
   const [bookModalOpen, setBookModalOpen] = useState(false);
   const [bookModalInitialData, setBookModalInitialData] = useState({});
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
+  const [autoEnquiryOpen, setAutoEnquiryOpen] = useState(false);
 
   const handleOpenBookModal = (initialData = {}) => {
     setBookModalInitialData(initialData);
@@ -28,7 +30,10 @@ export default function ToursPage() {
         onOpenPrivacyModal={() => setPrivacyModalOpen(true)}
         onSelectTour={(tour) => setSelectedTour(tour)}
       />
-      <FloatingActions onOpenBookModal={() => handleOpenBookModal()} />
+      <FloatingActions 
+        onOpenBookModal={() => handleOpenBookModal()} 
+        onOpenEnquiryModal={() => setAutoEnquiryOpen(true)}
+      />
       {selectedTour && (
         <TourModal
           tour={selectedTour}
@@ -48,6 +53,10 @@ export default function ToursPage() {
       <PrivacyModal
         isOpen={privacyModalOpen}
         onClose={() => setPrivacyModalOpen(false)}
+      />
+      <AutoEnquiryModal
+        isOpen={autoEnquiryOpen}
+        onClose={() => setAutoEnquiryOpen(false)}
       />
     </div>
   );

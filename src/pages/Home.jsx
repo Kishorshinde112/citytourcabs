@@ -100,7 +100,10 @@ export default function Home() {
       />
 
       {/* Floating Call & WhatsApp Desk + Mobile Sticky Bar */}
-      <FloatingActions onOpenBookModal={() => handleOpenBookModal()} />
+      <FloatingActions 
+        onOpenBookModal={() => handleOpenBookModal()} 
+        onOpenEnquiryModal={() => setAutoEnquiryOpen(true)}
+      />
 
       {/* Full Tour Details Modal */}
       {selectedTour && (

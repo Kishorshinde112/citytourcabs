@@ -2,18 +2,26 @@ import React from 'react';
 import { Phone, MessageCircle, ArrowUp } from 'lucide-react';
 import useSettingsStore from '../store/settingsStore';
 
-export default function FloatingActions({ onOpenBookModal }) {
+export default function FloatingActions({ onOpenBookModal, onOpenEnquiryModal }) {
   const { phone } = useSettingsStore();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleEnquiryClick = () => {
+    if (typeof onOpenEnquiryModal === 'function') {
+      onOpenEnquiryModal();
+    } else if (typeof onOpenBookModal === 'function') {
+      onOpenBookModal();
+    }
+  };
+
   return (
     <>
       {/* Right Edge Side Floating Vertical Inquire Now Tab */}
       <button
-        onClick={() => onOpenBookModal()}
+        onClick={handleEnquiryClick}
         className="fixed right-0 top-1/2 -translate-y-1/2 z-40 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs py-3 px-2 rounded-l-md shadow-xl flex items-center gap-1.5 cursor-pointer [writing-mode:vertical-rl] rotate-180 transition-all hover:px-2.5"
         aria-label="Inquire Now"
       >

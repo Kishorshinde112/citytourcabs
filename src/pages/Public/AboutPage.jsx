@@ -293,7 +293,10 @@ export default function AboutPage() {
       <Footer onOpenBookModal={() => handleOpenBookModal()} />
 
       {/* Floating Actions */}
-      <FloatingActions onOpenBookModal={() => handleOpenBookModal()} />
+      <FloatingActions 
+        onOpenBookModal={() => handleOpenBookModal()} 
+        onOpenEnquiryModal={() => setAutoEnquiryOpen(true)}
+      />
 
       {/* Quick Booking Modal */}
       <QuickBookModal
