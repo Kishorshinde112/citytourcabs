@@ -68,6 +68,7 @@ const TOUR_PACKAGES_MAP = {
 };
 
 const CAR_TYPES = [
+  'Wagon R (Hatchback 4+1)',
   'Swift Dzire (Sedan 4+1)',
   'Maruti Ertiga (MUV 6+1)',
   'Kia Carens (MUV 6+1)',
@@ -87,15 +88,15 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
   const isEnquiry = Boolean(initialData.isEnquiry || initialData.type === 'Inquiry');
 
   const [destinations, setDestinations] = useState(DEFAULT_DESTINATIONS);
-  const [destination, setDestination] = useState('Mumbai Darshan');
+  const [destination, setDestination] = useState('');
   const [packageName, setPackageName] = useState('');
-  const [carType, setCarType] = useState('Swift Dzire (Sedan 4+1)');
+  const [carType, setCarType] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
-  const [passengers, setPassengers] = useState('4');
-  const [travelDate, setTravelDate] = useState(getTodayString());
-  const [pickupTime, setPickupTime] = useState('08:00');
+  const [passengers, setPassengers] = useState('');
+  const [travelDate, setTravelDate] = useState('');
+  const [pickupTime, setPickupTime] = useState('');
   const [pickupAddress, setPickupAddress] = useState('');
   const [specialRequirements, setSpecialRequirements] = useState('');
 
@@ -138,19 +139,19 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         initialData.tourName ||
         initialData.title ||
         initialData.drop ||
-        'Mumbai Darshan';
+        '';
       setDestination(targetDest);
 
-      const availablePackages = TOUR_PACKAGES_MAP[targetDest] || ['Standard Tour Package'];
-      setPackageName(initialData.packageName || initialData.package || availablePackages[0]);
+      const availablePackages = targetDest ? (TOUR_PACKAGES_MAP[targetDest] || ['Standard Tour Package']) : [];
+      setPackageName(initialData.packageName || initialData.package || (availablePackages.length === 1 ? availablePackages[0] : ''));
 
-      setCarType(initialData.carType || initialData.vehicle || 'Swift Dzire (Sedan 4+1)');
+      setCarType(initialData.carType || initialData.vehicle || '');
       setFullName(initialData.fullName || initialData.name || '');
       setPhoneNumber(initialData.phoneNumber || initialData.phone || initialData.contact || '');
       setWhatsappNumber(initialData.whatsappNumber || initialData.whatsapp || '');
-      setPassengers(initialData.passengers || '4');
-      setTravelDate(initialData.travelDate || initialData.date || getTodayString());
-      setPickupTime(initialData.pickupTime || '08:00');
+      setPassengers(initialData.passengers || '');
+      setTravelDate(initialData.travelDate || initialData.date || '');
+      setPickupTime(initialData.pickupTime || '');
       setPickupAddress(initialData.pickupAddress || initialData.pickupLocation || '');
       setSpecialRequirements(initialData.specialRequirements || initialData.message || '');
     }
@@ -160,8 +161,8 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
   const handleDestinationChange = (e) => {
     const newDest = e.target.value;
     setDestination(newDest);
-    const pkgs = TOUR_PACKAGES_MAP[newDest] || ['Standard Tour Package'];
-    setPackageName(pkgs[0]);
+    const pkgs = newDest ? (TOUR_PACKAGES_MAP[newDest] || ['Standard Tour Package']) : [];
+    setPackageName(pkgs.length === 1 ? pkgs[0] : '');
   };
 
   if (!isOpen) return null;
@@ -181,13 +182,18 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
       setError('Please enter your full name.');
       return;
     }
-    const cleanPhone = phoneNumber.replace(/\D/g, '');
-    if (cleanPhone.length < 10) {
-      setError('Please enter a valid 10-digit phone number.');
+    const cleanPhone = phoneNumber.trim().replace(/[^0-9+]/g, '');
+    const digitsOnly = cleanPhone.replace(/\D/g, '');
+    if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+      setError('Please enter a valid phone number with country code (7 to 15 digits).');
       return;
     }
     if (!travelDate) {
       setError('Please select your travel date.');
+      return;
+    }
+    if (!isEnquiry && !carType) {
+      setError('Please select a car type.');
       return;
     }
     if (!isEnquiry && !pickupAddress.trim()) {
@@ -197,14 +203,16 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
 
     setLoading(true);
 
+    const cleanWhatsapp = whatsappNumber.trim().replace(/[^0-9+]/g, '');
+
     const bookingPayload = {
       name: fullName.trim(),
       phone: cleanPhone,
-      whatsapp: whatsappNumber ? whatsappNumber.replace(/\D/g, '') : cleanPhone,
+      whatsapp: cleanWhatsapp || cleanPhone,
       route: `${destination}${packageName ? ` - ${packageName}` : ''}`,
       tourName: destination,
-      vehicle: carType,
-      carType: carType,
+      vehicle: carType || 'Tour Vehicle',
+      carType: carType || 'Tour Vehicle',
       date: travelDate,
       travelDate: travelDate,
       pickup_time: pickupTime,
@@ -336,6 +344,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                 onChange={handleDestinationChange}
                 className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
               >
+                <option value="">Select Destination</option>
                 {destinations.map((dest, idx) => (
                   <option key={idx} value={dest}>
                     {dest}
@@ -354,17 +363,17 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
               {/* Package Dropdown */}
               <div>
                 <label htmlFor="package" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Package <span className="text-rose-500">*</span>
+                  Package
                 </label>
                 <div className="relative">
                   <select
                     id="package"
                     name="package"
-                    required
                     value={packageName}
                     onChange={(e) => setPackageName(e.target.value)}
                     className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
                   >
+                    <option value="">Select Package</option>
                     {currentPackages.map((pkg, idx) => (
                       <option key={idx} value={pkg}>
                         {pkg}
@@ -391,6 +400,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                     onChange={(e) => setCarType(e.target.value)}
                     className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
                   >
+                    <option value="">Select Car Type</option>
                     {CAR_TYPES.map((car, idx) => (
                       <option key={idx} value={car}>
                         {car}
@@ -433,8 +443,8 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                 name="phoneNumber"
                 type="tel"
                 required
-                maxLength={10}
-                placeholder="Enter your 10-digit phone number"
+                maxLength={20}
+                placeholder="Enter phone number with country code (e.g. +91 9876543210)"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
@@ -451,8 +461,8 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                   name="phoneNumber"
                   type="tel"
                   required
-                  maxLength={10}
-                  placeholder="Enter your 10-digit mobile number"
+                  maxLength={20}
+                  placeholder="Enter phone number (e.g. +91 9876543210)"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
@@ -467,8 +477,8 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                   id="whatsappNumber"
                   name="whatsappNumber"
                   type="tel"
-                  maxLength={10}
-                  placeholder="Enter your Whatsapp number"
+                  maxLength={20}
+                  placeholder="WhatsApp number with country code"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
@@ -493,6 +503,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                   onChange={(e) => setPassengers(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
                 >
+                  <option value="">Select Passengers</option>
                   {PASSENGER_OPTIONS.map((count) => (
                     <option key={count} value={count}>
                       {count} {count === '1' ? 'Passenger' : 'Passengers'}

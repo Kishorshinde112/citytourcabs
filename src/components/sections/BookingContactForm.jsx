@@ -63,11 +63,11 @@ export default function BookingContactForm() {
 
   const [destinations, setDestinations] = useState(DEFAULT_DESTINATIONS);
   const [formData, setFormData] = useState({
-    destination: 'Mumbai Darshan',
-    packageName: TOUR_PACKAGES_MAP['Mumbai Darshan'][0],
+    destination: '',
+    packageName: '',
     fullName: '',
     phoneNumber: '',
-    travelDate: new Date().toISOString().split('T')[0],
+    travelDate: '',
   });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -96,11 +96,11 @@ export default function BookingContactForm() {
 
   const handleDestinationChange = (e) => {
     const dest = e.target.value;
-    const pkgs = TOUR_PACKAGES_MAP[dest] || ['Standard Package'];
+    const pkgs = dest ? (TOUR_PACKAGES_MAP[dest] || ['Standard Package']) : [];
     setFormData((prev) => ({
       ...prev,
       destination: dest,
-      packageName: pkgs[0],
+      packageName: pkgs.length === 1 ? pkgs[0] : '',
     }));
   };
 
@@ -108,13 +108,22 @@ export default function BookingContactForm() {
     e.preventDefault();
     setError('');
 
+    if (!formData.destination) {
+      setError('Please select a destination.');
+      return;
+    }
     if (!formData.fullName.trim()) {
       setError('Please enter your full name.');
       return;
     }
-    const cleanPhone = formData.phoneNumber.replace(/\D/g, '');
-    if (cleanPhone.length < 10) {
-      setError('Please enter a valid 10-digit mobile number.');
+    const cleanPhone = formData.phoneNumber.trim().replace(/[^0-9+]/g, '');
+    const digitsOnly = cleanPhone.replace(/\D/g, '');
+    if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+      setError('Please enter a valid phone number with country code (7 to 15 digits).');
+      return;
+    }
+    if (!formData.travelDate) {
+      setError('Please select your travel date.');
       return;
     }
 
@@ -128,7 +137,7 @@ export default function BookingContactForm() {
       phone: cleanPhone,
       contact: cleanPhone,
       whatsapp: cleanPhone,
-      route: `${formData.destination} - ${formData.packageName}`,
+      route: `${formData.destination}${formData.packageName ? ` - ${formData.packageName}` : ''}`,
       tourName: formData.destination,
       vehicle: 'Tour Vehicle',
       carType: 'Tour Vehicle',
@@ -174,7 +183,9 @@ export default function BookingContactForm() {
     router.push(`/inquiry-confirmed?id=${inquiryId}`);
   };
 
-  const currentPackages = TOUR_PACKAGES_MAP[formData.destination] || ['Standard Package'];
+  const currentPackages = formData.destination
+    ? TOUR_PACKAGES_MAP[formData.destination] || ['Standard Package']
+    : [];
 
   return (
     <section id="contact" className="py-16 md:py-24 bg-gray-50 text-gray-900">
@@ -279,6 +290,7 @@ export default function BookingContactForm() {
                       onChange={handleDestinationChange}
                       className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
                     >
+                      <option value="">Select Destination</option>
                       {destinations.map((dest, idx) => (
                         <option key={idx} value={dest}>
                           {dest}
@@ -290,14 +302,14 @@ export default function BookingContactForm() {
                   {/* Package */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">
-                      Package *
+                      Package
                     </label>
                     <select
-                      required
                       value={formData.packageName}
                       onChange={(e) => setFormData({ ...formData, packageName: e.target.value })}
                       className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
                     >
+                      <option value="">Select Package</option>
                       {currentPackages.map((pkg, idx) => (
                         <option key={idx} value={pkg}>
                           {pkg}
@@ -329,8 +341,8 @@ export default function BookingContactForm() {
                     <input
                       type="tel"
                       required
-                      maxLength={10}
-                      placeholder="Enter your phone number"
+                      maxLength={20}
+                      placeholder="Enter phone number with country code (e.g. +91 9876543210)"
                       value={formData.phoneNumber}
                       onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                       className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
