@@ -52,7 +52,7 @@ export default function TourDetailClient({ slug, data }: { slug: string; data: a
           <img src={data.heroImage} alt={data.title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <div className="text-center text-white px-4">
-              <h1 className="text-3xl md:text-5xl font-bold font-display mb-4 text-white">
+              <h1 className="text-3xl md:text-5xl font-bold font-[Reddit_Sans] mb-4 text-white">
                 {data.title}
               </h1>
               <p className="text-xl md:text-2xl max-w-3xl mx-auto text-gray-100 font-sans">
@@ -78,7 +78,7 @@ export default function TourDetailClient({ slug, data }: { slug: string; data: a
               <div className="sticky top-24 space-y-6">
                 {/* Rate Card Table */}
                 <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                  <h3 className="mb-4 text-[18px] font-bold text-gray-900">Rate Card & Pricing</h3>
+                  <h3 className="mb-4 text-[18px] font-bold font-[Reddit_Sans] text-gray-900">Rate Card</h3>
                   {data.pricingTiers && data.pricingTiers.length > 0 ? (
                     <div className="space-y-4">
                       <div className="overflow-x-auto">
@@ -121,7 +121,7 @@ export default function TourDetailClient({ slug, data }: { slug: string; data: a
 
                 {/* Quick Booking Card */}
                 <div className="bg-orange-50 rounded-lg p-6 border-2 border-orange-200">
-                  <h3 className="mb-4 text-[18px] font-bold text-orange-600">Quick Booking</h3>
+                  <h3 className="mb-4 text-[18px] font-bold font-[Reddit_Sans] text-orange-600">Quick Booking</h3>
                   <p className="text-sm text-gray-600 mb-4">
                     Get instant confirmation for your {data.title}
                   </p>

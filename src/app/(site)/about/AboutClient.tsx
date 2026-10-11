@@ -87,7 +87,7 @@ export default function AboutClient() {
             <div className="absolute inset-0 bg-black/50" />
           </div>
           <div className="container mx-auto px-4 relative z-10 text-center text-white">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-display mb-4 text-white">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-[Reddit_Sans] mb-4 text-white">
               {aboutData.heroTitle}
             </h1>
             <p className="text-xl sm:text-2xl text-gray-100 max-w-2xl mx-auto">
@@ -100,7 +100,7 @@ export default function AboutClient() {
         <section className="py-16 md:py-24 bg-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-[rgb(58,128,227)] mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-[Reddit_Sans] text-[rgb(58,128,227)] mb-6">
                 {aboutData.welcomeTitle}
               </h2>
               <p className="text-gray-700 text-lg sm:text-xl leading-relaxed max-w-3xl mx-auto">
@@ -146,7 +146,7 @@ export default function AboutClient() {
         <section className="py-16 md:py-24 bg-white">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl sm:text-4xl font-bold font-display text-center mb-4 text-gray-900">
+              <h2 className="text-3xl sm:text-4xl font-bold font-[Reddit_Sans] text-center mb-4 text-gray-900">
                 Wide Range of Cars
               </h2>
               <p className="text-center text-lg text-gray-600 mb-10 max-w-3xl mx-auto">
@@ -216,7 +216,7 @@ export default function AboutClient() {
         <section className="py-16 md:py-24 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl sm:text-4xl font-bold font-display text-center mb-3 text-gray-900">
+              <h2 className="text-3xl sm:text-4xl font-bold font-[Reddit_Sans] text-center mb-3 text-gray-900">
                 What Sets Us Apart?
               </h2>
               <p className="text-center text-lg text-gray-700 mb-10">
@@ -298,7 +298,7 @@ export default function AboutClient() {
         >
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display mb-4 text-white">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-[Reddit_Sans] mb-4 text-white">
                 Choose CityTourCabs
               </h2>
               <p className="font-handwritten text-2xl sm:text-3xl mb-4 font-semibold">

@@ -8,7 +8,6 @@ import FleetSection from '@/components/FleetSection';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import GallerySection from '@/components/GallerySection';
 import Testimonials from '@/components/Testimonials';
-import FaqSection from '@/components/FaqSection';
 import BookingContactForm from '@/components/BookingContactForm';
 import Footer from '@/components/Footer';
 import FloatingActions from '@/components/FloatingActions';
@@ -98,9 +97,6 @@ export default function HomePage() {
 
         {/* Memories from Our Tours (Photo Gallery) */}
         <GallerySection />
-
-        {/* Frequently Asked Questions */}
-        <FaqSection />
 
         {/* Get In Touch (Booking & Inquiry Contact Form) */}
         <BookingContactForm />

@@ -118,7 +118,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
         
         {/* Section Header */}
         <div className="mb-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-display">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
             Explore Mumbai & Beyond
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
@@ -154,7 +154,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
                 {/* Tour Card Header & Content */}
                 <div className="p-6">
                   <a href={tour.href} className="hover:text-[#1A96EB] transition-colors">
-                    <h3 className="font-display font-bold text-[18px] text-gray-900 mb-2">
+                    <h3 className="font-[Reddit_Sans] font-bold text-[18px] text-gray-900 mb-2">
                       {tour.title}
                     </h3>
                   </a>

@@ -52,9 +52,9 @@ export default function WhyChooseUs() {
     {
       icon: Star,
       title: "Highly Rated",
-      desc: "Trusted by thousands of satisfied customers",
-      stat: "4.8",
-      statLabel: "Average Rating"
+      desc: "Trusted by thousands of happy travelers",
+      stat: "4.9★",
+      statLabel: "Customer Rating"
     }
   ];
 
@@ -98,7 +98,7 @@ export default function WhyChooseUs() {
         
         {/* Section Header */}
         <div className="mb-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-display">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
             Why Choose CityTourCabs?
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
@@ -121,14 +121,14 @@ export default function WhyChooseUs() {
                   </div>
 
                   <div className="flex-1">
-                    <h3 className="mb-2 font-bold text-gray-900 font-display text-lg">
+                    <h3 className="mb-2 font-bold text-gray-900 font-[Reddit_Sans] text-lg">
                       {feat.title}
                     </h3>
                     <p className="text-sm text-gray-600 mb-3">
                       {feat.desc}
                     </p>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-orange-600 font-bold text-xl">
+                      <span className="text-orange-600 font-bold text-xl" style={{ fontFamily: "Poppins, sans-serif" }}>
                         {feat.stat}
                       </span>
                       <span className="text-xs text-gray-500">

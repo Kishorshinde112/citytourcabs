@@ -96,7 +96,7 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
                 alt={siteName || "City Tour Cabs"}
                 className="h-14 w-auto object-contain"
               />
-              <span className="text-gray-900 font-bold text-2xl font-display">
+              <span className="text-[#1A96EB] font-[Reddit_Sans] font-bold text-[24px]">
                 {siteName || "City Tour Cabs"}
               </span>
             </a>
@@ -119,7 +119,7 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
               >
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium py-2"
+                  className="flex items-center text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium py-2 cursor-pointer"
                 >
                   <span>Tour Options</span>
                   <ChevronDown className="ml-1 h-4 w-4 text-gray-500" />
@@ -149,6 +149,16 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
                 Contact Us
               </a>
             </nav>
+
+            {/* Desktop Book Now CTA */}
+            <div className="hidden md:block">
+              <button
+                onClick={() => onOpenBookModal()}
+                className="bg-[#1A96EB] hover:bg-[#1578BC] text-white px-5 py-2.5 rounded-md font-semibold text-sm transition-colors cursor-pointer shadow-sm"
+              >
+                Book Now
+              </button>
+            </div>
 
             {/* Mobile Hamburger Toggle */}
             <div className="flex md:hidden items-center gap-2">

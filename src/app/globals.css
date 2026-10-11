@@ -283,3 +283,20 @@
 .chat-markdown a:hover {
   color: #c2410c;
 }
+
+.font-handwritten {
+  font-family: 'Caveat', cursive;
+}
+
+.font-\[Reddit_Sans\] {
+  font-family: 'Reddit Sans', sans-serif;
+}
+
+.text-brand-blue-500 {
+  color: #1a96eb;
+}
+
+.hover\:text-brand-blue-500:hover {
+  color: #1a96eb;
+}
+

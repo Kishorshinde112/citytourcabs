@@ -83,25 +83,26 @@ export default function Hero() {
                 <p className="font-handwritten text-2xl md:text-3xl mb-2 text-orange-300">
                   {slide.subtitle}
                 </p>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-display mb-4 leading-tight">
+                <h1
+                  className="mb-4 text-4xl md:text-5xl font-bold leading-tight"
+                  style={{ color: "white", fontFamily: "'Reddit Sans', sans-serif" }}
+                >
                   {slide.title}
                 </h1>
-                <p className="text-lg sm:text-xl text-gray-200 mb-8 max-w-2xl leading-relaxed">
+                <p className="text-lg md:text-xl mb-8 text-gray-200 max-w-2xl leading-relaxed">
                   {slide.description}
                 </p>
 
-                <div className="flex flex-wrap gap-4">
-                  <a
-                    href={slide.link || "#tours"}
-                    className="inline-flex items-center justify-center rounded-xl text-base font-semibold text-white px-7 py-3.5 bg-[#1A96EB] hover:bg-[#1578BC] transition-all transform hover:-translate-y-0.5 shadow-lg shadow-blue-500/25"
-                  >
-                    {slide.buttonText || "Explore Tours"}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <a href={slide.link || "#tours"}>
+                    <button className="inline-flex items-center justify-center text-base font-medium h-12 rounded-md px-7 bg-[#1A96EB] hover:bg-[#1578BC] text-white transition-colors w-full sm:w-auto cursor-pointer shadow-sm">
+                      {slide.buttonText || "Explore Tours"}
+                    </button>
                   </a>
-                  <a
-                    href={`tel:+91${phone}`}
-                    className="inline-flex items-center justify-center rounded-xl text-base font-semibold text-white px-7 py-3.5 bg-white/15 hover:bg-white/25 backdrop-blur-md transition-all border border-white/30"
-                  >
-                    Call: +91 {phone}
+                  <a href={`tel:${phone?.replace(/\s+/g, '')}`}>
+                    <button className="inline-flex items-center justify-center text-base font-medium h-12 rounded-md px-7 bg-white/10 border border-white text-white hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-colors w-full sm:w-auto cursor-pointer">
+                      Call Now
+                    </button>
                   </a>
                 </div>
               </div>
@@ -118,8 +119,8 @@ export default function Hero() {
               key={idx}
               onClick={() => setCurrentSlide(idx)}
               aria-label={`Go to slide ${idx + 1}`}
-              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                idx === currentSlide ? "w-8 bg-[#1A96EB]" : "w-2.5 bg-white/50 hover:bg-white"
+              className={`h-3 rounded-full transition-all duration-300 cursor-pointer ${
+                idx === currentSlide ? "w-8 bg-orange-600" : "w-3 bg-white/50 hover:bg-white/70"
               }`}
             />
           ))}

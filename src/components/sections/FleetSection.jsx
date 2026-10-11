@@ -84,16 +84,16 @@ export default function FleetSection({ onOpenBookModal }) {
         onClick={() => onOpenBookModal && onOpenBookModal({ carType: car.name })}
         className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full flex flex-col cursor-pointer"
       >
-        <div className="relative h-48 overflow-hidden group bg-white flex items-center justify-center p-2">
+        <div className="relative h-48 overflow-hidden group">
           <img
             src={car.image}
             alt={car.name}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             loading="lazy"
           />
         </div>
         <div className="p-6 flex-1 flex flex-col">
-          <h3 className="mb-3 font-bold text-lg text-white font-display">
+          <h3 className="mb-3 font-bold text-lg text-white font-[Reddit_Sans]">
             {car.name}
           </h3>
           <div className="space-y-2 text-gray-300 text-sm flex-1">
@@ -119,7 +119,7 @@ export default function FleetSection({ onOpenBookModal }) {
         
         {/* Section Header */}
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl md:text-4xl font-bold text-white font-display">
+          <h2 className="mb-4 text-3xl md:text-4xl font-bold text-white font-[Reddit_Sans]">
             Our Cabs Gallery
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto text-base sm:text-lg">

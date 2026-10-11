@@ -169,7 +169,7 @@ export default function BookingContactForm() {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="mb-4 text-3xl md:text-4xl font-bold font-display text-gray-900">
+          <h2 className="mb-4 text-3xl md:text-4xl font-bold font-[Reddit_Sans] text-gray-900">
             Get In Touch
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">

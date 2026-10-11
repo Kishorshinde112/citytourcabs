@@ -4,16 +4,29 @@ import React, { useState, useEffect } from 'react';
 import { Star, Quote } from 'lucide-react';
 import { TESTIMONIALS_DATA } from '@/data/testimonialsData';
 
-const DEFAULT_REVIEWS = TESTIMONIALS_DATA.map(t => ({
-  name: t.name,
-  location: t.location,
-  text: t.text,
-  rating: t.rating || 5,
-  trip: t.trip || '',
-}));
+const DEFAULT_REVIEWS = [
+  {
+    name: "Rajesh Sharma",
+    location: "Mumbai",
+    rating: 5,
+    text: "Excellent service! The driver was not only professional but also acted as a great guide. He showed us all the hidden gems of Mumbai that we wouldn't have found on our own.",
+  },
+  {
+    name: "Priya Patel",
+    location: "Pune",
+    rating: 5,
+    text: "Our trip to Lonavala was amazing thanks to CityTourCabs. The cab was clean, comfortable, and the driver's knowledge of the area made our journey memorable.",
+  },
+  {
+    name: "Amit Desai",
+    location: "Thane",
+    rating: 5,
+    text: "Highly recommend for Shirdi trips! Punctual, courteous driver who made sure we had a comfortable and spiritual journey. Will definitely book again.",
+  },
+];
 
 export default function Testimonials() {
-  const [reviews, setReviews] = useState(DEFAULT_REVIEWS.slice(0, 3));
+  const [reviews, setReviews] = useState(DEFAULT_REVIEWS);
 
   useEffect(() => {
     async function loadTestimonials() {
@@ -28,7 +41,6 @@ export default function Testimonials() {
                 location: item.location || '',
                 text: item.comment || item.text,
                 rating: item.rating || 5,
-                trip: item.tourName || item.trip || '',
               }))
             );
           }
@@ -46,17 +58,17 @@ export default function Testimonials() {
         
         {/* Section Header */}
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-display">
+          <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-[Reddit_Sans]">
             What Our Customers Say
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto font-handwritten text-xl">
+          <p className="text-gray-600 max-w-2xl mx-auto font-handwritten" style={{ fontSize: "1.25rem" }}>
             Don't just take our word for it - hear from our satisfied customers.
           </p>
         </div>
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {reviews.slice(0, 6).map((rev, idx) => (
+          {reviews.slice(0, 3).map((rev, idx) => (
             <div
               key={idx}
               className="bg-white rounded-xl border border-gray-200 p-6 relative flex flex-col justify-between hover:shadow-md transition-shadow"
@@ -78,16 +90,9 @@ export default function Testimonials() {
               </div>
 
               {/* Author */}
-              <div className="border-t border-gray-100 pt-4 flex items-center justify-between">
-                <div>
-                  <div className="font-semibold text-gray-900 font-display">{rev.name}</div>
-                  <div className="text-xs text-gray-500">{rev.location}</div>
-                </div>
-                {rev.trip && (
-                  <span className="text-[11px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                    {rev.trip}
-                  </span>
-                )}
+              <div>
+                <p className="font-semibold text-gray-900 font-[Reddit_Sans]">{rev.name}</p>
+                <p className="text-sm text-gray-500">{rev.location}</p>
               </div>
             </div>
           ))}

@@ -272,7 +272,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
             </div>
           ) : (
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 leading-tight">
+              <h2 className="text-2xl font-bold font-[Reddit_Sans] text-slate-900 leading-tight">
                 Book Your Tour Now
               </h2>
               <p className="text-sm text-slate-500 mt-1">

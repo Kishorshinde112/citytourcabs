@@ -53,7 +53,7 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
 
           {/* Col 1: Brand & Book Now */}
           <div className="md:col-span-1">
-            <h3 className="mb-4 text-2xl text-white font-display font-bold">
+            <h3 className="mb-4 text-2xl text-white font-[Reddit_Sans] font-bold">
               {siteName || "CityTourCabs"}
             </h3>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
@@ -69,7 +69,7 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
 
           {/* Col 2: Quick Links */}
           <div>
-            <h3 className="mb-4 text-white font-bold font-display">Quick Links</h3>
+            <h3 className="mb-4 text-white font-bold font-[Reddit_Sans]">Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <a className="text-sm hover:text-orange-600 transition-colors" href="/">
@@ -96,7 +96,7 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
 
           {/* Col 3: Services Offered */}
           <div>
-            <h3 className="mb-4 text-white font-bold font-display">Services Offered</h3>
+            <h3 className="mb-4 text-white font-bold font-[Reddit_Sans]">Services Offered</h3>
             <ul className="space-y-2">
               {tourLinks.map((t, idx) => (
                 <li key={idx}>
@@ -110,7 +110,7 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
 
           {/* Col 4: Contact Us */}
           <div>
-            <h3 className="mb-4 text-white font-bold font-display">Contact Us</h3>
+            <h3 className="mb-4 text-white font-bold font-[Reddit_Sans]">Contact Us</h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />

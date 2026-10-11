@@ -36,7 +36,7 @@ export default function PrivacyPolicyClient() {
                 <Shield className="h-10 w-10 text-white" />
               </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold font-display mb-4 text-white">
+            <h1 className="text-3xl md:text-4xl font-bold font-[Reddit_Sans] mb-4 text-white">
               Privacy Policy
             </h1>
             <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto">
@@ -63,7 +63,7 @@ export default function PrivacyPolicyClient() {
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
                   <FileText className="h-6 w-6 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-display">
+                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
                   Information We Collect
                 </h2>
               </div>
@@ -102,7 +102,7 @@ export default function PrivacyPolicyClient() {
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
                   <UserCheck className="h-6 w-6 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-display">
+                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
                   How We Use Your Information
                 </h2>
               </div>
@@ -125,7 +125,7 @@ export default function PrivacyPolicyClient() {
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
                   <Eye className="h-6 w-6 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-display">
+                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
                   Information Sharing and Disclosure
                 </h2>
               </div>
@@ -148,7 +148,7 @@ export default function PrivacyPolicyClient() {
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
                   <Lock className="h-6 w-6 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-display">
+                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
                   Data Security
                 </h2>
               </div>
@@ -165,7 +165,7 @@ export default function PrivacyPolicyClient() {
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
                   <Shield className="h-6 w-6 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-display">
+                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
                   Your Rights
                 </h2>
               </div>
@@ -183,7 +183,7 @@ export default function PrivacyPolicyClient() {
 
             {/* 6. Cookies and Tracking Technologies */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
                 Cookies and Tracking Technologies
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -195,7 +195,7 @@ export default function PrivacyPolicyClient() {
 
             {/* 7. Third-Party Links */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
                 Third-Party Links
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -207,7 +207,7 @@ export default function PrivacyPolicyClient() {
 
             {/* 8. Children&apos;s Privacy */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
                 Children&apos;s Privacy
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -219,7 +219,7 @@ export default function PrivacyPolicyClient() {
 
             {/* 9. Changes to This Privacy Policy */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
                 Changes to This Privacy Policy
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -235,7 +235,7 @@ export default function PrivacyPolicyClient() {
                 <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center shrink-0">
                   <Mail className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-display">
+                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
                   Contact Us
                 </h2>
               </div>

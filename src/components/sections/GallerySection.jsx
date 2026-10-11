@@ -84,10 +84,10 @@ export default function GallerySection() {
         
         {/* Section Header */}
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-display">
+          <h2 className="mb-4 text-[30px] font-[Reddit_Sans] font-bold text-gray-900">
             Memories from Our Tours
           </h2>
-          <p className="max-w-2xl mx-auto text-gray-600 text-base sm:text-lg">
+          <p className="max-w-2xl mx-auto text-base sm:text-lg" style={{ color: "#4b5563" }}>
             Explore the beautiful moments captured during our tours and sightseeing trips.
           </p>
         </div>
