@@ -94,6 +94,77 @@
   }
 }
 
+/* Tour Content & Typography Alignment */
+.tour-content {
+  text-align: left;
+  line-height: 1.75;
+  color: #1f2937;
+}
+
+.tour-content h1,
+.tour-content h2,
+.tour-content h3,
+.tour-content h4,
+.tour-content h5,
+.tour-content h6,
+.tour-content p,
+.tour-content div,
+.tour-content span,
+.tour-content ul,
+.tour-content ol,
+.tour-content li {
+  text-align: left !important;
+}
+
+.tour-content h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.tour-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #111827;
+}
+
+.tour-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.tour-content p {
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.tour-content ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+}
+
+.tour-content li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.tour-content hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.75rem 0;
+}
+
 /* Rate Table Styles */
 .rate-table-html table {
   width: 100%;
