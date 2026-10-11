@@ -61,7 +61,7 @@ export const TourEditor: React.FC<any> = (props) => {
   // Auth State & In-Place Re-Authentication
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false)
-  const [authEmail, setAuthEmail] = useState<string>('mumbaicitycabs24@gmail.com')
+  const [authEmail, setAuthEmail] = useState<string>('citytourcabs8@gmail.com')
   const [authPassword, setAuthPassword] = useState<string>('')
   const [authLoading, setAuthLoading] = useState<boolean>(false)
   const [authError, setAuthError] = useState<string | null>(null)
@@ -1197,7 +1197,7 @@ export const TourEditor: React.FC<any> = (props) => {
                     const val = e.target.value
                     updateDoc((p) => ({ ...p, seo: { ...p.seo, canonical: val } }))
                   }}
-                  placeholder={`https://citycabs24.com/${cleanSlug}`}
+                  placeholder={`https://citytourcabs.in/${cleanSlug}`}
                   className="w-full px-3 py-2 text-xs bg-[#EEF1F4] border border-slate-300 rounded-lg outline-none font-mono"
                 />
               </div>

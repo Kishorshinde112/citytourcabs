@@ -3,7 +3,10 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 
 export async function GET() {
-  let webhookUrl = process.env.CHATBOT_WEBHOOK_URL || process.env.CHAT_WEBHOOK_URL
+  let webhookUrl =
+    process.env.N8N_CHAT_WEBHOOK_URL ||
+    process.env.CHATBOT_WEBHOOK_URL ||
+    process.env.CHAT_WEBHOOK_URL
   if (!webhookUrl) {
     try {
       const payload = await getPayload({ config })

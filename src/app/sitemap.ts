@@ -38,12 +38,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const legacyRoutes: MetadataRoute.Sitemap = Object.keys(tourPagesData).map((slug) => ({
-    url: `${baseUrl}/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
-
-  return [...staticRoutes, ...tourRoutes, ...legacyRoutes];
+  return [...staticRoutes, ...tourRoutes];
 }

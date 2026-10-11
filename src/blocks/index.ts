@@ -216,7 +216,7 @@ export const WhyChooseUsBlock: Block = {
     {
       name: 'title',
       type: 'text',
-      label: 'Section Heading (Default: Why Choose CityCabs24?)',
+      label: 'Section Heading (Default: Why Choose City Tour Cabs?)',
     },
     {
       name: 'subtitle',
@@ -236,7 +236,7 @@ export const AboutBlock: Block = {
     {
       name: 'title',
       type: 'text',
-      label: 'Section Heading (Default: About CityCabs24)',
+      label: 'Section Heading (Default: About City Tour Cabs)',
     },
     {
       name: 'subtitle',

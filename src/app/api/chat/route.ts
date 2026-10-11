@@ -39,7 +39,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Message cannot be empty.' }, { status: 400 })
     }
 
-    let webhookUrl = process.env.CHATBOT_WEBHOOK_URL || process.env.CHAT_WEBHOOK_URL
+    let webhookUrl =
+      process.env.N8N_CHAT_WEBHOOK_URL ||
+      process.env.CHATBOT_WEBHOOK_URL ||
+      process.env.CHAT_WEBHOOK_URL
+
     if (!webhookUrl) {
       try {
         const payload = await getPayload({ config })
@@ -48,10 +52,6 @@ export async function POST(req: Request) {
           webhookUrl = settings.chatbotWebhookUrl
         }
       } catch (_) {}
-    }
-
-    if (!webhookUrl) {
-      webhookUrl = 'https://n8n.kishorlab.dev/webhook-test/4d6e3906-3c0c-4c18-bef2-cf30563485c0'
     }
 
     if (webhookUrl) {
@@ -67,49 +67,20 @@ export async function POST(req: Request) {
           source: 'citytourcabs-nextjs',
         }
 
-        const cleanUrl = webhookUrl.trim()
-        const urlsToTry: string[] = []
-        if (cleanUrl.endsWith('/chat')) {
-          urlsToTry.push(cleanUrl)
-          urlsToTry.push(cleanUrl.slice(0, -5))
-        } else {
-          urlsToTry.push(cleanUrl + '/chat')
-          urlsToTry.push(cleanUrl)
-        }
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 7000)
 
-        const candidateUrls: string[] = []
-        for (const u of urlsToTry) {
-          if (!candidateUrls.includes(u)) candidateUrls.push(u)
-          if (u.includes('/webhook/')) {
-            const testV = u.replace('/webhook/', '/webhook-test/')
-            if (!candidateUrls.includes(testV)) candidateUrls.push(testV)
-          } else if (u.includes('/webhook-test/')) {
-            const prodV = u.replace('/webhook-test/', '/webhook/')
-            if (!candidateUrls.includes(prodV)) candidateUrls.push(prodV)
-          }
-        }
+        const webhookResponse = await fetch(webhookUrl.trim(), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'CityTourCabs-AI/2.0',
+          },
+          body: JSON.stringify(payloadObj),
+          signal: controller.signal,
+        }).catch(() => null)
 
-        let webhookResponse: Response | null = null
-        for (const targetUrl of candidateUrls) {
-          try {
-            const controller = new AbortController()
-            const timeout = setTimeout(() => controller.abort(), 35000)
-            const resCandidate = await fetch(targetUrl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'User-Agent': 'CityTourCabs-AI/2.0',
-              },
-              body: JSON.stringify(payloadObj),
-              signal: controller.signal,
-            })
-            clearTimeout(timeout)
-            if (resCandidate && resCandidate.ok) {
-              webhookResponse = resCandidate
-              break
-            }
-          } catch (_) {}
-        }
+        clearTimeout(timeout)
 
         if (webhookResponse && webhookResponse.ok) {
           const rawText = await webhookResponse.text()

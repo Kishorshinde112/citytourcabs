@@ -576,7 +576,7 @@ export const PageEditor: React.FC<any> = (props) => {
                   onChange={(e) =>
                     updateDoc((p) => ({ ...p, seo: { ...p.seo, canonical: e.target.value } }))
                   }
-                  placeholder={`https://citycabs24.com${publicUrl}`}
+                  placeholder={`https://citytourcabs.in${publicUrl}`}
                   className="w-full px-3 py-2 text-xs bg-[#EEF1F4] border border-slate-300 rounded-lg outline-none font-mono"
                 />
               </div>
