@@ -36,23 +36,22 @@ const useSettingsStore = create((set, get) => ({
 
   fetchSettings: async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await fetch('/api/globals/site-settings');
       if (res.ok) {
         const data = await res.json();
-        if (data.success && data.settings) {
+        if (data && (data.phone || data.businessName || data.siteName)) {
           set({
-            siteName: data.settings.siteName || DEFAULT_SETTINGS.siteName,
-            logoUrl: data.settings.logoUrl || DEFAULT_SETTINGS.logoUrl,
-            phone: data.settings.phone || DEFAULT_SETTINGS.phone,
-            helpPhone: data.settings.helpPhone || DEFAULT_SETTINGS.helpPhone,
-            email: data.settings.email || DEFAULT_SETTINGS.email,
-            whatsapp: data.settings.whatsapp || DEFAULT_SETTINGS.whatsapp,
-            officeAddress: data.settings.officeAddress || DEFAULT_SETTINGS.officeAddress,
-            workingHours: data.settings.workingHours || DEFAULT_SETTINGS.workingHours,
-            announcement: data.settings.announcement || DEFAULT_SETTINGS.announcement,
-            promoPopup: data.settings.promoPopup || DEFAULT_SETTINGS.promoPopup,
-            footer: data.settings.footer || DEFAULT_SETTINGS.footer,
-            chatbotWebhookUrl: data.settings.chatbotWebhookUrl || DEFAULT_SETTINGS.chatbotWebhookUrl,
+            siteName: data.businessName || data.siteName || DEFAULT_SETTINGS.siteName,
+            phone: data.phone || DEFAULT_SETTINGS.phone,
+            helpPhone: data.helpPhone || DEFAULT_SETTINGS.helpPhone,
+            email: data.email || DEFAULT_SETTINGS.email,
+            whatsapp: data.whatsapp || DEFAULT_SETTINGS.whatsapp,
+            officeAddress: data.officeAddress || DEFAULT_SETTINGS.officeAddress,
+            workingHours: data.workingHours || DEFAULT_SETTINGS.workingHours,
+            announcement: data.announcement || DEFAULT_SETTINGS.announcement,
+            promoPopup: data.promoPopup || DEFAULT_SETTINGS.promoPopup,
+            footer: data.footer || DEFAULT_SETTINGS.footer,
+            chatbotWebhookUrl: data.chatbotWebhookUrl || DEFAULT_SETTINGS.chatbotWebhookUrl,
           });
         }
       }
@@ -64,16 +63,13 @@ const useSettingsStore = create((set, get) => ({
   updateSettings: async (newSettings) => {
     set((state) => ({ ...state, ...newSettings }));
     try {
-      const res = await fetch('/api/settings', {
-        method: 'PUT',
+      const res = await fetch('/api/globals/site-settings', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newSettings),
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.settings) {
-          get().fetchSettings();
-        }
+        get().fetchSettings();
       }
     } catch (err) {
       console.error('Failed to sync settings with server:', err);

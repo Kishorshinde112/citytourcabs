@@ -170,15 +170,6 @@ export default function BookingContactForm() {
       );
     } catch {}
 
-    // Forward to n8n webhook
-    try {
-      fetch('https://n8n.kishorlab.dev/webhook/lead-ingestor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingPayload),
-      }).catch(() => {});
-    } catch (err) {}
-
     // Redirect to dedicated inquiry confirmed page
     router.push(`/inquiry-confirmed?id=${inquiryId}`);
   };

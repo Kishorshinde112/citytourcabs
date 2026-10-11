@@ -224,17 +224,8 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
     };
 
     try {
-      // 1. Save to SQLite DB & Admin
+      // 1. Save to SQLite DB & Admin (server automatically forwards to internal n8n)
       await addBooking(bookingPayload);
-
-      // 2. Dispatch to n8n Webhook
-      try {
-        fetch('https://n8n.kishorlab.dev/webhook/lead-ingestor', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bookingPayload),
-        }).catch(() => {});
-      } catch (err) {}
 
       const refId = (isEnquiry ? 'INQ-' : 'BK-') + Math.floor(100000 + Math.random() * 900000);
       try {

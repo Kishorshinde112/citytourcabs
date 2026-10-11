@@ -24,17 +24,8 @@ export default function BookingForm() {
     };
 
     try {
-      // 1. Save directly into local database & live admin panel
+      // 1. Save directly into local database & live admin panel (server forwards to n8n internally)
       await addBooking(bookingPayload);
-
-      // 2. Also forward to webhook if available
-      try {
-        fetch('https://n8n.kishorlab.dev/webhook/lead-ingestor', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bookingPayload)
-        }).catch(() => {});
-      } catch (err) {}
 
       setStatus('Booking Confirmed! We will call you shortly.');
     } catch (error) {

@@ -4,6 +4,18 @@ import config from '@/payload.config'
 
 export async function GET(req: Request) {
   try {
+    const payload = await getPayload({ config })
+    const { user } = await payload.auth({ headers: req.headers })
+    const adminKey = req.headers.get('x-admin-key')
+    const authHeader = req.headers.get('authorization')
+    const isSecretValid =
+      (adminKey && adminKey === process.env.PAYLOAD_SECRET) ||
+      (authHeader && authHeader === `Bearer ${process.env.PAYLOAD_SECRET}`)
+
+    if (!user && !isSecretValid) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
+
     const url = new URL(req.url)
     const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'))
     const limitParam = url.searchParams.get('limit')
@@ -11,8 +23,6 @@ export async function GET(req: Request) {
     const limit = isAll ? 10000 : Math.max(1, parseInt(limitParam || '25'))
     const search = (url.searchParams.get('search') || '').trim()
     const status = (url.searchParams.get('status') || '').trim()
-
-    const payload = await getPayload({ config })
 
     let where: any = {}
     if (status && status !== 'All') {
@@ -68,7 +78,8 @@ export async function POST(req: Request) {
     const referrer = String(body.referrer || '').trim()
 
     const payload = await getPayload({ config })
-    const bookingId = body.id || ('BK-' + Math.floor(100000 + Math.random() * 900000))
+    // Generate unique collision-safe booking ID on server
+    const bookingId = 'BK-' + Date.now().toString().slice(-6) + '-' + Math.floor(100 + Math.random() * 900)
     const booking = await payload.create({
       collection: 'bookings',
       data: {
@@ -89,8 +100,8 @@ export async function POST(req: Request) {
       },
     })
 
-    // Background internal dispatch to n8n
-    const n8nUrl = process.env.N8N_INTERNAL_URL || 'http://n8n-service:5678/webhook/leads'
+    // Store-then-Forward: Background internal dispatch to n8n via Docker network
+    const n8nUrl = process.env.N8N_INTERNAL_URL || 'http://n8n:5678/webhook/booking-notification'
     fetch(n8nUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

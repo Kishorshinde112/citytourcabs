@@ -2,9 +2,20 @@ import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const payload = await getPayload({ config })
+    const { user } = await payload.auth({ headers: req.headers })
+    const adminKey = req.headers.get('x-admin-key')
+    const authHeader = req.headers.get('authorization')
+    const isSecretValid =
+      (adminKey && adminKey === process.env.PAYLOAD_SECRET) ||
+      (authHeader && authHeader === `Bearer ${process.env.PAYLOAD_SECRET}`)
+
+    if (!user && !isSecretValid) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const bookings = await payload.find({
       collection: 'bookings',
       limit: 10000,

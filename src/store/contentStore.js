@@ -20,11 +20,12 @@ const useContentStore = create(
       // Fetch all tours and site content from server
       fetchContent: async () => {
         try {
-          const res = await fetch('/api/tours');
+          const res = await fetch('/api/tours?limit=100');
           if (res.ok) {
             const data = await res.json();
-            if (data.success && Array.isArray(data.tours) && data.tours.length > 0) {
-              set({ tours: data.tours });
+            const list = Array.isArray(data.docs) ? data.docs : (Array.isArray(data.tours) ? data.tours : []);
+            if (list.length > 0) {
+              set({ tours: list });
             }
           }
         } catch (err) {
@@ -32,34 +33,27 @@ const useContentStore = create(
         }
 
         try {
-          const resSettings = await fetch('/api/settings');
-          if (resSettings.ok) {
-            const data = await resSettings.json();
-            if (data.success && data.settings) {
-              if (data.settings.fleet) {
-                try {
-                  const parsed = JSON.parse(data.settings.fleet);
-                  if (Array.isArray(parsed) && parsed.length > 0) set({ fleet: parsed });
-                } catch (e) {}
-              }
-              if (data.settings.gallery) {
-                try {
-                  const parsed = JSON.parse(data.settings.gallery);
-                  if (Array.isArray(parsed) && parsed.length > 0) set({ gallery: parsed });
-                } catch (e) {}
-              }
-              if (data.settings.siteImages) {
-                try {
-                  const parsed = JSON.parse(data.settings.siteImages);
-                  if (parsed && typeof parsed === 'object') {
-                    set(state => ({ siteImages: { ...state.siteImages, ...parsed } }));
-                  }
-                } catch (e) {}
-              }
+          const resFleet = await fetch('/api/fleet?limit=100');
+          if (resFleet.ok) {
+            const data = await resFleet.json();
+            if (Array.isArray(data.docs) && data.docs.length > 0) {
+              set({ fleet: data.docs });
             }
           }
         } catch (err) {
-          console.warn('Using local cached settings:', err);
+          console.warn('Using local cached fleet:', err);
+        }
+
+        try {
+          const resGallery = await fetch('/api/gallery?limit=100');
+          if (resGallery.ok) {
+            const data = await resGallery.json();
+            if (Array.isArray(data.docs) && data.docs.length > 0) {
+              set({ gallery: data.docs });
+            }
+          }
+        } catch (err) {
+          console.warn('Using local cached gallery:', err);
         }
       },
 

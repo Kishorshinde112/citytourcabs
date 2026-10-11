@@ -31,23 +31,22 @@ const useBookingsStore = create((set, get) => ({
       const res = await fetch(`/api/bookings?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.success && Array.isArray(data.bookings)) {
-          set({
-            bookings: data.bookings,
-            total: data.total,
-            totalPages: data.totalPages || 1,
-            page: data.page || page,
-            limit: data.limit || limit,
-            counts: data.counts || get().counts,
-            search,
-            statusFilter,
-            loading: false,
-          });
-          return;
-        }
+        const list = Array.isArray(data.bookings) ? data.bookings : (Array.isArray(data.docs) ? data.docs : []);
+        set({
+          bookings: list,
+          total: data.total ?? data.totalDocs ?? list.length,
+          totalPages: data.totalPages || 1,
+          page: data.page || page,
+          limit: data.limit || limit,
+          counts: data.counts || get().counts,
+          search,
+          statusFilter,
+          loading: false,
+        });
+        return;
       }
     } catch (err) {
-      console.warn('Error fetching bookings from server:', err);
+      console.warn('Error fetching bookings:', err);
     }
     set({ loading: false });
   },
@@ -73,9 +72,7 @@ const useBookingsStore = create((set, get) => ({
   },
 
   addBooking: async (bookingData) => {
-    const tempId = 'BK-' + Math.floor(100000 + Math.random() * 900000);
-    const newBooking = {
-      id: tempId,
+    const payload = {
       name: bookingData.name || bookingData.fullName || 'Customer',
       phone: bookingData.phone || bookingData.contact || '',
       whatsapp: bookingData.whatsapp || bookingData.whatsappNumber || bookingData.phone || '',
@@ -87,25 +84,17 @@ const useBookingsStore = create((set, get) => ({
       passengers: bookingData.passengers || bookingData.noOfPassengers || '4',
       status: 'Pending',
       type: bookingData.type || 'Inquiry',
-      created_at: new Date().toISOString().slice(0, 19).replace('T', ' ')
+      special_requirements: bookingData.special_requirements || bookingData.specialRequirements || bookingData.message || '',
     };
-
-    // Optimistic UI update if on page 1
-    if (get().page === 1) {
-      set((state) => ({ bookings: [newBooking, ...state.bookings] }));
-    }
 
     try {
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newBooking),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.booking) {
-          get().fetchBookings();
-        }
+        return await res.json();
       }
     } catch (err) {
       console.error('Failed to sync booking to server:', err);
@@ -144,9 +133,5 @@ const useBookingsStore = create((set, get) => ({
     }
   }
 }));
-
-if (typeof window !== 'undefined') {
-  useBookingsStore.getState().fetchBookings();
-}
 
 export default useBookingsStore;

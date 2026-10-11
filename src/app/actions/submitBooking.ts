@@ -32,7 +32,7 @@ export async function submitBooking(formData: SubmitBookingInput) {
     const payload = await getPayload({ config })
 
     // 1. Save directly to DB via Payload (Zero HTTP lag, guaranteed persistence)
-    const bookingId = formData.id || ('BK-' + Math.floor(100000 + Math.random() * 900000))
+    const bookingId = 'BK-' + Date.now().toString().slice(-6) + '-' + Math.floor(100 + Math.random() * 900)
     const booking = await payload.create({
       collection: 'bookings',
       data: {
@@ -53,8 +53,8 @@ export async function submitBooking(formData: SubmitBookingInput) {
       },
     })
 
-    // 2. Secretly trigger n8n for instant WhatsApp confirmation (Dokploy internal network)
-    const n8nUrl = process.env.N8N_INTERNAL_URL || 'http://n8n-service:5678/webhook/leads'
+    // 2. Secretly trigger n8n for instant WhatsApp confirmation (Dokploy/Coolify internal network)
+    const n8nUrl = process.env.N8N_INTERNAL_URL || 'http://n8n:5678/webhook/booking-notification'
     fetch(n8nUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
