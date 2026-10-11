@@ -1,28 +1,48 @@
 services:
-  app:
+  citytourcabs:
     build:
       context: .
       dockerfile: Dockerfile
     image: citytourcabs:latest
-    container_name: citytourcabs_app
+    container_name: citytourcabs
     restart: unless-stopped
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
-      - NEXT_PUBLIC_SERVER_URL=https://citytourcabs.in
+      - NEXT_PUBLIC_SITE_URL=https://cabs.kishorlab.dev
+      - NEXT_PUBLIC_SITE_NAME=City Tour Cabs
+      - NEXT_PUBLIC_SERVER_URL=https://cabs.kishorlab.dev
       - PAYLOAD_SECRET=f9a84e27c191a27e0c4b7d1e892f3a4b6c8d0e1f2a3b4c5d6e7f8a9b0c1d2e3f
-      # For SQLite (default, self-contained):
       - DATABASE_URI=file:/app/data/citytourcabs.db
-      # If using external PostgreSQL in Dokploy, uncomment:
-      # - DATABASE_URI=postgresql://postgres:password@postgres:5432/citytourcabs
       - N8N_INTERNAL_URL=http://n8n:5678/webhook/booking-notification
       - N8N_CHAT_WEBHOOK_URL=http://n8n:5678/webhook/citytourcabs-chat
     volumes:
       - ./data:/app/data
       - media_storage:/app/public/media
+    networks:
+      - dokploy-network
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      - "traefik.http.routers.citytourcabs-http.entrypoints=web"
+      - "traefik.http.routers.citytourcabs-http.rule=Host(`cabs.kishorlab.dev`) || Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`)"
+      - "traefik.http.routers.citytourcabs-http.service=citytourcabs-svc"
+      - "traefik.http.routers.citytourcabs-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.citytourcabs-https.entrypoints=websecure"
+      - "traefik.http.routers.citytourcabs-https.rule=Host(`cabs.kishorlab.dev`) || Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`)"
+      - "traefik.http.routers.citytourcabs-https.service=citytourcabs-svc"
+      - "traefik.http.routers.citytourcabs-https.tls=true"
+      - "traefik.http.routers.citytourcabs-https.tls.certresolver=letsencrypt"
+      - "traefik.http.services.citytourcabs-svc.loadbalancer.server.port=3000"
 
 volumes:
   media_storage:
+
+networks:
+  dokploy-network:
+    external: true
+  coolify:
+    external: true
+

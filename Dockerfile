@@ -31,7 +31,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PAYLOAD_CONFIG_PATH=src/payload.config.ts
 
 # Build the standalone Next.js + Payload app
-RUN npm run build
+RUN npm run build && rm -rf .next/standalone/data
 
 # Stage 3: Runner
 FROM node:22-bookworm-slim AS runner
@@ -51,15 +51,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
+# Copy build standalone output
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy native binary packages omitted by Next.js standalone tracing
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@libsql ./node_modules/@libsql
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@img ./node_modules/@img
+
 # Copy public assets & static files
 COPY --from=builder /app/public ./public
 
 # Set permissions for persistent SQLite data folder
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
-
-# Copy build standalone output
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
