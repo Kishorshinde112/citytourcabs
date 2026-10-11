@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import ChatWidget from '@/components/ChatWidget';
 import '@/app/globals.css';
 
 export const viewport: Viewport = {
@@ -116,7 +115,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-white text-gray-900 font-sans antialiased selection:bg-[#1A96EB] selection:text-white">
-        <ChatWidget />
         {children}
       </body>
     </html>

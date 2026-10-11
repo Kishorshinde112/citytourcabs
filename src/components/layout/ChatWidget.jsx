@@ -13,6 +13,7 @@ marked.setOptions({
 });
 
 export default function ChatWidget() {
+  return null;
   const pathname = usePathname();
   const { phone } = useSettingsStore();
 
