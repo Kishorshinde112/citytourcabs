@@ -228,12 +228,34 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         }).catch(() => {});
       } catch (err) {}
 
+      const refId = (isEnquiry ? 'INQ-' : 'BK-') + Math.floor(100000 + Math.random() * 900000);
+      try {
+        sessionStorage.setItem(
+          'last_booking',
+          JSON.stringify({
+            id: refId,
+            name: fullName.trim(),
+            contact: cleanPhone,
+            phone: cleanPhone,
+            pickupLocation: pickupAddress.trim() || 'Customer Doorstep',
+            tourName: `${destination}${packageName ? ` - ${packageName}` : ''}`,
+            travelDate: travelDate,
+            carType: carType,
+            type: isEnquiry ? 'Inquiry' : 'Booking',
+          })
+        );
+      } catch {}
+
       setSuccess(true);
 
       // Close modal and redirect
       setTimeout(() => {
         onClose();
-        router.push('/booking-confirmed');
+        router.push(
+          isEnquiry
+            ? `/booking-confirmed?type=inquiry&id=${refId}`
+            : `/booking-confirmed?id=${refId}`
+        );
       }, 700);
     } catch (err) {
       console.error('Submission failed:', err);

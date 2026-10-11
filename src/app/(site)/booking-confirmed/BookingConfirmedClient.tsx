@@ -34,10 +34,13 @@ export default function BookingConfirmedClient() {
       // ignore
     }
 
+    const isEnq =
+      (searchParams.get('type') || saved.type || '').toLowerCase() === 'inquiry';
+    const fallbackPrefix = isEnq ? 'INQ-' : 'BK-';
     const fallbackId =
       searchParams.get('id') ||
       saved.id ||
-      'BK-' + Math.floor(100000 + Math.random() * 900000);
+      fallbackPrefix + Math.floor(100000 + Math.random() * 900000);
 
     bookingIdRef.current = fallbackId;
 
@@ -55,10 +58,25 @@ export default function BookingConfirmedClient() {
         'Cab Service',
       travelDate: searchParams.get('date') || saved.travelDate || '',
       carType: searchParams.get('car') || saved.carType || 'Sedan (Dzire / Etios)',
+      type: isEnq ? 'Inquiry' : 'Booking',
     });
   }, [searchParams]);
 
-  const bookingId = bookingIdRef.current || 'BK-' + Math.floor(100000 + Math.random() * 900000);
+  const isEnquiry =
+    (booking.type || '').toLowerCase() === 'inquiry' ||
+    searchParams.get('type')?.toLowerCase() === 'inquiry';
+
+  const bookingId =
+    bookingIdRef.current ||
+    (isEnquiry ? 'INQ-' : 'BK-') + Math.floor(100000 + Math.random() * 900000);
+
+  const whatsappMessage = isEnquiry
+    ? `Hi City Tour Cabs, I just submitted an inquiry (Ref: ${bookingId}). Please share fare quotation and details for ${encodeURIComponent(
+        booking.tourName || 'my tour'
+      )}.`
+    : `Hi City Tour Cabs, I just submitted a booking (Ref: ${bookingId}). Please confirm my cab for ${encodeURIComponent(
+        booking.tourName || 'my trip'
+      )}.`;
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden text-slate-100">
@@ -74,14 +92,17 @@ export default function BookingConfirmedClient() {
             <CheckCircle2 className="w-12 h-12 text-black" />
           </div>
           <div className="flex items-center gap-2 text-yellow-400 text-xs font-bold uppercase tracking-widest mb-2">
-            <Sparkles className="w-4 h-4" /> Booking Confirmed
+            <Sparkles className="w-4 h-4" /> {isEnquiry ? 'Inquiry Confirmed' : 'Booking Confirmed'}
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">
             Thank You, {booking.name || 'Valued Customer'}! 🎉
           </h1>
           <p className="text-zinc-400 text-sm max-w-sm">
-            Your booking request has been received. Our team will call you within{' '}
-            <span className="text-yellow-400 font-bold">30 minutes</span> to confirm your driver and cab details.
+            {isEnquiry
+              ? 'Your inquiry request has been received. Our team will call you in '
+              : 'Your booking request has been received. Our team will call you in '}
+            <span className="text-yellow-400 font-bold">a couple of minutes</span> to confirm your{' '}
+            {isEnquiry ? 'tour and cab details' : 'driver and cab details'}.
           </p>
         </div>
 
@@ -89,7 +110,7 @@ export default function BookingConfirmedClient() {
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl mb-6 space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-              Booking Reference
+              {isEnquiry ? 'Inquiry Reference' : 'Booking Reference'}
             </span>
             <span className="text-yellow-400 font-black text-base">{bookingId}</span>
           </div>
@@ -154,9 +175,7 @@ export default function BookingConfirmedClient() {
             Call Us Now
           </a>
           <a
-            href={`https://wa.me/91${phone}?text=Hi%20City Tour Cabs%2C%20I%20just%20submitted%20a%20booking%20(Ref%3A%20${bookingId}).%20Please%20confirm%20my%20cab%20for%20${encodeURIComponent(
-              booking.tourName || 'my trip'
-            )}.`}
+            href={`https://wa.me/91${phone}?text=${encodeURIComponent(whatsappMessage)}`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-black text-sm transition shadow-lg"

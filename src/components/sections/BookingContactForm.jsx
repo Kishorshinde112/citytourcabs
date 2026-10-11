@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
 import useBookingsStore from '@/store/bookingsStore';
@@ -56,6 +57,7 @@ const TOUR_PACKAGES_MAP = {
 const DEFAULT_DESTINATIONS = Object.keys(TOUR_PACKAGES_MAP);
 
 export default function BookingContactForm() {
+  const router = useRouter();
   const { phone, email } = useSettingsStore();
   const { addBooking } = useBookingsStore();
 
@@ -118,7 +120,10 @@ export default function BookingContactForm() {
 
     setSubmitted(true);
 
+    const inquiryId = 'INQ-' + Math.floor(100000 + Math.random() * 900000);
+
     const bookingPayload = {
+      id: inquiryId,
       name: formData.fullName.trim(),
       phone: cleanPhone,
       contact: cleanPhone,
@@ -138,6 +143,24 @@ export default function BookingContactForm() {
     // Save inquiry to SQLite DB & Admin Dashboard
     await addBooking(bookingPayload);
 
+    // Save to sessionStorage for confirmation page
+    try {
+      sessionStorage.setItem(
+        'last_booking',
+        JSON.stringify({
+          id: inquiryId,
+          name: formData.fullName.trim(),
+          contact: cleanPhone,
+          phone: cleanPhone,
+          tourName: `${formData.destination} - ${formData.packageName}`,
+          travelDate: formData.travelDate || new Date().toISOString().slice(0, 10),
+          carType: 'Tour Vehicle',
+          pickupLocation: 'Customer Doorstep',
+          type: 'Inquiry',
+        })
+      );
+    } catch {}
+
     // Forward to n8n webhook
     try {
       fetch('https://n8n.kishorlab.dev/webhook/lead-ingestor', {
@@ -147,19 +170,8 @@ export default function BookingContactForm() {
       }).catch(() => {});
     } catch (err) {}
 
-    // Open WhatsApp
-    const text =
-      `*🚖 City Tour Cabs - Booking Inquiry*\n\n` +
-      `*Name:* ${formData.fullName}\n` +
-      `*Phone:* ${cleanPhone}\n` +
-      `*Destination:* ${formData.destination}\n` +
-      `*Package:* ${formData.packageName}\n` +
-      `*Travel Date:* ${formData.travelDate}\n\n` +
-      `Please confirm availability and share fare quotation.`;
-
-    setTimeout(() => {
-      window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(text)}`, '_blank');
-    }, 600);
+    // Redirect to inquiry confirmed page
+    router.push(`/booking-confirmed?type=inquiry&id=${inquiryId}`);
   };
 
   const currentPackages = TOUR_PACKAGES_MAP[formData.destination] || ['Standard Package'];
