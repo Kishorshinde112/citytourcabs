@@ -63,8 +63,11 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
           <div className="container mx-auto px-4">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
               <div className="text-sm text-center sm:text-left">
-                <span className="font-handwritten text-base tracking-wide">
-                  {announcement?.text || "Available 24/7 for your convenience"}
+                <span
+                  className="font-handwritten text-base tracking-wide font-normal"
+                  style={{ fontFamily: "'Caveat', cursive" }}
+                >
+                  Available 24/7 for your convenience
                 </span>
               </div>
               <div className="flex items-center gap-4 text-sm">

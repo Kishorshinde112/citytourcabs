@@ -11,7 +11,7 @@ export const DEFAULT_SETTINGS = {
   workingHours: '24/7 Available (Open All 365 Days)',
   announcement: {
     enabled: true,
-    text: 'Available 24/7 for your convenience • 100% Sanitized Cabs with Expert Drivers',
+    text: 'Available 24/7 for your convenience',
   },
   promoPopup: {
     enabled: true,

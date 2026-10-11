@@ -80,7 +80,10 @@ export default function Hero() {
 
             <div className="container mx-auto px-4 relative z-10 h-full flex items-center">
               <div className="max-w-3xl text-white">
-                <p className="font-handwritten text-2xl md:text-3xl mb-2 text-orange-300">
+                <p
+                  className="font-handwritten text-2xl md:text-3xl mb-2 text-orange-300"
+                  style={{ fontFamily: "'Caveat', cursive" }}
+                >
                   {slide.subtitle}
                 </p>
                 <h1

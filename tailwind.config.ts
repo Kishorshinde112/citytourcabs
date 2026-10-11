@@ -22,6 +22,8 @@ const config: Config = {
       fontFamily: {
         sans: ['Poppins', 'system-ui', 'sans-serif'],
         display: ['Reddit Sans', 'sans-serif'],
+        reddit: ['Reddit Sans', 'sans-serif'],
+        handwritten: ['Caveat', 'cursive'],
         handwriting: ['Caveat', 'cursive'],
       },
     },

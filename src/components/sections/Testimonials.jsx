@@ -61,7 +61,10 @@ export default function Testimonials() {
           <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-[Reddit_Sans]">
             What Our Customers Say
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto font-handwritten" style={{ fontSize: "1.25rem" }}>
+          <p
+            className="text-gray-600 max-w-2xl mx-auto font-handwritten"
+            style={{ fontSize: "1.25rem", fontFamily: "'Caveat', cursive" }}
+          >
             Don't just take our word for it - hear from our satisfied customers.
           </p>
         </div>

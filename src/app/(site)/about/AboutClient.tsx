@@ -131,7 +131,10 @@ export default function AboutClient() {
                 <span className="bg-[#ea580c] text-white px-8 py-3 rounded-full inline-block mb-6 text-lg sm:text-xl font-bold shadow-xs">
                   {aboutData.missionTitle}
                 </span>
-                <p className="font-handwritten text-3xl sm:text-4xl text-gray-700 mb-6 font-semibold">
+                <p
+                  className="font-handwritten text-3xl sm:text-4xl text-gray-700 mb-6 font-semibold"
+                  style={{ fontFamily: "'Caveat', cursive" }}
+                >
                   &ldquo;{aboutData.missionDescription}&rdquo;
                 </p>
                 <p className="text-gray-700 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
@@ -301,7 +304,10 @@ export default function AboutClient() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-[Reddit_Sans] mb-4 text-white">
                 Choose CityTourCabs
               </h2>
-              <p className="font-handwritten text-2xl sm:text-3xl mb-4 font-semibold">
+              <p
+                className="font-handwritten text-2xl sm:text-3xl mb-4 font-semibold"
+                style={{ fontFamily: "'Caveat', cursive" }}
+              >
                 Fast. Safe. Affordable. Always at your doorstep.
               </p>
               <p className="text-lg sm:text-xl text-blue-100 mb-8">

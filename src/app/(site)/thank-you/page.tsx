@@ -45,7 +45,10 @@ export default function ThankYouPage() {
             <p className="text-xl text-orange-100 max-w-2xl mx-auto mb-8">
               We've received your booking request and our team will get back to you shortly to confirm your tour details.
             </p>
-            <p className="font-handwritten text-2xl text-orange-100">
+            <p
+              className="font-handwritten text-2xl text-orange-100"
+              style={{ fontFamily: "'Caveat', cursive" }}
+            >
               Your adventure awaits!
             </p>
           </div>
