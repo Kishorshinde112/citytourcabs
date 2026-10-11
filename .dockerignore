@@ -1,0 +1,7 @@
+node_modules
+.next
+.git
+.github
+legacy_src
+*.log
+.DS_Store

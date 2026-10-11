@@ -10,8 +10,15 @@ node_modules
 dist
 dist-ssr
 
+# Next.js build output
+.next/
+out/
+build/
+tsconfig.tsbuildinfo
+
 # Editor directories and files
 .idea
+.vscode
 .DS_Store
 *.suo
 *.ntvs*
@@ -22,10 +29,24 @@ dist-ssr
 # Environment variables
 .env
 .env.local
+.env.*.local
 
 # Database
 /data/
 *.db
+*.sqlite
+*.sqlite3
 
 # Binaries
 pocketbase
+
+# Archive and temporary reference dumps
+/archive/
+venv/
+.venv/
+legacy_backup/
+take the payload cms only from this website code/
+.claude/
+CLAUDE_AGENT_HANDOVER.md
+claude agent handover.md
+Screenshot*.png

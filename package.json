@@ -1,37 +1,46 @@
 {
   "name": "citytourcabs",
+  "version": "2.0.0",
   "private": true,
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "server": "PORT=3001 node server/index.js",
-    "start": "PORT=3001 node server/index.js"
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "postbuild": "cp -r public .next/standalone/ 2>/dev/null || true; mkdir -p .next/standalone/.next; cp -r .next/static .next/standalone/.next/ 2>/dev/null || true; ln -sf $(pwd)/data .next/standalone/data 2>/dev/null || true",
+    "start": "node .next/standalone/server.js",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap"
   },
   "dependencies": {
+    "@payloadcms/db-postgres": "^3.0.0",
+    "@payloadcms/db-sqlite": "^3.0.0",
+    "@payloadcms/next": "^3.0.0",
+    "@payloadcms/plugin-redirects": "^3.0.0",
+    "@payloadcms/plugin-seo": "^3.0.0",
+    "@payloadcms/richtext-lexical": "^3.0.0",
+    "@payloadcms/storage-s3": "^3.0.0",
     "clsx": "^2.1.1",
-    "compression": "^1.8.1",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
+    "graphql": "^16.10.0",
     "lucide-react": "^0.475.0",
-    "marked": "^18.0.14",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^7.18.3",
+    "marked": "^15.0.7",
+    "next": "^15.1.0",
+    "payload": "^3.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.33.5",
     "tailwind-merge": "^2.6.0",
-    "zustand": "^5.0.15"
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.20",
-    "playwright": "^1.63.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "vite": "^6.0.7"
+    "typescript": "^5.7.2"
   }
 }
