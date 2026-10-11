@@ -97,39 +97,16 @@ def run_sync():
     """, (now_iso, now_iso))
     print("  -> Seeded site_settings")
 
-    # 4. Sync Bookings (Preserve all past bookings)
-    src_cur.execute("SELECT * FROM bookings")
-    src_bookings = src_cur.fetchall()
-    src_b_cols = [c[1] for c in src_cur.execute("PRAGMA table_info(bookings)").fetchall()]
-
-    for b in src_bookings:
-        b_dict = dict(zip(src_b_cols, b))
-        b_id = str(b_dict.get('id', ''))
-        if not b_id:
-            continue
-        dst_cur.execute("SELECT id FROM bookings WHERE id = ?", (b_id,))
-        if not dst_cur.fetchone():
-            dst_cur.execute("""
-                INSERT INTO bookings (
-                    id, name, phone, route, vehicle, date, status, 
-                    created_at, createdAt, whatsapp, type, referrer, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                b_id,
-                b_dict.get('name', 'Customer'),
-                b_dict.get('phone', ''),
-                b_dict.get('route', 'Mumbai Sightseeing'),
-                b_dict.get('vehicle', 'Standard Cab / Tour Vehicle'),
-                b_dict.get('date', ''),
-                b_dict.get('status', 'Pending'),
-                b_dict.get('created_at', now_iso),
-                b_dict.get('created_at', now_iso),
-                b_dict.get('phone', ''),
-                b_dict.get('lead_type', 'Inquiry'),
-                b_dict.get('utm_source', 'https://cabs.kishorlab.dev/'),
-                b_dict.get('updated_at', now_iso)
-            ))
-    print(f"  -> Merged bookings. Total in dst: {dst_cur.execute('SELECT count(*) FROM bookings').fetchone()[0]}")
+    # 4. Clean up any foreign branding references
+    dst_cur.execute("UPDATE tours_blocks_tour_details_rules SET text = REPLACE(text, 'City Cabs 24', 'City Tour Cabs')")
+    dst_cur.execute("UPDATE tours_blocks_tour_details_rules SET text = REPLACE(text, 'CityCabs24', 'City Tour Cabs')")
+    dst_cur.execute("UPDATE pages_blocks_about SET title = 'About City Tour Cabs' WHERE title LIKE '%CityCabs24%'")
+    dst_cur.execute("UPDATE pages_blocks_why_choose_us SET title = 'Why Choose City Tour Cabs?' WHERE title LIKE '%CityCabs24%'")
+    dst_cur.execute("UPDATE pages SET seo_title = REPLACE(seo_title, 'CityCabs24', 'City Tour Cabs')")
+    dst_cur.execute("UPDATE pages SET seo_canonical = REPLACE(seo_canonical, 'citycabs24.com', 'citytourcabs.in')")
+    dst_cur.execute("UPDATE tours SET seo_description = REPLACE(seo_description, 'CityCabs24', 'City Tour Cabs')")
+    dst_cur.execute("UPDATE tours SET seo_canonical = REPLACE(seo_canonical, 'citycabs24.com', 'citytourcabs.in')")
+    print("  -> Cleaned all branding to City Tour Cabs")
 
     # 5. Populate Fleet Vehicles
     fleet_items = [
