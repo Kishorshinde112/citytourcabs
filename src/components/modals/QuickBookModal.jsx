@@ -253,7 +253,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         onClose();
         router.push(
           isEnquiry
-            ? `/booking-confirmed?type=inquiry&id=${refId}`
+            ? `/inquiry-confirmed?id=${refId}`
             : `/booking-confirmed?id=${refId}`
         );
       }, 700);

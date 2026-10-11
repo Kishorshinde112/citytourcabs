@@ -170,8 +170,8 @@ export default function BookingContactForm() {
       }).catch(() => {});
     } catch (err) {}
 
-    // Redirect to inquiry confirmed page
-    router.push(`/booking-confirmed?type=inquiry&id=${inquiryId}`);
+    // Redirect to dedicated inquiry confirmed page
+    router.push(`/inquiry-confirmed?id=${inquiryId}`);
   };
 
   const currentPackages = TOUR_PACKAGES_MAP[formData.destination] || ['Standard Package'];
