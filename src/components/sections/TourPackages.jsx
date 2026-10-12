@@ -93,10 +93,26 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
     let isMounted = true;
     async function loadTours() {
       try {
-        const res = await fetch('/api/tours');
+        const res = await fetch('/api/tours?limit=100&depth=1');
         const data = await res.json();
-        if (isMounted && data.success && Array.isArray(data.tours) && data.tours.length > 0) {
-          setTourCards(data.tours);
+        const docs = Array.isArray(data.docs)
+          ? data.docs
+          : (data.success && Array.isArray(data.tours) ? data.tours : []);
+
+        if (isMounted && docs.length > 0) {
+          const mapped = docs.map((doc) => {
+            const staticTour = defaultTourCards.find((t) => t.id === doc.slug || t.href === `/${doc.slug}`) || {};
+            const details = Array.isArray(doc.layout) ? doc.layout.find((b) => b.blockType === 'tourDetails') : null;
+            return {
+              id: doc.slug || staticTour.id,
+              title: doc.title || staticTour.title,
+              badge: details?.subtitle || doc.subtitle || staticTour.badge || '',
+              description: details?.description || doc.shortDescription || staticTour.description || '',
+              image: details?.heroImage || doc.banner || staticTour.image || '/assets/about-banner.jpg',
+              href: `/${doc.slug || staticTour.id}`,
+            };
+          });
+          setTourCards(mapped);
         }
       } catch (err) {
         console.error('Error fetching dynamic tours:', err);
