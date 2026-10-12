@@ -6,6 +6,7 @@ export function triggerRevalidation(slug?: string) {
     revalidatePath('/tours', 'page')
     if (slug) {
       revalidatePath(`/${slug}`, 'page')
+      revalidatePath(`/tours/${slug}`, 'page')
     }
   } catch (err) {
     // Graceful fallback if invoked outside Next.js request context

@@ -9,7 +9,9 @@ export const Media: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: () => true,
+    create: ({ req: { user } }) => Boolean(user),
+    update: ({ req: { user } }) => Boolean(user),
+    delete: ({ req: { user } }) => Boolean(user),
   },
   hooks: {
     afterRead: [

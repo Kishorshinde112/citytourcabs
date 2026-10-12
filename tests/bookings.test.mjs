@@ -48,3 +48,13 @@ test('Public API: POST /api/chat returns prompt response or fallback within reas
   assert.equal(data.success, true);
   assert.ok(data.reply && data.reply.length > 10, 'Must return a helpful reply');
 });
+
+test('Security: POST /api/media rejects unauthenticated file uploads', async () => {
+  const res = await fetch(`${BASE_URL}/api/media`, {
+    method: 'POST',
+    body: JSON.stringify({ alt: 'Test exploit' }),
+    headers: { 'Content-Type': 'application/json' },
+  });
+  assert.ok(res.status === 401 || res.status === 403, `Must return 401/403, got ${res.status}`);
+});
+

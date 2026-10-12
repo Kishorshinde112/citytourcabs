@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import tourPagesData from '@/data/tourPagesData.json';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://citytourcabs.in';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://citytourcabs.in';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
