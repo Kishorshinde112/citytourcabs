@@ -8,6 +8,9 @@ import useBookingsStore from '@/store/bookingsStore';
 
 const TOUR_PACKAGES_MAP = {
   'Mumbai Darshan': [
+    '8hrs 80 kms',
+    '10hrs 100 kms',
+    '12hrs 120 kms',
     'South Mumbai Heritage Tour (8 Hours / 80 Km)',
     'Suburban Bollywood & Beach Tour (10 Hours / 100 Km)',
     'Full City Complete Darshan (12 Hours / 120 Km)',
@@ -175,8 +178,8 @@ export default function BookingContactForm() {
   };
 
   const currentPackages = formData.destination
-    ? TOUR_PACKAGES_MAP[formData.destination] || ['Standard Package']
-    : [];
+    ? TOUR_PACKAGES_MAP[formData.destination] || ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms']
+    : ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
 
   return (
     <section id="contact" className="py-16 md:py-24 bg-gray-50 text-gray-900">

@@ -21,6 +21,9 @@ const DEFAULT_DESTINATIONS = [
 
 const TOUR_PACKAGES_MAP = {
   'Mumbai Darshan': [
+    '8hrs 80 kms',
+    '10hrs 100 kms',
+    '12hrs 120 kms',
     'South Mumbai Heritage Tour (8 Hours / 80 Km)',
     'Suburban Bollywood & Beach Tour (10 Hours / 100 Km)',
     'Full City Complete Darshan (12 Hours / 120 Km)',
@@ -142,7 +145,9 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         '';
       setDestination(targetDest);
 
-      const availablePackages = targetDest ? (TOUR_PACKAGES_MAP[targetDest] || ['Standard Tour Package']) : [];
+      const availablePackages = targetDest
+        ? (TOUR_PACKAGES_MAP[targetDest] || ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'])
+        : ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
       setPackageName(initialData.packageName || initialData.package || (availablePackages.length === 1 ? availablePackages[0] : ''));
 
       setCarType(initialData.carType || initialData.vehicle || '');
@@ -161,13 +166,15 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
   const handleDestinationChange = (e) => {
     const newDest = e.target.value;
     setDestination(newDest);
-    const pkgs = newDest ? (TOUR_PACKAGES_MAP[newDest] || ['Standard Tour Package']) : [];
+    const pkgs = newDest
+      ? (TOUR_PACKAGES_MAP[newDest] || ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'])
+      : ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
     setPackageName(pkgs.length === 1 ? pkgs[0] : '');
   };
 
   if (!isOpen) return null;
 
-  const currentPackages = TOUR_PACKAGES_MAP[destination] || ['Standard Tour Package'];
+  const currentPackages = TOUR_PACKAGES_MAP[destination] || ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
