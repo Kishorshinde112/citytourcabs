@@ -42,9 +42,10 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install runtime dependencies for SQLite and images
+# Install runtime dependencies for SQLite, images, and privilege management
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # Create user & app directory
@@ -55,18 +56,19 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy native binary packages omitted by Next.js standalone tracing
+# Copy native packages and install sharp runtime
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@libsql ./node_modules/@libsql
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@img ./node_modules/@img
+RUN npm install sharp@0.33.5 @libsql/linux-arm64-gnu --no-save --legacy-peer-deps && \
+    chown -R nextjs:nodejs ./node_modules
 
 # Copy public assets & static files
 COPY --from=builder /app/public ./public
 
-# Set permissions for persistent SQLite data folder
-RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
-
-USER nextjs
+# Copy entrypoint script to ensure permissions on mounted volumes
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 3000
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "server.js"]
