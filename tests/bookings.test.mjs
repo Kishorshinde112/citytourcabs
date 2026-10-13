@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const BASE_URL = process.env.TEST_BASE_URL || 'https://cabs.kishorlab.dev';
+const BASE_URL = process.env.TEST_BASE_URL || 'https://citytourcabs.in';
 const ADMIN_SECRET = process.env.PAYLOAD_SECRET || 'f9a84e27c191a27e0c4b7d1e892f3a4b6c8d0e1f2a3b4c5d6e7f8a9b0c1d2e3f';
 
 test('Security: GET /api/bookings is protected against unauthorized access', async () => {

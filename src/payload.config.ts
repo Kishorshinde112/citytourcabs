@@ -30,7 +30,7 @@ const dbUri = (() => {
 })()
 
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'https://cabs.kishorlab.dev',
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'https://citytourcabs.in',
   admin: {
     user: Users.slug,
     meta: {

@@ -10,9 +10,9 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
-      - NEXT_PUBLIC_SITE_URL=https://cabs.kishorlab.dev
+      - NEXT_PUBLIC_SITE_URL=https://citytourcabs.in
       - NEXT_PUBLIC_SITE_NAME=City Tour Cabs
-      - NEXT_PUBLIC_SERVER_URL=https://cabs.kishorlab.dev
+      - NEXT_PUBLIC_SERVER_URL=https://citytourcabs.in
       - PAYLOAD_SECRET=f9a84e27c191a27e0c4b7d1e892f3a4b6c8d0e1f2a3b4c5d6e7f8a9b0c1d2e3f
       - DATABASE_URI=file:/app/data/citytourcabs.db
       - N8N_INTERNAL_URL=http://n8n:5678/webhook/booking-notification
@@ -27,11 +27,11 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
       - "traefik.http.routers.citytourcabs-http.entrypoints=web"
-      - "traefik.http.routers.citytourcabs-http.rule=Host(`cabs.kishorlab.dev`) || Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`)"
+      - "traefik.http.routers.citytourcabs-http.rule=Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`) || Host(`cabs.kishorlab.dev`)"
       - "traefik.http.routers.citytourcabs-http.service=citytourcabs-svc"
       - "traefik.http.routers.citytourcabs-http.middlewares=redirect-to-https@file"
       - "traefik.http.routers.citytourcabs-https.entrypoints=websecure"
-      - "traefik.http.routers.citytourcabs-https.rule=Host(`cabs.kishorlab.dev`) || Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`)"
+      - "traefik.http.routers.citytourcabs-https.rule=Host(`citytourcabs.in`) || Host(`www.citytourcabs.in`) || Host(`cabs.kishorlab.dev`)"
       - "traefik.http.routers.citytourcabs-https.service=citytourcabs-svc"
       - "traefik.http.routers.citytourcabs-https.tls=true"
       - "traefik.http.routers.citytourcabs-https.tls.certresolver=letsencrypt"
