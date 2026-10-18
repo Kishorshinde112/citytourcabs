@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 export const DEFAULT_SETTINGS = {
   siteName: 'City Tour Cabs',
-  logoUrl: '/assets/citytourcabs-logo.png',
+  logoUrl: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351891/citytourcabs/assets/citytourcabs-logo.png",
   phone: '7021001921',
   helpPhone: '9967672660',
   email: 'citytourcabs8@gmail.com',

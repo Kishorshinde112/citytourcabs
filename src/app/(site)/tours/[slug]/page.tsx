@@ -216,7 +216,7 @@ async function getTourData(slug: string) {
         doc.heroImageMedia?.url ||
         (typeof doc.heroImageMedia === 'object' && doc.heroImageMedia?.filename
           ? `/media/${doc.heroImageMedia.filename}`
-          : detailsBlock?.heroImage || doc.heroImage || fallback?.heroImage || '/assets/about-banner.jpg');
+          : detailsBlock?.heroImage || doc.heroImage || fallback?.heroImage || 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351872/citytourcabs/assets/about-banner.jpg');
 
       const leftHtml = doc.itineraryHtml || generateLeftHtml(detailsBlock, fallback?.leftHtml);
       const rightHtml = doc.rateTableHtml || generateRightHtml(detailsBlock, fallback?.rightHtml);
@@ -258,7 +258,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     data.seo?.description ||
     data.subtitle ||
     `Book guided cab tour for ${data.title} with experienced drivers and sanitized cabs.`;
-  const image = data.heroImage || '/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png';
+  const image = data.heroImage || 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png';
 
   return {
     title,

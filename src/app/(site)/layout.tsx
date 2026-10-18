@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     siteName: 'City Tour Cabs',
     images: [
       {
-        url: '/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
+        url: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
         width: 1200,
         height: 630,
         alt: 'City Tour Cabs Mumbai',
@@ -48,11 +48,11 @@ export const metadata: Metadata = {
     title: 'City Tour Cabs - Premium Cab & Sightseeing Tour Booking',
     description:
       'Book affordable, sanitized cabs with friendly driver-guides across Mumbai, Lonavala, Alibaug, and Shirdi.',
-    images: ['/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png'],
+    images: ['https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png'],
   },
   icons: {
-    icon: '/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
-    apple: '/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
+    icon: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
+    apple: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
   },
 };
 
@@ -74,7 +74,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
               '@context': 'https://schema.org',
               '@type': 'TaxiService',
               name: 'City Tour Cabs',
-              image: 'https://citytourcabs.in/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
+              image: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
               '@id': 'https://citytourcabs.in',
               url: 'https://citytourcabs.in',
               telephone: '+917021001921',

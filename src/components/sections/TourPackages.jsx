@@ -10,7 +10,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Mumbai Darshan",
       badge: "Discover Mumbai's iconic landmarks",
       description: "Discover Mumbai's iconic landmarks with our Mumbai Sightseeing Tours",
-      image: "/assets/tours/bd08021da8c244de8eafa9a4f86c4e2a30099151_yk3fsq4Dd4.png",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352016/citytourcabs/assets/tours/bd08021da8c244de8eafa9a4f86c4e2a30099151_yk3fsq4Dd4.jpg",
       href: "/tours/mumbai-darshan"
     },
     {
@@ -18,7 +18,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Lonavala Trip",
       badge: "A Perfect Weekend Gateway!",
       description: "Escape the hustle and bustle of the city with our Lonavala Trip Package.",
-      image: "/assets/tours/panvel_upscaled_image_2_HOyyQs2JHJ.webp",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352375/citytourcabs/assets/tours/panvel_upscaled_image_2_HOyyQs2JHJ.webp",
       href: "/tours/lonavala-trip"
     },
     {
@@ -26,7 +26,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Alibaug Sightseeing",
       badge: "Coastal Paradise Near Mumbai",
       description: "Escape to the coastal charm of Alibaug with our reliable and comfortable cab services. Perfect for weekend getaways, family trips, or a peaceful beachside retreat near Mumbai.",
-      image: "/assets/tours/alibag_rt4bWntlkB.webp",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351954/citytourcabs/assets/tours/alibag_rt4bWntlkB.webp",
       href: "/tours/alibaug-sightseeing"
     },
     {
@@ -34,7 +34,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Matheran Sightseeing",
       badge: "India's Smallest Hill Station",
       description: "Experience the charm of India's smallest hill station with our reliable and comfortable cab services to Matheran. Enjoy a pollution-free escape surrounded by lush greenery, scenic viewpoints, and peaceful nature trails.",
-      image: "/assets/tours/matheran_82596VAAMO.webp",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352290/citytourcabs/assets/tours/matheran_82596VAAMO.webp",
       href: "/tours/matheran-sightseeing"
     },
     {
@@ -42,7 +42,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Shirdi Tour",
       badge: "Spiritual Journey to Sai Baba's Abode",
       description: "Plan your spiritual journey to Shirdi with our reliable and comfortable cab service.",
-      image: "/assets/tours/shirdi_p7RAPbKB9X.jpeg",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352407/citytourcabs/assets/tours/shirdi_p7RAPbKB9X.jpg",
       href: "/tours/shirdi-tour"
     },
     {
@@ -50,7 +50,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Mahabaleshwar Sightseeing",
       badge: "The Queen of Hill Stations",
       description: "Experience the scenic beauty of Mahabaleshwar with our reliable and comfortable cab service. Perfect for families, friends, and couples looking to unwind amidst nature.",
-      image: "/assets/tours/mhabaleshwar_9KMZyI1jrD.webp",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352318/citytourcabs/assets/tours/mhabaleshwar_9KMZyI1jrD.webp",
       href: "/tours/mahabaleshwar-sightseeing"
     },
     {
@@ -58,7 +58,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Igatpuri Tour",
       badge: "Hills, Waterfall & Dams",
       description: "Escape the hustle and bustle of the city with our Igatpuri Trip Package",
-      image: "/assets/tours/igatpuri_final_7NAxDp2jVq.jpg",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352096/citytourcabs/assets/tours/igatpuri_final_7NAxDp2jVq.jpg",
       href: "/tours/igatpuri-tour"
     },
     {
@@ -66,7 +66,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Ashtavinayak",
       badge: "Spiritual Trail of Lord Ganesha",
       description: "Ashtavinayak refers to a sacred pilgrimage of eight temples dedicated to Ganesha, all located in the Indian state of Maharashtra. The word comes from “Ashta” (eight) and “Vinayak” (a name of Ganesha).",
-      image: "/assets/tours/astavinayak_final_lcm8iZIjgA.jpg",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351996/citytourcabs/assets/tours/astavinayak_final_lcm8iZIjgA.jpg",
       href: "/tours/ashtavinayak"
     },
     {
@@ -74,7 +74,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "3 Jyotirlinga in Maharashtra",
       badge: "WHERE HILLS MEET DEVOTION",
       description: "3 Jyotirlinga in Maharashtra by Car",
-      image: "/assets/tours/jtyotirling_qDvKgpsz20.jpg",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352126/citytourcabs/assets/tours/jtyotirling_qDvKgpsz20.jpg",
       href: "/tours/3-jyotirlinga-in-maharashtra"
     },
     {
@@ -82,7 +82,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       title: "Konkan Darshan",
       badge: "Beach, Forts & Hills",
       description: "Escape to the coastal charm of Konkan with our reliable and comfortable cab services. Perfect for weekend getaways, family trips, or a peaceful beachside retreat.",
-      image: "/assets/tours/konkan_darshan_HkVaCpJLtu.jpg",
+      image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352186/citytourcabs/assets/tours/konkan_darshan_HkVaCpJLtu.jpg",
       href: "/tours/konkan-darshan"
     }
   ];
@@ -106,7 +106,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
             const cmsImage = typeof details?.heroImage === 'string' && !details.heroImage.includes('unsplash.com')
               ? details.heroImage
               : null;
-            const finalImage = staticTour.image || cmsImage || doc.banner || '/assets/about-banner.jpg';
+            const finalImage = cmsImage || (typeof doc.banner === 'string' ? doc.banner : null) || staticTour.image || 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351884/citytourcabs/assets/about-banner.jpg';
             return {
               id: doc.slug || staticTour.id,
               title: doc.title || staticTour.title,

@@ -20,10 +20,10 @@ export default function AboutClient() {
   const [aboutData, setAboutData] = useState({
     heroTitle: "About Us",
     heroSubtitle: "Your trusted local cab partner in Mumbai",
-    heroImage: "/assets/about-banner.jpg",
+    heroImage: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351872/citytourcabs/assets/about-banner.jpg",
     welcomeTitle: "Welcome to CityTourCabs",
     welcomeDescription: "We make city travel easy, affordable, and comfortable with fast doorstep pickup and drop, reliable service, and friendly professional drivers who truly care about your experience.",
-    driverImage: "/assets/about-driver.jpg",
+    driverImage: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351881/citytourcabs/assets/about-driver.jpg",
     statsYears: "12+",
     statsCustomers: "50,000+",
     statsCabs: "45+",
@@ -44,10 +44,10 @@ export default function AboutClient() {
             setAboutData({
               heroTitle: p.hero?.title || "About Us",
               heroSubtitle: p.hero?.subtitle || "Your trusted local cab partner in Mumbai",
-              heroImage: p.hero?.backgroundImage || "/assets/about-banner.jpg",
+              heroImage: p.hero?.backgroundImage || "https://res.cloudinary.com/o0mbamog/image/upload/v1792351872/citytourcabs/assets/about-banner.jpg",
               welcomeTitle: p.aboutContent?.welcomeTitle || "Welcome to CityTourCabs",
               welcomeDescription: p.aboutContent?.welcomeDescription || "We make city travel easy, affordable, and comfortable with fast doorstep pickup and drop, reliable service, and friendly professional drivers who truly care about your experience.",
-              driverImage: p.aboutContent?.driverImage || "/assets/about-driver.jpg",
+              driverImage: p.aboutContent?.driverImage || "https://res.cloudinary.com/o0mbamog/image/upload/v1792351881/citytourcabs/assets/about-driver.jpg",
               statsYears: p.aboutContent?.statsYears || "12+",
               statsCustomers: p.aboutContent?.statsCustomers || "50,000+",
               statsCabs: p.aboutContent?.statsCabs || "45+",
@@ -124,7 +124,7 @@ export default function AboutClient() {
                   className="h-64 sm:h-72 w-full sm:w-[420px] object-cover rounded-2xl shadow-md"
                 />
                 <img
-                  src="/assets/about-cityscape.png"
+                  src="https://res.cloudinary.com/o0mbamog/image/upload/v1792351877/citytourcabs/assets/about-cityscape.png"
                   alt="Mumbai cityscape"
                   className="h-64 sm:h-72 w-full sm:w-[420px] object-cover rounded-2xl shadow-md"
                 />

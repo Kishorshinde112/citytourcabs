@@ -13,7 +13,7 @@ export const FLEET_DATA = [
     fuelType: "CNG / Petrol",
     ratePerKm: "₹11 / km",
     localFullDay: "₹2,199 / 8hr 80km",
-    image: "/assets/wagonr-Ct1Y7D7H.jpg",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352410/citytourcabs/assets/wagonr-Ct1Y7D7H.jpg",
     features: [
       "Clean & Sanitized Interiors",
       "Tall Boy Design with High Headroom",
@@ -36,7 +36,7 @@ export const FLEET_DATA = [
     fuelType: "CNG / Petrol",
     ratePerKm: "₹12 / km",
     localFullDay: "₹2,499 / 8hr 80km",
-    image: "/assets/dzire-CAMjcjsT.jpg",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351893/citytourcabs/assets/dzire-CAMjcjsT.jpg",
     features: [
       "Smooth Highway Suspension",
       "Spacious Legroom & Reclining Seats",
@@ -59,7 +59,7 @@ export const FLEET_DATA = [
     fuelType: "CNG / Petrol",
     ratePerKm: "₹15 / km",
     localFullDay: "₹3,499 / 8hr 80km",
-    image: "/assets/ertiga-Bq9MdWD-.jpg",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351894/citytourcabs/assets/ertiga-Bq9MdWD-.jpg",
     features: [
       "Roof AC Vents for all rows",
       "Generous Shoulder & Legroom",
@@ -82,7 +82,7 @@ export const FLEET_DATA = [
     fuelType: "Petrol / Diesel",
     ratePerKm: "₹17 / km",
     localFullDay: "₹3,899 / 8hr 80km",
-    image: "/assets/carens-CBBO8xCr.jpg",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351885/citytourcabs/assets/carens-CBBO8xCr.jpg",
     features: [
       "Executive Aircraft-style Cabin",
       "One-Touch Tumble 2nd Row Seats",
@@ -105,7 +105,7 @@ export const FLEET_DATA = [
     fuelType: "Diesel",
     ratePerKm: "₹19 / km",
     localFullDay: "₹4,499 / 8hr 80km",
-    image: "/assets/innova-B7xv-cs5.jpg",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351933/citytourcabs/assets/innova-B7xv-cs5.jpg",
     features: [
       "Unmatched Highway Ride Stability & Safety",
       "Captain Seats with Armrests",

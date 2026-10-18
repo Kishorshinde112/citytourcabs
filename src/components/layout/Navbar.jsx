@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { Phone, Mail, MessageCircle, Menu, X, ChevronDown } from "lucide-react";
 import useSettingsStore from "@/store/settingsStore";
-import logoImg from "@/assets/citytourcabs-logo.png";
 
 export default function Navbar({ onOpenBookModal = () => {} }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -95,7 +94,7 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
             {/* Brand Logo */}
             <a href="/" className="shrink-0 flex items-center gap-3">
               <img
-                src={logoUrl || logoImg?.src || logoImg || "/assets/citytourcabs-logo.png"}
+                src={logoUrl || "https://res.cloudinary.com/o0mbamog/image/upload/v1792351891/citytourcabs/assets/citytourcabs-logo.png"}
                 alt={siteName || "City Tour Cabs"}
                 className="h-14 w-auto object-contain"
               />

@@ -10,17 +10,17 @@ import Footer from '@/components/Footer';
 const POPULAR_TOURS = [
   {
     title: 'Mumbai Darshan',
-    image: '/assets/tours/bd08021da8c244de8eafa9a4f86c4e2a30099151_yk3fsq4Dd4.png',
+    image: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792352016/citytourcabs/assets/tours/bd08021da8c244de8eafa9a4f86c4e2a30099151_yk3fsq4Dd4.jpg',
     href: '/tours/mumbai-darshan',
   },
   {
     title: 'Lonavala Trip',
-    image: '/assets/tours/panvel_upscaled_image_2_HOyyQs2JHJ.webp',
+    image: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792352375/citytourcabs/assets/tours/panvel_upscaled_image_2_HOyyQs2JHJ.webp',
     href: '/tours/lonavala-trip',
   },
   {
     title: 'Shirdi Tour',
-    image: '/assets/tours/shirdi_p7RAPbKB9X.jpeg',
+    image: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792352407/citytourcabs/assets/tours/shirdi_p7RAPbKB9X.jpg',
     href: '/tours/shirdi-tour',
   },
 ];

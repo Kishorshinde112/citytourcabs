@@ -5,7 +5,7 @@ import useSettingsStore from '@/store/settingsStore';
 
 const DEFAULT_SLIDES = [
   {
-    image: "/assets/bd08021da8c244de8eafa9a4f86c4e2a30099151-CaKyNwZu.png",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351883/citytourcabs/assets/bd08021da8c244de8eafa9a4f86c4e2a30099151-CaKyNwZu.jpg",
     subtitle: "Discover the City of Dreams",
     title: "Mumbai Sightseeing Tours",
     description: "Explore Mumbai's iconic landmarks with our expert drivers who know every corner, every story, and every hidden gem of the city.",
@@ -13,7 +13,7 @@ const DEFAULT_SLIDES = [
     buttonText: "Explore Mumbai Tours"
   },
   {
-    image: "/assets/0b74c7f86c8df43750abbbe95621c390702852bc-C6i9-JQP.png",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351857/citytourcabs/assets/0b74c7f86c8df43750abbbe95621c390702852bc-C6i9-JQP.jpg",
     subtitle: "Escape to the Hills",
     title: "Lonavala Weekend Getaway",
     description: "Experience the scenic beauty of Lonavala with our comfortable cabs and knowledgeable drivers who will make your hill station trip unforgettable.",

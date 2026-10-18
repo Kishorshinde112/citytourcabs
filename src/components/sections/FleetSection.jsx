@@ -5,7 +5,7 @@ import { FLEET_DATA } from '@/data/fleetData';
 const defaultFleet = FLEET_DATA.map((c) => ({
   id: c.id,
   name: c.name,
-  image: c.image || '/assets/fleet-default.jpg',
+  image: c.image || 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351893/citytourcabs/assets/dzire-CAMjcjsT.jpg',
   seats: c.seats,
   seatsDesc: c.configuration || '',
   boot: c.bootSpace ? `${c.bootSpace} (${c.luggage})` : '',
@@ -24,7 +24,7 @@ export default function FleetSection({ onOpenBookModal }) {
         if (isMounted && docs.length > 0) {
           const mapped = docs.map((car) => ({
             ...car,
-            image: typeof car.image === 'object' && car.image?.url ? car.image.url : (car.imageUrl || car.image || defaultFleet.find(d => d.name === car.name)?.image || '/assets/fleet-default.jpg'),
+            image: typeof car.image === 'object' && car.image?.url ? car.image.url : (car.imageUrl || car.image || defaultFleet.find(d => d.name === car.name)?.image || 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351893/citytourcabs/assets/dzire-CAMjcjsT.jpg'),
             seatsDesc: car.configuration || car.seatsDesc || '',
             boot: car.bootSpace ? `${car.bootSpace}${car.luggage ? ` (${car.luggage})` : ''}` : (car.boot || '')
           }));
