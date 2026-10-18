@@ -103,12 +103,16 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
           const mapped = docs.map((doc) => {
             const staticTour = defaultTourCards.find((t) => t.id === doc.slug || t.href === `/${doc.slug}`) || {};
             const details = Array.isArray(doc.layout) ? doc.layout.find((b) => b.blockType === 'tourDetails') : null;
+            const cmsImage = typeof details?.heroImage === 'string' && !details.heroImage.includes('unsplash.com')
+              ? details.heroImage
+              : null;
+            const finalImage = staticTour.image || cmsImage || doc.banner || '/assets/about-banner.jpg';
             return {
               id: doc.slug || staticTour.id,
               title: doc.title || staticTour.title,
               badge: details?.subtitle || doc.subtitle || staticTour.badge || '',
               description: details?.description || doc.shortDescription || staticTour.description || '',
-              image: details?.heroImage || doc.banner || staticTour.image || '/assets/about-banner.jpg',
+              image: finalImage,
               href: `/tours/${doc.slug || staticTour.id}`,
             };
           });

@@ -17,12 +17,12 @@ async function seed() {
   })
 
   if (existingUsers.totalDocs === 0) {
-    console.log('Creating default admin user: admin@citytourcabs.in...')
+    console.log('Creating default admin user: citytourcabs8@gmail.com...')
     await payload.create({
       collection: 'users',
       data: {
         name: 'Administrator',
-        email: 'admin@citytourcabs.in',
+        email: 'citytourcabs8@gmail.com',
         password: 'CityTourCabs@2026!',
         role: 'admin',
       },
