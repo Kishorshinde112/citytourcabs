@@ -232,9 +232,8 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
 
     try {
       // 1. Save to SQLite DB & Admin (server automatically forwards to internal n8n)
-      await addBooking(bookingPayload);
-
-      const refId = (isEnquiry ? 'INQ-' : 'BK-') + Math.floor(100000 + Math.random() * 900000);
+      const result = await addBooking(bookingPayload);
+      const refId = result.booking.id;
       try {
         sessionStorage.setItem(
           'last_booking',

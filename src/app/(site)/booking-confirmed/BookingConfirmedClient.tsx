@@ -36,11 +36,9 @@ export default function BookingConfirmedClient() {
 
     const isEnq =
       (searchParams.get('type') || saved.type || '').toLowerCase() === 'inquiry';
-    const fallbackPrefix = isEnq ? 'INQ-' : 'BK-';
     const fallbackId =
       searchParams.get('id') ||
-      saved.id ||
-      fallbackPrefix + Math.floor(100000 + Math.random() * 900000);
+      saved.id || '';
 
     bookingIdRef.current = fallbackId;
 
@@ -67,8 +65,7 @@ export default function BookingConfirmedClient() {
     searchParams.get('type')?.toLowerCase() === 'inquiry';
 
   const bookingId =
-    bookingIdRef.current ||
-    (isEnquiry ? 'INQ-' : 'BK-') + Math.floor(100000 + Math.random() * 900000);
+    bookingIdRef.current || '';
 
   const whatsappMessage = isEnquiry
     ? `Hi City Tour Cabs, I just submitted an inquiry (Ref: ${bookingId}). Please share fare quotation and details for ${encodeURIComponent(

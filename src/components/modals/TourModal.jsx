@@ -6,22 +6,14 @@ import {
   Phone, MessageCircle, Star, Sparkles, Shield, ChevronRight
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
-import useBookingsStore from '@/store/bookingsStore';
 
 export default function TourModal({ tour, onClose, onBookClick }) {
   if (!tour) return null;
 
   const { phone } = useSettingsStore();
-  const { addBooking } = useBookingsStore();
 
   const handleWhatsAppBooking = () => {
-    addBooking({
-      name: 'Tour Inquiry',
-      phone: phone,
-      route: `${tour.title} (${tour.duration})`,
-      vehicle: 'Tour Package',
-      date: new Date().toISOString().slice(0, 10),
-    });
+    // Opening WhatsApp is not a confirmed booking; don't insert a fake lead.
 
     const text = `*🚖 City Tour Cabs - Tour Booking Request*\n\n` +
       `*Package:* ${tour.title}\n` +

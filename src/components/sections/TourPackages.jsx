@@ -11,7 +11,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "Discover Mumbai's iconic landmarks",
       description: "Discover Mumbai's iconic landmarks with our Mumbai Sightseeing Tours",
       image: "/assets/tours/bd08021da8c244de8eafa9a4f86c4e2a30099151_yk3fsq4Dd4.png",
-      href: "/mumbai-darshan"
+      href: "/tours/mumbai-darshan"
     },
     {
       id: "lonavala-trip",
@@ -19,7 +19,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "A Perfect Weekend Gateway!",
       description: "Escape the hustle and bustle of the city with our Lonavala Trip Package.",
       image: "/assets/tours/panvel_upscaled_image_2_HOyyQs2JHJ.webp",
-      href: "/lonavala-trip"
+      href: "/tours/lonavala-trip"
     },
     {
       id: "alibaug-sightseeing",
@@ -27,7 +27,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "Coastal Paradise Near Mumbai",
       description: "Escape to the coastal charm of Alibaug with our reliable and comfortable cab services. Perfect for weekend getaways, family trips, or a peaceful beachside retreat near Mumbai.",
       image: "/assets/tours/alibag_rt4bWntlkB.webp",
-      href: "/alibaug-sightseeing"
+      href: "/tours/alibaug-sightseeing"
     },
     {
       id: "matheran-sightseeing",
@@ -35,7 +35,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "India's Smallest Hill Station",
       description: "Experience the charm of India's smallest hill station with our reliable and comfortable cab services to Matheran. Enjoy a pollution-free escape surrounded by lush greenery, scenic viewpoints, and peaceful nature trails.",
       image: "/assets/tours/matheran_82596VAAMO.webp",
-      href: "/matheran-sightseeing"
+      href: "/tours/matheran-sightseeing"
     },
     {
       id: "shirdi-tour",
@@ -43,7 +43,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "Spiritual Journey to Sai Baba's Abode",
       description: "Plan your spiritual journey to Shirdi with our reliable and comfortable cab service.",
       image: "/assets/tours/shirdi_p7RAPbKB9X.jpeg",
-      href: "/shirdi-tour"
+      href: "/tours/shirdi-tour"
     },
     {
       id: "mahabaleshwar-sightseeing",
@@ -51,7 +51,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "The Queen of Hill Stations",
       description: "Experience the scenic beauty of Mahabaleshwar with our reliable and comfortable cab service. Perfect for families, friends, and couples looking to unwind amidst nature.",
       image: "/assets/tours/mhabaleshwar_9KMZyI1jrD.webp",
-      href: "/mahabaleshwar-sightseeing"
+      href: "/tours/mahabaleshwar-sightseeing"
     },
     {
       id: "igatpuri-tour",
@@ -59,7 +59,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "Hills, Waterfall & Dams",
       description: "Escape the hustle and bustle of the city with our Igatpuri Trip Package",
       image: "/assets/tours/igatpuri_final_7NAxDp2jVq.jpg",
-      href: "/igatpuri-tour"
+      href: "/tours/igatpuri-tour"
     },
     {
       id: "ashtavinayak",
@@ -67,7 +67,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "Spiritual Trail of Lord Ganesha",
       description: "Ashtavinayak refers to a sacred pilgrimage of eight temples dedicated to Ganesha, all located in the Indian state of Maharashtra. The word comes from “Ashta” (eight) and “Vinayak” (a name of Ganesha).",
       image: "/assets/tours/astavinayak_final_lcm8iZIjgA.jpg",
-      href: "/ashtavinayak"
+      href: "/tours/ashtavinayak"
     },
     {
       id: "jyotirlinga-maharashtra",
@@ -75,7 +75,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "WHERE HILLS MEET DEVOTION",
       description: "3 Jyotirlinga in Maharashtra by Car",
       image: "/assets/tours/jtyotirling_qDvKgpsz20.jpg",
-      href: "/3-jyotirlinga-in-maharashtra"
+      href: "/tours/3-jyotirlinga-in-maharashtra"
     },
     {
       id: "konkan-darshan",
@@ -83,7 +83,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
       badge: "Beach, Forts & Hills",
       description: "Escape to the coastal charm of Konkan with our reliable and comfortable cab services. Perfect for weekend getaways, family trips, or a peaceful beachside retreat.",
       image: "/assets/tours/konkan_darshan_HkVaCpJLtu.jpg",
-      href: "/konkan-darshan"
+      href: "/tours/konkan-darshan"
     }
   ];
 
@@ -109,7 +109,7 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
               badge: details?.subtitle || doc.subtitle || staticTour.badge || '',
               description: details?.description || doc.shortDescription || staticTour.description || '',
               image: details?.heroImage || doc.banner || staticTour.image || '/assets/about-banner.jpg',
-              href: `/${doc.slug || staticTour.id}`,
+              href: `/tours/${doc.slug || staticTour.id}`,
             };
           });
           setTourCards(mapped);

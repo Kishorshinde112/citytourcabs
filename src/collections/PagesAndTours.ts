@@ -1,3 +1,4 @@
+import { isCmsAdmin } from '@/lib/cmsAccess';
 import type { CollectionConfig } from 'payload'
 import { triggerRevalidation } from '../utils/revalidate'
 import {
@@ -40,9 +41,9 @@ export const Tours: CollectionConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req: { user } }) => Boolean(user),
-    create: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => Boolean(user),
+    update: isCmsAdmin,
+    create: isCmsAdmin,
+    delete: isCmsAdmin,
   },
   hooks: {
     afterChange: [
@@ -167,9 +168,9 @@ export const Pages: CollectionConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req: { user } }) => Boolean(user),
-    create: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => Boolean(user),
+    update: isCmsAdmin,
+    create: isCmsAdmin,
+    delete: isCmsAdmin,
   },
   hooks: {
     afterChange: [

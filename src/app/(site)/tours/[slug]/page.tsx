@@ -253,7 +253,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     };
   }
 
-  const title = data.seo?.title || `${data.title} | City Tour Cabs Mumbai`;
+  const title = data.seo?.title || data.title;
   const description =
     data.seo?.description ||
     data.subtitle ||
@@ -263,6 +263,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   return {
     title,
     description,
+    alternates: { canonical: data.seo?.canonical || `https://citytourcabs.in/tours/${slug}` },
     openGraph: {
       title,
       description,

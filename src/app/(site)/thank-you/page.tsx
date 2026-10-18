@@ -11,17 +11,17 @@ const POPULAR_TOURS = [
   {
     title: 'Mumbai Darshan',
     image: '/assets/tours/bd08021da8c244de8eafa9a4f86c4e2a30099151_yk3fsq4Dd4.png',
-    href: '/mumbai-darshan',
+    href: '/tours/mumbai-darshan',
   },
   {
     title: 'Lonavala Trip',
     image: '/assets/tours/panvel_upscaled_image_2_HOyyQs2JHJ.webp',
-    href: '/lonavala-trip',
+    href: '/tours/lonavala-trip',
   },
   {
     title: 'Shirdi Tour',
     image: '/assets/tours/shirdi_p7RAPbKB9X.jpeg',
-    href: '/shirdi-tour',
+    href: '/tours/shirdi-tour',
   },
 ];
 

@@ -15,10 +15,10 @@ export const Bookings: CollectionConfig = {
     },
   },
   access: {
-    read: ({ req: { user } }) => Boolean(user), // Admin only
-    create: () => true,                         // Public booking forms
-    update: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => Boolean(user),
+    read: ({ req: { user } }) => Boolean(user) && user.collection === 'users' && ['admin','operator'].includes(user.role),
+    create: ({ req: { user } }) => Boolean(user) && user.collection === 'users' && user.role === 'admin',
+    update: ({ req: { user } }) => Boolean(user) && user.collection === 'users' && ['admin','operator'].includes(user.role),
+    delete: ({ req: { user } }) => Boolean(user) && user.collection === 'users' && user.role === 'admin',
   },
   fields: [
     {

@@ -9,7 +9,7 @@ const DEFAULT_SLIDES = [
     subtitle: "Discover the City of Dreams",
     title: "Mumbai Sightseeing Tours",
     description: "Explore Mumbai's iconic landmarks with our expert drivers who know every corner, every story, and every hidden gem of the city.",
-    link: "/mumbai-darshan",
+    link: "/tours/mumbai-darshan",
     buttonText: "Explore Mumbai Tours"
   },
   {
@@ -17,7 +17,7 @@ const DEFAULT_SLIDES = [
     subtitle: "Escape to the Hills",
     title: "Lonavala Weekend Getaway",
     description: "Experience the scenic beauty of Lonavala with our comfortable cabs and knowledgeable drivers who will make your hill station trip unforgettable.",
-    link: "/lonavala-trip",
+    link: "/tours/lonavala-trip",
     buttonText: "Book Lonavala Trip"
   },
   {
@@ -25,7 +25,7 @@ const DEFAULT_SLIDES = [
     subtitle: "Seek Blessings & Peace",
     title: "Shirdi Spiritual Journey",
     description: "Visit the holy town of Shirdi with our reliable cab service and experienced drivers who ensure a comfortable and peaceful pilgrimage journey.",
-    link: "/shirdi-tour",
+    link: "/tours/shirdi-tour",
     buttonText: "Book Shirdi Tour"
   }
 ];
@@ -38,12 +38,19 @@ export default function Hero() {
   useEffect(() => {
     async function loadCmsSlides() {
       try {
-        const res = await fetch('/api/pages/home');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.page?.slides && data.page.slides.length > 0) {
-            setSlides(data.page.slides);
-          }
+        const params = new URLSearchParams({ 'where[slug][equals]': 'home', limit: '1', depth: '2' });
+        const res = await fetch(`/api/pages?${params}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const page = data.docs?.[0];
+        const hero = page?.layout?.find((block) => block.blockType === 'hero');
+        if (hero?.title) {
+          const background = typeof hero.image === 'object' ? hero.image?.url : null;
+          setSlides([{...DEFAULT_SLIDES[0], title:hero.title,
+            subtitle:hero.subtitle || DEFAULT_SLIDES[0].subtitle,
+            image:background || DEFAULT_SLIDES[0].image,
+          }]);
+          setCurrentSlide(0);
         }
       } catch (e) {
         // Fallback gracefully
@@ -73,6 +80,9 @@ export default function Hero() {
               <img
                 src={slide.image}
                 alt={slide.title}
+                loading={idx === 0 ? 'eager' : 'lazy'}
+                fetchPriority={idx === 0 ? 'high' : 'auto'}
+                decoding="async"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50" />

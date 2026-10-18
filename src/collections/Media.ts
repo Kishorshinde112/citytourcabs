@@ -1,3 +1,4 @@
+import { isCmsAdmin } from '@/lib/cmsAccess';
 import type { CollectionConfig } from 'payload'
 import path from 'path'
 
@@ -9,9 +10,9 @@ export const Media: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => Boolean(user),
-    update: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => Boolean(user),
+    create: isCmsAdmin,
+    update: isCmsAdmin,
+    delete: isCmsAdmin,
   },
   hooks: {
     afterRead: [

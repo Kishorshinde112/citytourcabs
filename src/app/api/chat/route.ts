@@ -1,3 +1,4 @@
+import { allowRequest } from '@/lib/rateLimit.mjs'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
@@ -34,8 +35,17 @@ function generateFallbackChatResponse(query: string): string {
 
 export async function POST(req: Request) {
   try {
-    const { message, sessionId, history } = await req.json()
-    if (!message || !message.trim()) {
+    const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unidentified'
+    if (!allowRequest(`chat:${ip}`,{limit:30})) {
+      return NextResponse.json({error:'Too many messages. Please try later.'},{status:429})
+    }
+    if (Number(req.headers.get('content-length') || 0) > 16000) {
+      return NextResponse.json({error:'Message too large.'},{status:413})
+    }
+    const raw = await req.text()
+    if (raw.length > 16000) return NextResponse.json({error:'Message too large.'},{status:413})
+    const { message, sessionId, history } = JSON.parse(raw)
+    if (typeof message !== 'string' || !message.trim() || message.length > 1500) {
       return NextResponse.json({ error: 'Message cannot be empty.' }, { status: 400 })
     }
 
@@ -62,7 +72,7 @@ export async function POST(req: Request) {
           query: message.trim(),
           sessionId: sessionId || `session_${Date.now()}`,
           action: 'sendMessage',
-          history: history || [],
+          history: Array.isArray(history) ? history.slice(-10) : [],
           timestamp: new Date().toISOString(),
           source: 'citytourcabs-nextjs',
         }

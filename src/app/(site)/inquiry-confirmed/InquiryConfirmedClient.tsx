@@ -36,8 +36,7 @@ export default function InquiryConfirmedClient() {
 
     const fallbackId =
       searchParams.get('id') ||
-      saved.id ||
-      'INQ-' + Math.floor(100000 + Math.random() * 900000);
+      saved.id || '';
 
     inquiryIdRef.current = fallbackId;
 
@@ -59,7 +58,7 @@ export default function InquiryConfirmedClient() {
   }, [searchParams]);
 
   const inquiryId =
-    inquiryIdRef.current || 'INQ-' + Math.floor(100000 + Math.random() * 900000);
+    inquiryIdRef.current || '';
 
   const whatsappMessage = `Hi City Tour Cabs, I just submitted an inquiry (Ref: ${inquiryId}). Please share tour details and fare quotation for ${encodeURIComponent(
     inquiry.tourName || 'my tour'

@@ -92,12 +92,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
                 latitude: 19.076,
                 longitude: 72.8777,
               },
-              aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: '4.9',
-                reviewCount: '1250',
-                bestRating: '5',
-              },
               areaServed: [
                 'Mumbai',
                 'Pune',

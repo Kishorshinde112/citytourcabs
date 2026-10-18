@@ -130,12 +130,7 @@ export default function BookingContactForm() {
       return;
     }
 
-    setSubmitted(true);
-
-    const inquiryId = 'INQ-' + Math.floor(100000 + Math.random() * 900000);
-
     const bookingPayload = {
-      id: inquiryId,
       name: formData.fullName.trim(),
       phone: cleanPhone,
       contact: cleanPhone,
@@ -152,8 +147,17 @@ export default function BookingContactForm() {
       status: 'Pending',
     };
 
-    // Save inquiry to SQLite DB & Admin Dashboard
-    await addBooking(bookingPayload);
+    // Only show confirmation after the server returns a saved booking ID.
+    let inquiryId;
+    try {
+      const result = await addBooking(bookingPayload);
+      inquiryId = result.booking.id;
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitted(false);
+      setError(err instanceof Error ? err.message : 'Submission failed. Please try again.');
+      return;
+    }
 
     // Save to sessionStorage for confirmation page
     try {

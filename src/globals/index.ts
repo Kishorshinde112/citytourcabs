@@ -1,3 +1,4 @@
+import { isCmsAdmin } from '@/lib/cmsAccess';
 import type { GlobalConfig } from 'payload'
 
 export const SiteSettings: GlobalConfig = {
@@ -6,14 +7,14 @@ export const SiteSettings: GlobalConfig = {
   admin: {
     group: 'SETTINGS',
   },
-  access: { read: () => true },
+  access: { read: () => true, update:isCmsAdmin },
   fields: [
     { name: 'businessName', type: 'text', label: 'Business Name' },
     { name: 'phone', type: 'text', label: 'Primary Phone' },
     { name: 'helpPhone', type: 'text', label: 'Help / Alternate Phone' },
     { name: 'email', type: 'text', label: 'Email Address' },
     { name: 'whatsapp', type: 'text', label: 'WhatsApp Number' },
-    { name: 'chatbotWebhookUrl', type: 'text', label: 'Chatbot Webhook URL' },
+    { name: 'chatbotWebhookUrl', type: 'text', label: 'Chatbot Webhook URL', access: {read:isCmsAdmin,update:isCmsAdmin} },
     { name: 'logo', type: 'upload', relationTo: 'media' },
     // Retain legacy columns for database compatibility
     { name: 'siteName', type: 'text', admin: { hidden: true } },
@@ -29,7 +30,7 @@ export const Navigation: GlobalConfig = {
   admin: {
     group: 'SETTINGS',
   },
-  access: { read: () => true },
+  access: { read: () => true, update:isCmsAdmin },
   fields: [
     {
       name: 'links',
@@ -48,7 +49,7 @@ export const Footer: GlobalConfig = {
   admin: {
     group: 'SETTINGS',
   },
-  access: { read: () => true },
+  access: { read: () => true, update:isCmsAdmin },
   fields: [
     {
       name: 'groups',

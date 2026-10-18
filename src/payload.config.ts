@@ -16,6 +16,10 @@ import { SiteSettings, Navigation, Footer } from './globals'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+if (process.env.NODE_ENV === 'production' && !process.env.PAYLOAD_SECRET) {
+  throw new Error('PAYLOAD_SECRET must be set in production');
+}
+
 const rawDbUri = process.env.DATABASE_URI || 'file:./data/citytourcabs.db'
 const isPostgres = rawDbUri.startsWith('postgres://') || rawDbUri.startsWith('postgresql://')
 
@@ -72,7 +76,7 @@ export default buildConfig({
         },
         push: false,
       }),
-  secret: process.env.PAYLOAD_SECRET || 'citytourcabs-secret-fallback-key-32-chars',
+  secret: process.env.PAYLOAD_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'local-dev-only-change-me'),
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

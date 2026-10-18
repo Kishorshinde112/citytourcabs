@@ -1,124 +1,69 @@
-import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import config from '@/payload.config'
+import { NextResponse } from 'next/server';
+import { getPayload } from 'payload';
+import { randomUUID } from 'node:crypto';
+import config from '@/payload.config';
+import { isAuthorizedBookingStaff } from '@/lib/bookingAuth';
+import { validateBooking, BookingValidationError } from '@/lib/bookingValidation.mjs';
+import { allowRequest } from '@/lib/rateLimit.mjs';
+import { forwardBookingToN8n } from '@/lib/bookingNotifications';
+
+export const runtime = 'nodejs';
+const failure = (status: number, message: string) => NextResponse.json({ success:false, error:message }, {status});
 
 export async function GET(req: Request) {
   try {
-    const payload = await getPayload({ config })
-    const { user } = await payload.auth({ headers: req.headers })
-    const adminKey = req.headers.get('x-admin-key')
-    const authHeader = req.headers.get('authorization')
-    const isSecretValid =
-      (adminKey && adminKey === process.env.PAYLOAD_SECRET) ||
-      (authHeader && authHeader === `Bearer ${process.env.PAYLOAD_SECRET}`)
-
-    if (!user && !isSecretValid) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const url = new URL(req.url)
-    const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'))
-    const limitParam = url.searchParams.get('limit')
-    const isAll = limitParam === 'all' || limitParam === '0'
-    const limit = isAll ? 10000 : Math.max(1, parseInt(limitParam || '25'))
-    const search = (url.searchParams.get('search') || '').trim()
-    const status = (url.searchParams.get('status') || '').trim()
-
-    let where: any = {}
-    if (status && status !== 'All') {
-      where.status = { equals: status }
-    }
-
-    if (search) {
-      where.or = [
-        { name: { contains: search } },
-        { phone: { contains: search } },
-        { route: { contains: search } },
-        { vehicle: { contains: search } },
-      ]
-    }
-
-    const res = await payload.find({
-      collection: 'bookings',
-      where,
-      limit,
-      page,
-      sort: '-createdAt',
-    })
-
+    const payload = await getPayload({ config });
+    if (!(await isAuthorizedBookingStaff(payload, req.headers))) return failure(401,'Unauthorized');
+    const params = new URL(req.url).searchParams;
+    const page = Math.min(10000, Math.max(1, Number.parseInt(params.get('page') || '1', 10) || 1));
+    const requestedLimit = params.get('limit');
+    const limit = Math.min(100, Math.max(1, Number.parseInt(requestedLimit || '25', 10) || 25));
+    const search = (params.get('search') || '').trim().slice(0, 100);
+    const status = (params.get('status') || '').trim();
+    const where: any = {};
+    if (['Pending','Confirmed','Completed','Cancelled'].includes(status)) where.status = {equals:status};
+    if (search) where.or = [
+      {name:{contains:search}}, {phone:{contains:search}},
+      {route:{contains:search}}, {vehicle:{contains:search}},
+    ];
+    const result = await payload.find({collection:'bookings',where,limit,page,sort:'-createdAt',overrideAccess:true});
     return NextResponse.json({
-      success: true,
-      bookings: res.docs,
-      docs: res.docs,
-      total: res.totalDocs,
-      totalDocs: res.totalDocs,
-      page: res.page,
-      limit: res.limit,
-      totalPages: res.totalPages,
-    })
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+      success:true, bookings:result.docs, docs:result.docs,
+      total:result.totalDocs, totalDocs:result.totalDocs,
+      page:result.page, limit:result.limit, totalPages:result.totalPages,
+    });
+  } catch (err) {
+    console.error('[Bookings GET]',err);
+    return failure(500,'Failed to load bookings');
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const name = String(body.name || body.fullName || 'Customer').trim()
-    const phone = String(body.phone || body.contact || '').trim()
-    const whatsapp = String(body.whatsapp || body.whatsappNumber || phone).trim()
-    const route = String(body.route || body.tourName || body.destination || body.drop || 'Custom Trip').trim()
-    const vehicle = String(body.vehicle || body.carType || body.carPreference || 'Standard Cab').trim()
-    const date = String(body.date || body.travelDate || body.pickupDate || new Date().toISOString().slice(0, 10)).trim()
-    const pickup_address = String(body.pickup_address || body.pickupAddress || body.pickupLocation || body.pickup || '').trim()
-    const pickup_time = String(body.pickup_time || body.pickupTime || '').trim()
-    const passengers = String(body.passengers || body.noOfPassengers || '4').trim()
-    const special_requirements = String(body.special_requirements || body.specialRequirements || body.message || body.otherDetails || '').trim()
-    const type = String(body.type || 'Inquiry').trim()
-    const referrer = String(body.referrer || '').trim()
+    if (!req.headers.get('content-type')?.toLowerCase().includes('application/json')) {
+      return failure(415,'Expected application/json');
+    }
+    const contentLength = Number(req.headers.get('content-length') || 0);
+    if (contentLength > 8192) return failure(413,'Booking request is too large');
+    const raw = await req.text();
+    if (raw.length > 8192) return failure(413,'Booking request is too large');
+    let input: unknown;
+    try { input = JSON.parse(raw); }
+    catch { return failure(400,'Invalid JSON'); }
 
-    const payload = await getPayload({ config })
-    // Generate unique collision-safe booking ID on server
-    const bookingId = 'BK-' + Date.now().toString().slice(-6) + '-' + Math.floor(100 + Math.random() * 900)
-    const booking = await payload.create({
-      collection: 'bookings',
-      data: {
-        id: bookingId,
-        name,
-        phone,
-        whatsapp,
-        route,
-        vehicle,
-        date,
-        pickup_address: pickup_address || 'Customer Location',
-        pickup_time,
-        passengers,
-        special_requirements,
-        status: 'Pending',
-        type,
-        referrer,
-      },
-    })
-
-    // Store-then-Forward: Background internal dispatch to n8n via Docker network
-    const n8nUrl = process.env.N8N_INTERNAL_URL || 'http://n8n:5678/webhook/booking-notification'
-    fetch(n8nUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...booking,
-        timestamp: new Date().toISOString(),
-        source: 'CityTourCabs-API',
-      }),
-    }).catch((err) => {
-      console.warn('[n8n Webhook Warning]:', err.message)
-    })
-
-    return NextResponse.json({
-      success: true,
-      booking,
-    })
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    // Trust a single ingress proxy only. Protect this route with an edge rate limit as well.
+    const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unidentified';
+    if (!allowRequest(ip)) return failure(429,'Too many requests. Please try again later');
+    const data = validateBooking(input);
+    const payload = await getPayload({config});
+    const bookingId = `BK-${randomUUID()}`;
+    // Public Payload CMS create is disabled; only the internal server API can bypass it.
+    const booking = await payload.create({collection:'bookings',data:{...data,id:bookingId,status:'Pending' as const},overrideAccess:true});
+    const notified = await forwardBookingToN8n(booking);
+    return NextResponse.json({success:true,booking, notificationDelivered:notified},{status:201});
+  } catch (err) {
+    if (err instanceof BookingValidationError) return failure(400,err.message);
+    console.error('[Bookings POST]',err);
+    return failure(500,'Unable to save booking. Please try again');
   }
 }

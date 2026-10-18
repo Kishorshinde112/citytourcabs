@@ -58,38 +58,22 @@ export default function WhyChooseUs() {
     }
   ];
 
-  const [features, setFeatures] = useState(defaultFeatures);
+  const features = defaultFeatures;
+
+  const [heading, setHeading] = useState('Why Choose CityTourCabs?');
+  const [subtitle, setSubtitle] = useState('Experience the difference with our commitment to excellence, reliability, and customer satisfaction.');
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadFeatures() {
-      try {
-        const res = await fetch('/api/pages/home');
-        const data = await res.json();
-        if (
-          isMounted &&
-          data.success &&
-          data.page &&
-          Array.isArray(data.page.whyChooseUs) &&
-          data.page.whyChooseUs.length > 0
-        ) {
-          const cmsFeatures = data.page.whyChooseUs.map((item) => ({
-            icon: ICON_MAP[item.icon] || Shield,
-            title: item.title,
-            desc: item.desc,
-            stat: item.stat,
-            statLabel: item.statLabel,
-          }));
-          setFeatures(cmsFeatures);
-        }
-      } catch (err) {
-        console.error('Error fetching whyChooseUs features:', err);
+    let mounted = true;
+    const params = new URLSearchParams({ 'where[slug][equals]': 'home', limit:'1', depth:'1' });
+    fetch(`/api/pages?${params}`).then((res) => res.ok ? res.json() : null).then((data) => {
+      const block = data?.docs?.[0]?.layout?.find((x) => x.blockType === 'whyChooseUs');
+      if (mounted && block) {
+        if (block.title) setHeading(block.title);
+        if (block.subtitle) setSubtitle(block.subtitle);
       }
-    }
-    loadFeatures();
-    return () => {
-      isMounted = false;
-    };
+    }).catch(() => {});
+    return () => { mounted = false; };
   }, []);
 
   return (
@@ -99,10 +83,10 @@ export default function WhyChooseUs() {
         {/* Section Header */}
         <div className="mb-12 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
-            Why Choose CityTourCabs?
+            {heading}
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
-            Experience the difference with our commitment to excellence, reliability, and customer satisfaction.
+            {subtitle}
           </p>
         </div>
 

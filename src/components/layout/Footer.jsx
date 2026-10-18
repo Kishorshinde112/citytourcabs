@@ -8,16 +8,16 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
   const { phone, email, officeAddress, footer, siteName } = useSettingsStore();
 
   const defaultTourLinks = [
-    { name: "Mumbai Darshan", href: "/mumbai-darshan" },
-    { name: "Lonavala Trip", href: "/lonavala-trip" },
-    { name: "Alibaug Sightseeing", href: "/alibaug-sightseeing" },
-    { name: "Matheran Sightseeing", href: "/matheran-sightseeing" },
-    { name: "Shirdi Tour", href: "/shirdi-tour" },
-    { name: "Mahabaleshwar Sightseeing", href: "/mahabaleshwar-sightseeing" },
-    { name: "Igatpuri Tour", href: "/igatpuri-tour" },
-    { name: "Ashtavinayak", href: "/ashtavinayak" },
-    { name: "3 Jyotirlinga in Maharashtra", href: "/3-jyotirlinga-in-maharashtra" },
-    { name: "Konkan Darshan", href: "/konkan-darshan" },
+    { name: "Mumbai Darshan", href: "/tours/mumbai-darshan" },
+    { name: "Lonavala Trip", href: "/tours/lonavala-trip" },
+    { name: "Alibaug Sightseeing", href: "/tours/alibaug-sightseeing" },
+    { name: "Matheran Sightseeing", href: "/tours/matheran-sightseeing" },
+    { name: "Shirdi Tour", href: "/tours/shirdi-tour" },
+    { name: "Mahabaleshwar Sightseeing", href: "/tours/mahabaleshwar-sightseeing" },
+    { name: "Igatpuri Tour", href: "/tours/igatpuri-tour" },
+    { name: "Ashtavinayak", href: "/tours/ashtavinayak" },
+    { name: "3 Jyotirlinga in Maharashtra", href: "/tours/3-jyotirlinga-in-maharashtra" },
+    { name: "Konkan Darshan", href: "/tours/konkan-darshan" },
   ];
 
   const [tourLinks, setTourLinks] = useState(defaultTourLinks);

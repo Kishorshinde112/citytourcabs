@@ -1,78 +1,38 @@
-import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import config from '@/payload.config'
+import { NextResponse } from 'next/server';
+import { getPayload } from 'payload';
+import config from '@/payload.config';
+import { isAuthorizedBookingStaff } from '@/lib/bookingAuth';
+
+function escapeCsv(value: unknown) {
+  const str = String(value ?? '');
+  // Excel / Sheets formula injection protection, even when a formula starts after whitespace.
+  const safe = /^[\s]*[=+@\-\t\r]/.test(str) ? `'${str}` : str;
+  return `"${safe.replace(/"/g, '""')}"`;
+}
 
 export async function GET(req: Request) {
   try {
-    const payload = await getPayload({ config })
-    const { user } = await payload.auth({ headers: req.headers })
-    const adminKey = req.headers.get('x-admin-key')
-    const authHeader = req.headers.get('authorization')
-    const isSecretValid =
-      (adminKey && adminKey === process.env.PAYLOAD_SECRET) ||
-      (authHeader && authHeader === `Bearer ${process.env.PAYLOAD_SECRET}`)
-
-    if (!user && !isSecretValid) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const payload = await getPayload({config});
+    if (!(await isAuthorizedBookingStaff(payload,req.headers))) {
+      return NextResponse.json({error:'Unauthorized'},{status:401});
     }
-
-    const bookings = await payload.find({
-      collection: 'bookings',
-      limit: 10000,
-      pagination: false,
-      sort: '-createdAt',
-    })
-
-    const headers = [
-      'Booking ID',
-      'Status',
-      'Travel Date',
-      'Created At',
-      'Customer Name',
-      'Phone',
-      'WhatsApp',
-      'Route / Tour',
-      'Vehicle',
-      'Passengers',
-      'Pickup Time',
-      'Pickup Address',
-      'Special Requirements',
-    ]
-
-    const escapeCsv = (val: any) => {
-      if (val === null || val === undefined) return '""'
-      const str = String(val).replace(/"/g, '""')
-      return `"${str}"`
-    }
-
-    let csvContent = headers.join(',') + '\n'
-    for (const r of bookings.docs) {
-      csvContent +=
-        [
-          escapeCsv(r.id),
-          escapeCsv(r.status || 'Pending'),
-          escapeCsv(r.date),
-          escapeCsv(r.createdAt),
-          escapeCsv(r.name),
-          escapeCsv(r.phone),
-          escapeCsv(r.whatsapp),
-          escapeCsv(r.route),
-          escapeCsv(r.vehicle),
-          escapeCsv(r.passengers),
-          escapeCsv(r.pickup_time),
-          escapeCsv(r.pickup_address),
-          escapeCsv(r.special_requirements),
-        ].join(',') + '\n'
-    }
-
-    return new NextResponse(csvContent, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/csv',
-        'Content-Disposition': 'attachment; filename="citytourcabs_leads.csv"',
-      },
-    })
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    const bookings = await payload.find({collection:'bookings',limit:10000,pagination:false,sort:'-createdAt',overrideAccess:true});
+    const columns = [
+      ['Booking ID','id'],['Status','status'],['Travel Date','date'],['Created At','createdAt'],
+      ['Customer Name','name'],['Phone','phone'],['WhatsApp','whatsapp'],['Route / Tour','route'],
+      ['Vehicle','vehicle'],['Passengers','passengers'],['Pickup Time','pickup_time'],
+      ['Pickup Address','pickup_address'],['Special Requirements','special_requirements'],
+    ] as const;
+    const csv = [columns.map(([header])=>escapeCsv(header)).join(','),
+      ...bookings.docs.map((row: any)=>columns.map(([,key])=>escapeCsv(row[key])).join(','))].join('\r\n')+'\r\n';
+    return new NextResponse(csv,{headers:{
+      'Content-Type':'text/csv; charset=utf-8',
+      'Content-Disposition':'attachment; filename="citytourcabs_leads.csv"',
+      'Cache-Control':'private, no-store',
+      'X-Content-Type-Options':'nosniff',
+    }});
+  } catch (err) {
+    console.error('[Bookings Export]',err);
+    return NextResponse.json({error:'Could not export bookings'},{status:500});
   }
 }

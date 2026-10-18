@@ -323,7 +323,7 @@ async function seed() {
         facebookUrl: 'https://facebook.com',
         instagramUrl: 'https://instagram.com',
       },
-      chatbotWebhookUrl: 'https://n8n.kishorlab.dev/webhook-test/4d6e3906-3c0c-4c18-bef2-cf30563485c0',
+      chatbotWebhookUrl: '',
     },
   })
   console.log('✅ Global Site Settings updated successfully.')

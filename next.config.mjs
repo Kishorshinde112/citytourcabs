@@ -23,19 +23,21 @@ const nextConfig = {
       },
     ],
   },
-  async rewrites() {
+  async redirects() {
     return [
-      { source: '/mumbai-darshan', destination: '/tours/mumbai-darshan' },
-      { source: '/mumbai-darshan-cab-service', destination: '/tours/mumbai-darshan' },
-      { source: '/lonavala-trip', destination: '/tours/lonavala-trip' },
-      { source: '/alibaug-sightseeing', destination: '/tours/alibaug-sightseeing' },
-      { source: '/matheran-sightseeing', destination: '/tours/matheran-sightseeing' },
-      { source: '/shirdi-tour', destination: '/tours/shirdi-tour' },
-      { source: '/mahabaleshwar-sightseeing', destination: '/tours/mahabaleshwar-sightseeing' },
-      { source: '/igatpuri-tour', destination: '/tours/igatpuri-tour' },
-      { source: '/ashtavinayak', destination: '/tours/ashtavinayak' },
-      { source: '/3-jyotirlinga-in-maharashtra', destination: '/tours/3-jyotirlinga-in-maharashtra' },
-      { source: '/konkan-darshan', destination: '/tours/konkan-darshan' },
+      { source: '/:path*', has: [{ type: 'host', value: 'www.citytourcabs.in' }], destination: 'https://citytourcabs.in/:path*', permanent: true },
+      { source: '/:path*', has: [{ type: 'host', value: 'cabs.kishorlab.dev' }], destination: 'https://citytourcabs.in/:path*', permanent: true },
+      { source: '/mumbai-darshan', destination: '/tours/mumbai-darshan', permanent: true },
+      { source: '/mumbai-darshan-cab-service', destination: '/tours/mumbai-darshan', permanent: true },
+      { source: '/lonavala-trip', destination: '/tours/lonavala-trip', permanent: true },
+      { source: '/alibaug-sightseeing', destination: '/tours/alibaug-sightseeing', permanent: true },
+      { source: '/matheran-sightseeing', destination: '/tours/matheran-sightseeing', permanent: true },
+      { source: '/shirdi-tour', destination: '/tours/shirdi-tour', permanent: true },
+      { source: '/mahabaleshwar-sightseeing', destination: '/tours/mahabaleshwar-sightseeing', permanent: true },
+      { source: '/igatpuri-tour', destination: '/tours/igatpuri-tour', permanent: true },
+      { source: '/ashtavinayak', destination: '/tours/ashtavinayak', permanent: true },
+      { source: '/3-jyotirlinga-in-maharashtra', destination: '/tours/3-jyotirlinga-in-maharashtra', permanent: true },
+      { source: '/konkan-darshan', destination: '/tours/konkan-darshan', permanent: true },
     ]
   },
 }

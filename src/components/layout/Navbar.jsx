@@ -11,16 +11,16 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
   const { phone, email, announcement, siteName, logoUrl } = useSettingsStore();
 
   const defaultTourOptions = [
-    { name: "Mumbai Darshan", id: "mumbai-darshan", href: "/mumbai-darshan" },
-    { name: "Lonavala Trip", id: "lonavala-trip", href: "/lonavala-trip" },
-    { name: "Alibaug Sightseeing", id: "alibaug-sightseeing", href: "/alibaug-sightseeing" },
-    { name: "Matheran Sightseeing", id: "matheran-sightseeing", href: "/matheran-sightseeing" },
-    { name: "Shirdi Tour", id: "shirdi-tour", href: "/shirdi-tour" },
-    { name: "Mahabaleshwar Sightseeing", id: "mahabaleshwar-sightseeing", href: "/mahabaleshwar-sightseeing" },
-    { name: "Igatpuri Tour", id: "igatpuri-tour", href: "/igatpuri-tour" },
-    { name: "Ashtavinayak", id: "ashtavinayak", href: "/ashtavinayak" },
-    { name: "3 Jyotirlinga in Maharashtra", id: "jyotirlinga-maharashtra", href: "/3-jyotirlinga-in-maharashtra" },
-    { name: "Konkan Darshan", id: "konkan-darshan", href: "/konkan-darshan" },
+    { name: "Mumbai Darshan", id: "mumbai-darshan", href: "/tours/mumbai-darshan" },
+    { name: "Lonavala Trip", id: "lonavala-trip", href: "/tours/lonavala-trip" },
+    { name: "Alibaug Sightseeing", id: "alibaug-sightseeing", href: "/tours/alibaug-sightseeing" },
+    { name: "Matheran Sightseeing", id: "matheran-sightseeing", href: "/tours/matheran-sightseeing" },
+    { name: "Shirdi Tour", id: "shirdi-tour", href: "/tours/shirdi-tour" },
+    { name: "Mahabaleshwar Sightseeing", id: "mahabaleshwar-sightseeing", href: "/tours/mahabaleshwar-sightseeing" },
+    { name: "Igatpuri Tour", id: "igatpuri-tour", href: "/tours/igatpuri-tour" },
+    { name: "Ashtavinayak", id: "ashtavinayak", href: "/tours/ashtavinayak" },
+    { name: "3 Jyotirlinga in Maharashtra", id: "jyotirlinga-maharashtra", href: "/tours/3-jyotirlinga-in-maharashtra" },
+    { name: "Konkan Darshan", id: "konkan-darshan", href: "/tours/konkan-darshan" },
   ];
 
   const [tourOptions, setTourOptions] = useState(defaultTourOptions);

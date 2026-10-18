@@ -1,3 +1,4 @@
+import { isCmsAdmin } from '@/lib/cmsAccess';
 import type { CollectionConfig } from 'payload'
 import { triggerRevalidation } from '../utils/revalidate'
 
@@ -15,7 +16,7 @@ export const Fleet: CollectionConfig = {
       afterListTable: ['@/components/admin/RecordDrawer#RecordDrawer'],
     },
   },
-  access: { read: () => true },
+  access: { read: () => true, create:isCmsAdmin, update:isCmsAdmin, delete:isCmsAdmin },
   hooks: {
     beforeChange: [
       async ({ data, req }) => {
@@ -110,7 +111,7 @@ export const Gallery: CollectionConfig = {
       afterListTable: ['@/components/admin/RecordDrawer#RecordDrawer'],
     },
   },
-  access: { read: () => true },
+  access: { read: () => true, create:isCmsAdmin, update:isCmsAdmin, delete:isCmsAdmin },
   hooks: {
     beforeChange: [
       async ({ data, req }) => {
@@ -153,7 +154,7 @@ export const Testimonials: CollectionConfig = {
       afterListTable: ['@/components/admin/RecordDrawer#RecordDrawer'],
     },
   },
-  access: { read: () => true },
+  access: { read: () => true, create:isCmsAdmin, update:isCmsAdmin, delete:isCmsAdmin },
   hooks: {
     afterChange: [({ doc }) => { triggerRevalidation(); return doc }],
     afterDelete: [({ doc }) => { triggerRevalidation(); return doc }],
@@ -197,7 +198,7 @@ export const FAQs: CollectionConfig = {
       afterListTable: ['@/components/admin/RecordDrawer#RecordDrawer'],
     },
   },
-  access: { read: () => true },
+  access: { read: () => true, create:isCmsAdmin, update:isCmsAdmin, delete:isCmsAdmin },
   hooks: {
     afterChange: [({ doc }) => { triggerRevalidation(); return doc }],
     afterDelete: [({ doc }) => { triggerRevalidation(); return doc }],
@@ -214,7 +215,7 @@ export const Redirects: CollectionConfig = {
     group: 'SYSTEM',
     useAsTitle: 'source',
   },
-  access: { read: () => true },
+  access: { read: () => true, create:isCmsAdmin, update:isCmsAdmin, delete:isCmsAdmin },
   fields: [
     { name: 'source', type: 'text', required: true, admin: { description: 'e.g. /mumbai-darshan-cab-service' } },
     { name: 'destination', type: 'text', required: true, admin: { description: 'e.g. /mumbai-darshan' } },
