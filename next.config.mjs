@@ -21,6 +21,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cabs.kishorlab.dev',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
     ],
   },
   async redirects() {

@@ -20,6 +20,7 @@
     "@payloadcms/db-sqlite": "^3.0.0",
     "@payloadcms/next": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
+    "cloudinary": "^2.11.0",
     "clsx": "^2.1.1",
     "graphql": "^16.10.0",
     "lucide-react": "^0.475.0",

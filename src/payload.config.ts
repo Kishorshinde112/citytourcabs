@@ -67,8 +67,9 @@ export default buildConfig({
     ? postgresAdapter({
         pool: {
           connectionString: dbUri,
+          ssl: { rejectUnauthorized: false },
         },
-        push: process.env.NODE_ENV !== 'production',
+        push: process.env.NODE_ENV !== 'production' || process.env.DB_PUSH === 'true',
       })
     : sqliteAdapter({
         client: {

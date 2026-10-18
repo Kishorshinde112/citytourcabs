@@ -17,6 +17,9 @@ export const Media: CollectionConfig = {
   hooks: {
     afterRead: [
       ({ doc }) => {
+        if (doc && doc.url && (doc.url.startsWith('http://') || doc.url.startsWith('https://'))) {
+          return doc
+        }
         if (doc && doc.filename) {
           doc.url = `/media/${doc.filename}`
         }
