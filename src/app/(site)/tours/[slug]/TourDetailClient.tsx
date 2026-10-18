@@ -18,16 +18,11 @@ export default function TourDetailClient({ slug, data }: { slug: string; data: a
   useEffect(() => {
     window.scrollTo(0, 0);
     const timer = setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        const seen = sessionStorage.getItem('enquiry_popup_seen');
-        if (!seen) {
-          setBookModalOpen((current) => {
-            if (!current) setAutoEnquiryOpen(true);
-            return current;
-          });
-        }
-      }
-    }, 10000);
+      setBookModalOpen((current) => {
+        if (!current) setAutoEnquiryOpen(true);
+        return current;
+      });
+    }, 5000);
     return () => clearTimeout(timer);
   }, [slug]);
 

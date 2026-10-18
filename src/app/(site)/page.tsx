@@ -42,21 +42,16 @@ export default function HomePage() {
     }
   }, []);
 
-  // Auto trigger enquiry modal after 10 seconds only if NO modal is open and not dismissed yet
+  // Auto trigger enquiry modal after 5 seconds on load / refresh
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        const seen = sessionStorage.getItem('enquiry_popup_seen');
-        if (!seen) {
-          setBookModalOpen((currentBookOpen) => {
-            if (!currentBookOpen) {
-              setAutoEnquiryOpen(true);
-            }
-            return currentBookOpen;
-          });
+      setBookModalOpen((currentBookOpen) => {
+        if (!currentBookOpen) {
+          setAutoEnquiryOpen(true);
         }
-      }
-    }, 10000);
+        return currentBookOpen;
+      });
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);

@@ -65,6 +65,16 @@ export default function AboutClient() {
     loadAboutPage();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBookModalOpen((current) => {
+        if (!current) setAutoEnquiryOpen(true);
+        return current;
+      });
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleOpenBookModal = () => {
     setAutoEnquiryOpen(false);
     setBookModalOpen(true);

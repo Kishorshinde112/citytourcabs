@@ -9,12 +9,7 @@ export default function AutoEnquiryModal({ isOpen, onClose }) {
   return (
     <QuickBookModal
       isOpen={isOpen}
-      onClose={() => {
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('enquiry_popup_seen', 'true');
-        }
-        onClose();
-      }}
+      onClose={onClose}
       initialData={{ isEnquiry: true, type: 'Inquiry' }}
     />
   );

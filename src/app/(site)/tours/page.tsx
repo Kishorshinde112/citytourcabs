@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import TourPackages from '@/components/TourPackages';
 import TourModal from '@/components/TourModal';
@@ -16,6 +16,16 @@ export default function ToursListingPage() {
   const [bookModalInitialData, setBookModalInitialData] = useState<any>({});
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [autoEnquiryOpen, setAutoEnquiryOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBookModalOpen((current) => {
+        if (!current) setAutoEnquiryOpen(true);
+        return current;
+      });
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleOpenBookModal = (initialData = {}) => {
     setAutoEnquiryOpen(false);
