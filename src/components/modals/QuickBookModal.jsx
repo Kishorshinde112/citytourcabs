@@ -74,7 +74,7 @@ const CAR_TYPES = [
   'Wagon R (Hatchback 4+1)',
   'Swift Dzire (Sedan 4+1)',
   'Maruti Ertiga (MUV 6+1)',
-  'Kia Carens (MUV 6+1)',
+  'Kia Carens (MUV 7+1)',
   'Toyota Innova Crysta (Luxury 7+1)',
   'Tempo Traveller (13/17/26 Seater)',
 ];
@@ -226,7 +226,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
       pickup_address: pickupAddress.trim() || 'Customer Doorstep',
       passengers: passengers,
       special_requirements: specialRequirements.trim(),
-      type: isEnquiry ? 'Inquiry' : 'Booking',
+      type: isEnquiry ? 'Enquiry' : 'Booking',
       status: 'Pending',
     };
 
@@ -246,10 +246,10 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
             tourName: `${destination}${packageName ? ` - ${packageName}` : ''}`,
             travelDate: travelDate,
             carType: carType,
-            type: isEnquiry ? 'Inquiry' : 'Booking',
+            type: isEnquiry ? 'Enquiry' : 'Booking',
           })
         );
-      } catch {}
+      } catch { }
 
       setSuccess(true);
 
@@ -258,7 +258,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         onClose();
         router.push(
           isEnquiry
-            ? `/inquiry-confirmed?id=${refId}`
+            ? `/enquiry-confirmed?id=${refId}`
             : `/booking-confirmed?id=${refId}`
         );
       }, 700);
@@ -275,7 +275,14 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-fadeIn"
     >
-      <div className="relative bg-white rounded-xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 sm:p-8 my-auto">
+
+      <div
+        className={`relative bg-white rounded-xl w-full ${isEnquiry
+            ? 'max-w-[420px] p-6'
+            : 'max-w-2xl p-6 sm:p-8'
+          } max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-200 my-auto`}
+      >
+
         {/* Close Button */}
         <button
           type="button"
@@ -617,7 +624,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
               disabled={loading}
               className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-lg shadow-sm hover:shadow transition cursor-pointer disabled:opacity-50"
             >
-              {loading ? 'Submitting...' : isEnquiry ? 'Submit Inquiry' : 'Book Now'}
+              {loading ? 'Submitting...' : isEnquiry ? 'Submit Enquiry' : 'Book Now'}
             </button>
           </div>
         </form>

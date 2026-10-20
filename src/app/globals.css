@@ -375,3 +375,9 @@
   color: #1a96eb;
 }
 
+/* Scroll-triggered content visibility optimization (zero layout shift, defers offscreen painting) */
+.lazy-render-scroll {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
+}
+

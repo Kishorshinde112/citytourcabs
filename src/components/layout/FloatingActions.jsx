@@ -54,8 +54,8 @@ export default function FloatingActions({ onOpenBookModal = () => {}, onOpenEnqu
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm whitespace-nowrap font-medium">Book your</p>
-                  <p className="text-sm whitespace-nowrap font-bold">Tour now</p>
+                  <p className="text-sm whitespace-nowrap font-bold">Inquire Now</p>
+                  <p className="text-xs whitespace-nowrap text-orange-100">Get Instant Quote</p>
                 </div>
               </div>
             </div>

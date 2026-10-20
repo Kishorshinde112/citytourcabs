@@ -55,36 +55,36 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
   };
 
   return (
-    <section id="mumbai-rates" className="py-16 sm:py-24 bg-white relative overflow-hidden border-b border-slate-200">
+    <section id="mumbai-rates" className="py-12 sm:py-20 bg-slate-50/70 relative overflow-hidden border-b border-slate-200">
       {/* Ambient background decoration */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-50/70 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-10 w-96 h-96 bg-amber-50/50 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-100/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-10 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-yellow-400/10 text-yellow-400 text-xs font-bold uppercase tracking-wider mb-3 border border-yellow-400/30">
-            <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100 text-orange-700 text-xs font-bold uppercase tracking-wider mb-3 border border-orange-200">
+            <Sparkles className="w-3.5 h-3.5 text-orange-600" />
             <span>Official Transparent Pricing</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-display font-black tracking-tight text-white">
-            Mumbai Sightseeing <span className="text-yellow-400">Rates & Packages</span>
+          <h2 className="text-3xl sm:text-4xl font-display font-black tracking-tight text-slate-900">
+            Mumbai Sightseeing <span className="text-orange-600">Rates & Packages</span>
           </h2>
 
-          <p className="text-zinc-400 text-sm sm:text-base mt-3">
+          <p className="text-slate-600 text-sm sm:text-base mt-3 font-sans">
             Choose from Half Day (8 hrs / 80 kms), Full Day (10 hrs / 100 kms), Extended Day (12 hrs / 120 kms), or Tempo Travellers with complete transparency.
           </p>
 
           {/* Navigation Pill Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mt-8">
+          <div className="flex flex-wrap justify-center gap-2.5 mt-8">
             <button
               onClick={() => setActiveTab('rates')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 ${
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
                 activeTab === 'rates'
-                  ? 'bg-yellow-400 text-black font-black shadow-md scale-105'
-                  : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                  ? 'bg-orange-500 text-white font-black shadow-md scale-105'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
               }`}
             >
               <Car className="w-4 h-4" />
@@ -93,10 +93,10 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
 
             <button
               onClick={() => setActiveTab('south')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 ${
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
                 activeTab === 'south'
-                  ? 'bg-yellow-400 text-black font-black shadow-md scale-105'
-                  : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                  ? 'bg-orange-500 text-white font-black shadow-md scale-105'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
               }`}
             >
               <MapPin className="w-4 h-4" />
@@ -105,10 +105,10 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
 
             <button
               onClick={() => setActiveTab('north')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 ${
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
                 activeTab === 'north'
-                  ? 'bg-yellow-400 text-black font-black shadow-md scale-105'
-                  : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                  ? 'bg-orange-500 text-white font-black shadow-md scale-105'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
               }`}
             >
               <Compass className="w-4 h-4" />
@@ -117,10 +117,10 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
 
             <button
               onClick={() => setActiveTab('full')}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 ${
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
                 activeTab === 'full'
-                  ? 'bg-yellow-400 text-black font-black shadow-md scale-105'
-                  : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                  ? 'bg-orange-500 text-white font-black shadow-md scale-105'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
               }`}
             >
               <Sparkles className="w-4 h-4" />
@@ -133,30 +133,30 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
         {activeTab === 'rates' && (
           <div className="space-y-6">
             {/* Rates Table Container */}
-            <div className="bg-zinc-900 rounded-3xl border border-zinc-800 shadow-2xl overflow-hidden">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
               
               {/* Header inside card */}
-              <div className="bg-black text-white p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-zinc-800">
+              <div className="bg-slate-900 text-white p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800">
                 <div>
                   <h3 className="text-xl font-bold font-display flex items-center gap-2.5">
-                    <Car className="w-5 h-5 text-yellow-400" />
-                    <span>Mumbai Sightseeing Rates</span>
+                    <Car className="w-5 h-5 text-orange-400" />
+                    <span>Mumbai Sightseeing Tariffs</span>
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    Fixed tariffs for local Mumbai tours. Driver-cum-guide included in all vehicles.
+                  <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                    Fixed transparent tariffs for local Mumbai tours. Driver-cum-guide included in all vehicles.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 bg-zinc-900 p-1.5 rounded-xl border border-zinc-800 text-xs">
-                  <span className="text-zinc-400 pl-2">Quick Duration Filter:</span>
+                <div className="flex items-center gap-2 bg-slate-800 p-1.5 rounded-xl border border-slate-700 text-xs">
+                  <span className="text-slate-400 pl-2">Filter:</span>
                   {['8h_80km', '10h_100km', '12h_120km'].map((d) => (
                     <button
                       key={d}
                       onClick={() => setSelectedDuration(d)}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition ${
+                      className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                         selectedDuration === d
-                          ? 'bg-yellow-400 text-black shadow-sm'
-                          : 'text-zinc-300 hover:text-white'
+                          ? 'bg-orange-500 text-white shadow-sm'
+                          : 'text-slate-300 hover:text-white'
                       }`}
                     >
                       {d === '8h_80km' ? '8h / 80km' : d === '10h_100km' ? '10h / 100km' : '12h / 120km'}
@@ -171,13 +171,13 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
                   <thead>
                     <tr className="bg-slate-50 text-slate-700 text-xs uppercase font-extrabold tracking-wider border-b border-slate-200">
                       <th className="py-4 px-4 sm:px-6">Car Types / Rates</th>
-                      <th className={`py-4 px-4 text-center transition ${selectedDuration === '8h_80km' ? 'bg-indigo-50/80 text-indigo-900 font-black' : ''}`}>
+                      <th className={`py-4 px-4 text-center transition ${selectedDuration === '8h_80km' ? 'bg-orange-50 text-orange-800 font-black' : ''}`}>
                         8 hrs / 80 kms
                       </th>
-                      <th className={`py-4 px-4 text-center transition ${selectedDuration === '10h_100km' ? 'bg-indigo-50/80 text-indigo-900 font-black' : ''}`}>
+                      <th className={`py-4 px-4 text-center transition ${selectedDuration === '10h_100km' ? 'bg-orange-50 text-orange-800 font-black' : ''}`}>
                         10 hrs / 100 kms
                       </th>
-                      <th className={`py-4 px-4 text-center transition ${selectedDuration === '12h_120km' ? 'bg-indigo-50/80 text-indigo-900 font-black' : ''}`}>
+                      <th className={`py-4 px-4 text-center transition ${selectedDuration === '12h_120km' ? 'bg-orange-50 text-orange-800 font-black' : ''}`}>
                         12 hrs / 120 kms
                       </th>
                       <th className="py-4 px-4 text-center">Extra / Km</th>
@@ -196,8 +196,8 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
                           {/* Car Name & Tag */}
                           <td className="py-4 px-4 sm:px-6">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-700 shrink-0 border border-slate-200">
-                                <Car className="w-5 h-5 text-indigo-600" />
+                              <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center font-bold text-orange-600 shrink-0 border border-orange-100">
+                                <Car className="w-5 h-5 text-orange-600" />
                               </div>
                               <div>
                                 <div className="font-bold text-slate-900 flex items-center gap-2">
@@ -217,10 +217,10 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
 
                           {/* If Tempo Traveller, show 12h/100km colspan */}
                           {car.isTempo ? (
-                            <td colSpan={3} className="py-4 px-4 text-center bg-indigo-50/30">
-                              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-100/70 text-indigo-950 font-bold">
+                            <td colSpan={3} className="py-4 px-4 text-center bg-orange-50/40">
+                              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-orange-100 text-orange-950 font-bold">
                                 <span>Full day Mumbai Darshan 12 Hrs 100 Kms:</span>
-                                <span className="text-base text-indigo-700 font-black">
+                                <span className="text-base text-orange-600 font-black">
                                   Rs. {car.rates['12h_100km'].toLocaleString('en-IN')}/-
                                 </span>
                               </div>
@@ -228,17 +228,17 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
                           ) : (
                             <>
                               {/* 8h / 80km */}
-                              <td className={`py-4 px-4 text-center font-bold ${selectedDuration === '8h_80km' ? 'bg-indigo-50/60 text-indigo-700 font-black text-base' : 'text-slate-900'}`}>
+                              <td className={`py-4 px-4 text-center font-bold ${selectedDuration === '8h_80km' ? 'bg-orange-50/70 text-orange-600 font-black text-base' : 'text-slate-900'}`}>
                                 Rs. {car.rates['8h_80km'].toLocaleString('en-IN')}/-
                               </td>
 
                               {/* 10h / 100km */}
-                              <td className={`py-4 px-4 text-center font-bold ${selectedDuration === '10h_100km' ? 'bg-indigo-50/60 text-indigo-700 font-black text-base' : 'text-slate-900'}`}>
+                              <td className={`py-4 px-4 text-center font-bold ${selectedDuration === '10h_100km' ? 'bg-orange-50/70 text-orange-600 font-black text-base' : 'text-slate-900'}`}>
                                 Rs. {car.rates['10h_100km'].toLocaleString('en-IN')}/-
                               </td>
 
                               {/* 12h / 120km */}
-                              <td className={`py-4 px-4 text-center font-bold ${selectedDuration === '12h_120km' ? 'bg-indigo-50/60 text-indigo-700 font-black text-base' : 'text-slate-900'}`}>
+                              <td className={`py-4 px-4 text-center font-bold ${selectedDuration === '12h_120km' ? 'bg-orange-50/70 text-orange-600 font-black text-base' : 'text-slate-900'}`}>
                                 Rs. {car.rates['12h_120km'].toLocaleString('en-IN')}/-
                               </td>
                             </>
@@ -267,7 +267,7 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
 
                               <button
                                 onClick={() => handleBookVehicle(car, selectedDuration)}
-                                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+                                className="px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer"
                               >
                                 <span>Book</span>
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -335,7 +335,7 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => onOpenBookModal && onOpenBookModal({ dropCity: 'South Mumbai Sightseeing', tripType: 'South Mumbai Tour' })}
-                  className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition cursor-pointer"
+                  className="px-5 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-orange-500/20 transition cursor-pointer"
                 >
                   <span>Book South Mumbai Cab</span>
                   <ArrowRight className="w-4 h-4" />
@@ -353,12 +353,12 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
                 {southTour.landmarks.map((spot, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-indigo-300 hover:bg-indigo-50/40 transition group"
+                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-orange-300 hover:bg-orange-50/40 transition group"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
+                    <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-orange-600 flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-orange-500 group-hover:text-white transition">
                       {idx + 1}
                     </div>
-                    <span className="font-semibold text-sm text-slate-800 group-hover:text-indigo-900 transition">
+                    <span className="font-semibold text-sm text-slate-800 group-hover:text-orange-950 transition">
                       {spot}
                     </span>
                   </div>
@@ -388,7 +388,7 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => onOpenBookModal && onOpenBookModal({ dropCity: 'North Mumbai Sightseeing', tripType: 'North Mumbai Tour' })}
-                  className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition cursor-pointer"
+                  className="px-5 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-orange-500/20 transition cursor-pointer"
                 >
                   <span>Book North Mumbai Cab</span>
                   <ArrowRight className="w-4 h-4" />
@@ -459,12 +459,12 @@ export default function MumbaiDarshanRateTable({ onOpenBookModal }) {
                 {fullTour.landmarks.map((spot, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-indigo-300 hover:bg-indigo-50/40 transition group"
+                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-orange-300 hover:bg-orange-50/40 transition group"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
+                    <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-orange-600 flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-orange-500 group-hover:text-white transition">
                       {idx + 1}
                     </div>
-                    <span className="font-semibold text-sm text-slate-800 group-hover:text-indigo-900 transition">
+                    <span className="font-semibold text-sm text-slate-800 group-hover:text-orange-950 transition">
                       {spot}
                     </span>
                   </div>

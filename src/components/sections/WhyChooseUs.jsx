@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Clock, Headphones, Users, Shield, MapPin, Star } from 'lucide-react';
+import ScrollReveal from '@/components/common/ScrollReveal';
 
 const ICON_MAP = {
   Clock,
@@ -81,47 +82,50 @@ export default function WhyChooseUs() {
       <div className="container mx-auto px-4">
         
         {/* Section Header */}
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
-            {heading}
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
-            {subtitle}
-          </p>
-        </div>
+        <ScrollReveal>
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
+              {heading}
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
+              {subtitle}
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feat, idx) => {
             const Icon = feat.icon;
             return (
-              <div
-                key={idx}
-                className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <Icon className="h-6 w-6 text-orange-600" />
-                  </div>
+              <ScrollReveal key={idx} delay={idx * 0.1}>
+                <div
+                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow h-full"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                      <Icon className="h-6 w-6 text-orange-600" />
+                    </div>
 
-                  <div className="flex-1">
-                    <h3 className="mb-2 font-bold text-gray-900 font-[Reddit_Sans] text-lg">
-                      {feat.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-3">
-                      {feat.desc}
-                    </p>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-orange-600 font-bold text-xl" style={{ fontFamily: "Poppins, sans-serif" }}>
-                        {feat.stat}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {feat.statLabel}
-                      </span>
+                    <div className="flex-1">
+                      <h3 className="mb-2 font-bold text-gray-900 font-[Reddit_Sans] text-lg">
+                        {feat.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-3">
+                        {feat.desc}
+                      </p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-orange-600 font-bold text-xl" style={{ fontFamily: "Poppins, sans-serif" }}>
+                          {feat.stat}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {feat.statLabel}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>

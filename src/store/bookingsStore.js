@@ -24,7 +24,7 @@ const useBookingsStore = create((set) => ({
       pickup_address: bookingData.pickup_address || bookingData.pickupAddress || '',
       pickup_time: bookingData.pickup_time || bookingData.pickupTime || '',
       passengers: bookingData.passengers || bookingData.noOfPassengers || '4',
-      type: bookingData.type || 'Inquiry',
+      type: bookingData.type || 'Enquiry',
       special_requirements: bookingData.special_requirements || bookingData.specialRequirements || bookingData.message || '',
     };
     const res = await fetch('/api/bookings',{

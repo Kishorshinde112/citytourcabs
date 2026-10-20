@@ -7,11 +7,11 @@ export const MUMBAI_DARSHAN_RATES = [
     recommended: false,
     isTempo: false,
     rates: {
-      "8h_80km": 2199,
-      "10h_100km": 2599,
-      "12h_120km": 2999
+      "8h_80km": 2300,
+      "10h_100km": 2800,
+      "12h_120km": 3400
     },
-    extraKm: 11,
+    extraKm: 12,
     extraHr: 120
   },
   {
@@ -22,12 +22,12 @@ export const MUMBAI_DARSHAN_RATES = [
     recommended: true,
     isTempo: false,
     rates: {
-      "8h_80km": 2499,
-      "10h_100km": 2899,
-      "12h_120km": 3399
+      "8h_80km": 2500,
+      "10h_100km": 3200,
+      "12h_120km": 3800
     },
-    extraKm: 12,
-    extraHr: 150
+    extraKm: 14,
+    extraHr: 140
   },
   {
     id: "ertiga",
@@ -37,12 +37,12 @@ export const MUMBAI_DARSHAN_RATES = [
     recommended: true,
     isTempo: false,
     rates: {
-      "8h_80km": 3499,
-      "10h_100km": 3999,
-      "12h_120km": 4499
+      "8h_80km": 3200,
+      "10h_100km": 3800,
+      "12h_120km": 4400
     },
-    extraKm: 15,
-    extraHr: 200
+    extraKm: 16,
+    extraHr: 160
   },
   {
     id: "carens",
@@ -52,12 +52,12 @@ export const MUMBAI_DARSHAN_RATES = [
     recommended: false,
     isTempo: false,
     rates: {
-      "8h_80km": 3899,
-      "10h_100km": 4399,
-      "12h_120km": 4899
+      "8h_80km": 3500,
+      "10h_100km": 4200,
+      "12h_120km": 4800
     },
-    extraKm: 17,
-    extraHr: 200
+    extraKm: 18,
+    extraHr: 180
   },
   {
     id: "innova",
@@ -67,24 +67,37 @@ export const MUMBAI_DARSHAN_RATES = [
     recommended: false,
     isTempo: false,
     rates: {
-      "8h_80km": 4499,
-      "10h_100km": 5199,
-      "12h_120km": 5899
+      "8h_80km": 3800,
+      "10h_100km": 4500,
+      "12h_120km": 5200
     },
-    extraKm: 19,
-    extraHr: 250
+    extraKm: 20,
+    extraHr: 200
   },
   {
-    id: "tempo",
-    carType: "Tempo Traveller (13/17)",
-    category: "Group Minibus",
-    seating: "13-17 Seater",
+    id: "tempo13",
+    carType: "13 Seater A/C Traveller",
+    category: "Minibus",
+    seating: "13+1 Seater",
     recommended: false,
     isTempo: true,
     rates: {
-      "12h_100km": 6999
+      "12h_100km": 8500
     },
-    extraKm: 26,
+    extraKm: 25,
+    extraHr: 300
+  },
+  {
+    id: "tempo17",
+    carType: "17 Seater A/C Traveller",
+    category: "Group Bus",
+    seating: "17+1 Seater",
+    recommended: false,
+    isTempo: true,
+    rates: {
+      "12h_100km": 9500
+    },
+    extraKm: 28,
     extraHr: 350
   }
 ];

@@ -42,6 +42,7 @@ const nextConfig = {
       { source: '/ashtavinayak', destination: '/tours/ashtavinayak', permanent: true },
       { source: '/3-jyotirlinga-in-maharashtra', destination: '/tours/3-jyotirlinga-in-maharashtra', permanent: true },
       { source: '/konkan-darshan', destination: '/tours/konkan-darshan', permanent: true },
+      { source: '/inquiry-confirmed', destination: '/enquiry-confirmed', permanent: true },
     ]
   },
 }

@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import InquiryConfirmedClient from '../inquiry-confirmed/InquiryConfirmedClient';
+import EnquiryConfirmedClient from './EnquiryConfirmedClient';
 
 export const metadata: Metadata = {
   title: 'Enquiry Confirmed | City Tour Cabs Mumbai',
@@ -21,7 +21,7 @@ export default function EnquiryConfirmedPage() {
         </div>
       }
     >
-      <InquiryConfirmedClient />
+      <EnquiryConfirmedClient />
     </Suspense>
   );
 }

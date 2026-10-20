@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
   Phone,
@@ -17,9 +17,11 @@ import {
 import useSettingsStore from '@/store/settingsStore';
 
 export default function BookingConfirmedClient() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { phone } = useSettingsStore();
-  const [booking, setBooking] = useState<any>({});
+  const [booking, setBooking] = useState<any>(null);
+  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
   const bookingIdRef = useRef<string>('');
 
@@ -35,10 +37,19 @@ export default function BookingConfirmedClient() {
     }
 
     const isEnq =
+      (searchParams.get('type') || saved.type || '').toLowerCase() === 'enquiry' ||
       (searchParams.get('type') || saved.type || '').toLowerCase() === 'inquiry';
-    const fallbackId =
+    const fallbackId = (
       searchParams.get('id') ||
-      saved.id || '';
+      saved.id || ''
+    ).trim();
+
+    // Route Guard: If no valid booking reference exists, redirect to home page immediately
+    if (!fallbackId) {
+      setIsRedirecting(true);
+      router.replace('/');
+      return;
+    }
 
     bookingIdRef.current = fallbackId;
 
@@ -56,19 +67,30 @@ export default function BookingConfirmedClient() {
         'Cab Service',
       travelDate: searchParams.get('date') || saved.travelDate || '',
       carType: searchParams.get('car') || saved.carType || 'Sedan (Dzire / Etios)',
-      type: isEnq ? 'Inquiry' : 'Booking',
+      type: isEnq ? 'Enquiry' : 'Booking',
     });
-  }, [searchParams]);
+  }, [searchParams, router]);
+
+  // While checking authorization or redirecting, show spinner and block content
+  if (isRedirecting || !booking) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
+      </div>
+    );
+  }
 
   const isEnquiry =
+    (booking.type || '').toLowerCase() === 'enquiry' ||
     (booking.type || '').toLowerCase() === 'inquiry' ||
+    searchParams.get('type')?.toLowerCase() === 'enquiry' ||
     searchParams.get('type')?.toLowerCase() === 'inquiry';
 
   const bookingId =
-    bookingIdRef.current || '';
+    bookingIdRef.current || booking.id || '';
 
   const whatsappMessage = isEnquiry
-    ? `Hi City Tour Cabs, I just submitted an inquiry (Ref: ${bookingId}). Please share fare quotation and details for ${encodeURIComponent(
+    ? `Hi City Tour Cabs, I just submitted an enquiry (Ref: ${bookingId}). Please share fare quotation and details for ${encodeURIComponent(
         booking.tourName || 'my tour'
       )}.`
     : `Hi City Tour Cabs, I just submitted a booking (Ref: ${bookingId}). Please confirm my cab for ${encodeURIComponent(
@@ -89,14 +111,14 @@ export default function BookingConfirmedClient() {
             <CheckCircle2 className="w-12 h-12 text-black" />
           </div>
           <div className="flex items-center gap-2 text-yellow-400 text-xs font-bold uppercase tracking-widest mb-2">
-            <Sparkles className="w-4 h-4" /> {isEnquiry ? 'Inquiry Confirmed' : 'Booking Confirmed'}
+            <Sparkles className="w-4 h-4" /> {isEnquiry ? 'Enquiry Confirmed' : 'Booking Confirmed'}
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">
             Thank You, {booking.name || 'Valued Customer'}! 🎉
           </h1>
           <p className="text-zinc-400 text-sm max-w-sm">
             {isEnquiry
-              ? 'Your inquiry request has been received. Our team will call you in '
+              ? 'Your enquiry request has been received. Our team will call you in '
               : 'Your booking request has been received. Our team will call you in '}
             <span className="text-yellow-400 font-bold">a couple of minutes</span> to confirm your{' '}
             {isEnquiry ? 'tour and cab details' : 'driver and cab details'}.
@@ -107,7 +129,7 @@ export default function BookingConfirmedClient() {
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl mb-6 space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-              {isEnquiry ? 'Inquiry Reference' : 'Booking Reference'}
+              {isEnquiry ? 'Enquiry Reference' : 'Booking Reference'}
             </span>
             <span className="text-yellow-400 font-black text-base">{bookingId}</span>
           </div>

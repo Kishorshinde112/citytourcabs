@@ -42,6 +42,8 @@ export default function TourModal({ tour, onClose, onBookClick }) {
             src={tour.banner}
             alt={tour.title}
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
           

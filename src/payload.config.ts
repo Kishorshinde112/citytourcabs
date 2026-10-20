@@ -29,6 +29,14 @@ const dbUri = (() => {
     if (!path.isAbsolute(rawPath)) {
       return `file:${path.resolve(process.cwd(), rawPath)}`
     }
+    return rawDbUri
+  }
+  // If Supabase direct domain is specified, automatically route to the IPv4 pooler
+  // to avoid IPv6 ENETUNREACH issues on environments without IPv6 transit
+  if (rawDbUri.includes('db.ttvmkvvnpwgtwtwlzjig.supabase.co')) {
+    return rawDbUri
+      .replace('://postgres:', '://postgres.ttvmkvvnpwgtwtwlzjig:')
+      .replace('db.ttvmkvvnpwgtwtwlzjig.supabase.co', 'aws-0-ap-south-1.pooler.supabase.com')
   }
   return rawDbUri
 })()

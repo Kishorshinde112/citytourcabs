@@ -2,29 +2,31 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
   Phone,
   MessageCircle,
   Home,
   CalendarCheck,
-  Car,
   MapPin,
   User,
   Sparkles,
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
 
-export default function InquiryConfirmedClient() {
+export default function EnquiryConfirmedClient() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { phone } = useSettingsStore();
-  const [inquiry, setInquiry] = useState<any>({});
+  const [enquiry, setEnquiry] = useState<any>(null);
+  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const inquiryIdRef = useRef<string>('');
+  const enquiryIdRef = useRef<string>('');
 
   useEffect(() => {
     let saved: any = {};
+
     try {
       const stored = sessionStorage.getItem('last_booking');
       if (stored) {
@@ -34,123 +36,161 @@ export default function InquiryConfirmedClient() {
       // ignore
     }
 
-    const fallbackId =
+    const fallbackId = (
       searchParams.get('id') ||
-      saved.id || '';
+      saved.id ||
+      ''
+    ).trim();
 
-    inquiryIdRef.current = fallbackId;
+    // Route Guard: If no valid enquiry reference exists, redirect to home page immediately
+    if (!fallbackId) {
+      setIsRedirecting(true);
+      router.replace('/');
+      return;
+    }
 
-    setInquiry({
+    enquiryIdRef.current = fallbackId;
+
+    setEnquiry({
       id: fallbackId,
-      name: searchParams.get('name') || saved.name || '',
-      contact: searchParams.get('contact') || saved.contact || saved.phone || '',
-      pickupLocation:
-        searchParams.get('pickup') || saved.pickupLocation || saved.pickupCity || '',
+      name:
+        searchParams.get('name') ||
+        saved.name ||
+        '',
+      contact:
+        searchParams.get('contact') ||
+        saved.contact ||
+        saved.phone ||
+        '',
       tourName:
         searchParams.get('tour') ||
         saved.tourName ||
         saved.dropCity ||
         saved.tripType ||
-        'Tour Inquiry',
-      travelDate: searchParams.get('date') || saved.travelDate || '',
-      carType: searchParams.get('car') || saved.carType || 'Tour Vehicle',
+        'Tour Enquiry',
+      travelDate:
+        searchParams.get('date') ||
+        saved.travelDate ||
+        '',
     });
-  }, [searchParams]);
+  }, [searchParams, router]);
 
-  const inquiryId =
-    inquiryIdRef.current || '';
+  // While checking authorization or redirecting, show spinner and block content
+  if (isRedirecting || !enquiry) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
+      </div>
+    );
+  }
 
-  const whatsappMessage = `Hi City Tour Cabs, I just submitted an inquiry (Ref: ${inquiryId}). Please share tour details and fare quotation for ${encodeURIComponent(
-    inquiry.tourName || 'my tour'
-  )}.`;
+  const enquiryId = enquiryIdRef.current || enquiry.id || '';
+
+  const whatsappMessage =
+    `Hi City Tour Cabs, I just submitted an enquiry (Ref: ${enquiryId}). Please share tour details and fare quotation for ${encodeURIComponent(
+      enquiry.tourName || 'my tour'
+    )}.`;
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden text-slate-100">
+
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-yellow-400/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-lg">
+
         {/* Success Icon */}
         <div className="flex flex-col items-center text-center mb-8">
           <div className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center shadow-2xl shadow-yellow-400/30 mb-5">
             <CheckCircle2 className="w-12 h-12 text-black" />
           </div>
+
           <div className="flex items-center gap-2 text-yellow-400 text-xs font-bold uppercase tracking-widest mb-2">
-            <Sparkles className="w-4 h-4" /> Inquiry Confirmed
+            <Sparkles className="w-4 h-4" />
+            Enquiry Confirmed
           </div>
+
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">
-            Thank You, {inquiry.name || 'Valued Customer'}! 🎉
+            Thank You, {enquiry.name || 'Valued Customer'}! 🎉
           </h1>
+
           <p className="text-zinc-400 text-sm max-w-sm">
-            Your inquiry request has been received. Our team will call you in{' '}
-            <span className="text-yellow-400 font-bold">a couple of minutes</span> to confirm your
-            tour and cab details.
+            Your enquiry request has been received. Our team will call you in{' '}
+            <span className="text-yellow-400 font-bold">
+              a couple of minutes
+            </span>{' '}
+            to confirm your tour and cab details.
           </p>
         </div>
 
-        {/* Inquiry Summary Card */}
+        {/* Enquiry Summary Card */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl mb-6 space-y-4">
+
           <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-              Inquiry Reference
+              Enquiry Reference
             </span>
-            <span className="text-yellow-400 font-black text-base">{inquiryId}</span>
+            <span className="text-yellow-400 font-black text-base">{enquiryId}</span>
           </div>
 
           <div className="space-y-3">
-            {inquiry.name && (
+
+            {/* Customer Name */}
+            {enquiry.name && (
               <div className="flex items-center gap-3 text-sm">
                 <User className="w-4 h-4 text-yellow-400 shrink-0" />
                 <span className="text-zinc-400">Name:</span>
-                <span className="text-white font-semibold ml-auto">{inquiry.name}</span>
+                <span className="text-white font-semibold ml-auto">
+                  {enquiry.name}
+                </span>
               </div>
             )}
-            {inquiry.contact && (
+
+            {/* Phone Number */}
+            {enquiry.contact && (
               <div className="flex items-center gap-3 text-sm">
                 <Phone className="w-4 h-4 text-yellow-400 shrink-0" />
                 <span className="text-zinc-400">Phone:</span>
-                <span className="text-white font-semibold ml-auto">+91 {inquiry.contact}</span>
-              </div>
-            )}
-            {inquiry.pickupLocation && (
-              <div className="flex items-center gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-yellow-400 shrink-0" />
-                <span className="text-zinc-400">Pickup:</span>
-                <span className="text-white font-semibold ml-auto text-right max-w-[55%]">
-                  {inquiry.pickupLocation}
+                <span className="text-white font-semibold ml-auto">
+                  +91 {enquiry.contact}
                 </span>
               </div>
             )}
-            {inquiry.tourName && (
+
+            {/* Tour / Destination */}
+            {enquiry.tourName && (
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="w-4 h-4 text-green-400 shrink-0" />
-                <span className="text-zinc-400 shrink-0">Tour / Destination:</span>
+                <span className="text-zinc-400 shrink-0">
+                  Tour / Destination:
+                </span>
                 <span className="text-white font-semibold ml-auto text-right">
-                  {inquiry.tourName}
+                  {enquiry.tourName}
                 </span>
               </div>
             )}
-            {inquiry.travelDate && (
+
+            {/* Travel Date */}
+            {enquiry.travelDate && (
               <div className="flex items-center gap-3 text-sm">
                 <CalendarCheck className="w-4 h-4 text-yellow-400 shrink-0" />
-                <span className="text-zinc-400">Travel Date:</span>
-                <span className="text-white font-semibold ml-auto">{inquiry.travelDate}</span>
+                <span className="text-zinc-400">
+                  Travel Date:
+                </span>
+                <span className="text-white font-semibold ml-auto">
+                  {enquiry.travelDate}
+                </span>
               </div>
             )}
-            {inquiry.carType && (
-              <div className="flex items-center gap-3 text-sm">
-                <Car className="w-4 h-4 text-yellow-400 shrink-0" />
-                <span className="text-zinc-400">Vehicle:</span>
-                <span className="text-white font-semibold ml-auto">{inquiry.carType}</span>
-              </div>
-            )}
+
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3 mb-4">
+
           <a
             href={`tel:+91${phone}`}
             className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-black text-sm transition shadow-lg shadow-yellow-400/20"
@@ -158,6 +198,7 @@ export default function InquiryConfirmedClient() {
             <Phone className="w-4 h-4" />
             Call Us Now
           </a>
+
           <a
             href={`https://wa.me/91${phone}?text=${encodeURIComponent(whatsappMessage)}`}
             target="_blank"
@@ -177,6 +218,7 @@ export default function InquiryConfirmedClient() {
           <Home className="w-4 h-4" />
           Back to Home
         </Link>
+
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import ScrollReveal from '@/components/common/ScrollReveal';
 
 const DEFAULT_IMAGES = [
   {
@@ -43,11 +44,15 @@ export default function GallerySection() {
   const [desktopIndex, setDesktopIndex] = useState(0);
   const [mobileIndex, setMobileIndex] = useState(0);
 
+  const sectionRef = React.useRef(null);
+
   useEffect(() => {
+    let active = true;
+
     async function loadGallery() {
       try {
         const res = await fetch('/api/gallery');
-        if (res.ok) {
+        if (res.ok && active) {
           const data = await res.json();
           const docs = Array.isArray(data.docs) ? data.docs : (Array.isArray(data.gallery) ? data.gallery : []);
           if (docs.length > 0) {
@@ -66,7 +71,25 @@ export default function GallerySection() {
         // Fallback
       }
     }
-    loadGallery();
+
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window && sectionRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) {
+            observer.disconnect();
+            loadGallery();
+          }
+        },
+        { rootMargin: '300px' }
+      );
+      observer.observe(sectionRef.current);
+      return () => {
+        active = false;
+        observer.disconnect();
+      };
+    } else {
+      loadGallery();
+    }
   }, []);
 
   const maxDesktopIndex = Math.max(0, images.length - 4);
@@ -79,21 +102,24 @@ export default function GallerySection() {
   const nextMobile = () => setMobileIndex((prev) => (prev < maxMobileIndex ? prev + 1 : maxMobileIndex));
 
   return (
-    <section className="py-16 md:py-24 bg-white text-gray-900">
+    <section ref={sectionRef} className="py-16 md:py-24 bg-white text-gray-900 lazy-render-scroll">
       <div className="container mx-auto px-4">
         
         {/* Section Header */}
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 text-[30px] font-[Reddit_Sans] font-bold text-gray-900">
-            Memories from Our Tours
-          </h2>
-          <p className="max-w-2xl mx-auto text-base sm:text-lg" style={{ color: "#4b5563" }}>
-            Explore the beautiful moments captured during our tours and sightseeing trips.
-          </p>
-        </div>
+        <ScrollReveal>
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-[30px] font-[Reddit_Sans] font-bold text-gray-900">
+              Memories from Our Tours
+            </h2>
+            <p className="max-w-2xl mx-auto text-base sm:text-lg" style={{ color: "#4b5563" }}>
+              Explore the beautiful moments captured during our tours and sightseeing trips.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        {/* Desktop Carousel (>= md) */}
-        <div className="hidden md:block relative">
+        <ScrollReveal delay={0.1}>
+          {/* Desktop Carousel (>= md) */}
+          <div className="hidden md:block relative">
           <button
             onClick={prevDesktop}
             disabled={desktopIndex === 0}
@@ -125,6 +151,7 @@ export default function GallerySection() {
                       alt={img.alt}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                       loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 </div>
@@ -180,6 +207,7 @@ export default function GallerySection() {
                       alt={img.alt}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 </div>
@@ -201,6 +229,7 @@ export default function GallerySection() {
             ))}
           </div>
         </div>
+      </ScrollReveal>
 
       </div>
     </section>

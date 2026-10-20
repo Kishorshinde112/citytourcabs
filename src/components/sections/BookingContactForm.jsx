@@ -172,13 +172,13 @@ export default function BookingContactForm() {
           travelDate: formData.travelDate || new Date().toISOString().slice(0, 10),
           carType: 'Tour Vehicle',
           pickupLocation: 'Customer Doorstep',
-          type: 'Inquiry',
+          type: 'Enquiry',
         })
       );
     } catch {}
 
-    // Redirect to dedicated inquiry confirmed page
-    router.push(`/inquiry-confirmed?id=${inquiryId}`);
+    // Redirect to dedicated enquiry confirmed page
+    router.push(`/enquiry-confirmed?id=${inquiryId}`);
   };
 
   const currentPackages = formData.destination
