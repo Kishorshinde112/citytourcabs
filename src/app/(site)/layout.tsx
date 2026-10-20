@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import '@/app/globals.css';
 
 export const viewport: Viewport = {
@@ -109,6 +110,25 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-white text-gray-900 font-sans antialiased selection:bg-[#1A96EB] selection:text-white">
+        {/* Google Tag (gtag.js) for GA4 (G-E6E794WM68) & Google Ads (AW-18526387794) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-E6E794WM68"
+          strategy="afterInteractive"
+        />
+        <Script id="google-tags-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-E6E794WM68', {
+              page_path: window.location.pathname,
+            });
+            gtag('config', 'AW-18526387794', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
         {children}
       </body>
     </html>

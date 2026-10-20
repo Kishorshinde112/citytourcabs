@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
+import { trackLeadEnquiry } from '@/lib/analytics';
 
 export default function EnquiryConfirmedClient() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function EnquiryConfirmedClient() {
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
   const enquiryIdRef = useRef<string>('');
+  const hasTrackedRef = useRef<boolean>(false);
 
   useEffect(() => {
     let saved: any = {};
@@ -51,6 +53,13 @@ export default function EnquiryConfirmedClient() {
 
     enquiryIdRef.current = fallbackId;
 
+    const resolvedTour =
+      searchParams.get('tour') ||
+      saved.tourName ||
+      saved.dropCity ||
+      saved.tripType ||
+      'Tour Enquiry';
+
     setEnquiry({
       id: fallbackId,
       name:
@@ -62,17 +71,18 @@ export default function EnquiryConfirmedClient() {
         saved.contact ||
         saved.phone ||
         '',
-      tourName:
-        searchParams.get('tour') ||
-        saved.tourName ||
-        saved.dropCity ||
-        saved.tripType ||
-        'Tour Enquiry',
+      tourName: resolvedTour,
       travelDate:
         searchParams.get('date') ||
         saved.travelDate ||
         '',
     });
+
+    // Unified GA4 & Google Ads Lead Conversion tracking (with deduplication latches)
+    if (!hasTrackedRef.current) {
+      hasTrackedRef.current = true;
+      trackLeadEnquiry(fallbackId, resolvedTour);
+    }
   }, [searchParams, router]);
 
   // While checking authorization or redirecting, show spinner and block content
