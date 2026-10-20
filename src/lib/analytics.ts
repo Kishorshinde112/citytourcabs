@@ -4,8 +4,9 @@
 export const GA4_MEASUREMENT_ID = 'G-E6E794WM68';
 export const GADS_TAG_ID = 'AW-18526387794';
 
-// Optional custom conversion label from environment variable if defined in Google Ads
-export const GADS_CONVERSION_LABEL = process.env.NEXT_PUBLIC_GADS_CONVERSION_LABEL || '';
+// Optional custom conversion label from environment variable or Google Ads default
+export const GADS_CONVERSION_LABEL =
+  process.env.NEXT_PUBLIC_GADS_CONVERSION_LABEL || 'GQMOCJ-eoaMdENL8ilJF';
 
 declare global {
   interface Window {
@@ -45,7 +46,7 @@ export function trackLeadEnquiry(enquiryId: string, tourName?: string) {
     if (typeof window.gtag === 'function') {
       window.gtag(...args);
     } else {
-      window.dataLayer.push(arguments);
+      window.dataLayer.push(args);
     }
   };
 
