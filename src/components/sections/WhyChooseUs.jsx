@@ -13,7 +13,7 @@ const ICON_MAP = {
   Star,
 };
 
-export default function WhyChooseUs() {
+export default function WhyChooseUs({ block = null }) {
   const defaultFeatures = [
     {
       icon: Clock,
@@ -61,21 +61,31 @@ export default function WhyChooseUs() {
 
   const features = defaultFeatures;
 
-  const [heading, setHeading] = useState('Why Choose CityTourCabs?');
-  const [subtitle, setSubtitle] = useState('Experience the difference with our commitment to excellence, reliability, and customer satisfaction.');
+  const [heading, setHeading] = useState(block?.title || 'Why Choose CityTourCabs?');
+  const [subtitle, setSubtitle] = useState(
+    block?.subtitle || 'Experience the difference with our commitment to excellence, reliability, and customer satisfaction.'
+  );
 
   useEffect(() => {
+    if (block) {
+      setHeading(block.title || 'Why Choose CityTourCabs?');
+      setSubtitle(
+        block.subtitle || 'Experience the difference with our commitment to excellence, reliability, and customer satisfaction.'
+      );
+      return;
+    }
+
     let mounted = true;
     const params = new URLSearchParams({ 'where[slug][equals]': 'home', limit:'1', depth:'1' });
     fetch(`/api/pages?${params}`).then((res) => res.ok ? res.json() : null).then((data) => {
-      const block = data?.docs?.[0]?.layout?.find((x) => x.blockType === 'whyChooseUs');
-      if (mounted && block) {
-        if (block.title) setHeading(block.title);
-        if (block.subtitle) setSubtitle(block.subtitle);
+      const cmsBlock = data?.docs?.[0]?.layout?.find((x) => x.blockType === 'whyChooseUs');
+      if (mounted && cmsBlock) {
+        if (cmsBlock.title) setHeading(cmsBlock.title);
+        if (cmsBlock.subtitle) setSubtitle(cmsBlock.subtitle);
       }
     }).catch(() => {});
     return () => { mounted = false; };
-  }, []);
+  }, [block]);
 
   return (
     <section id="about" className="py-16 md:py-24 bg-gradient-to-br from-orange-100 to-orange-50 text-gray-900">

@@ -10,23 +10,15 @@ export async function GET() {
   if (!webhookUrl) {
     try {
       const payload = await getPayload({ config })
-      const settings = await payload.findGlobal({ slug: 'site-settings' })
+      const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true })
       if (settings?.chatbotWebhookUrl) {
         webhookUrl = settings.chatbotWebhookUrl
       }
     } catch (_) {}
   }
 
-  let host = null
-  if (webhookUrl) {
-    try {
-      host = new URL(webhookUrl).host
-    } catch (_) {}
-  }
-
   return NextResponse.json({
-    enabled: true,
+    enabled: Boolean(webhookUrl),
     webhookConfigured: Boolean(webhookUrl),
-    webhookHost: host,
   })
 }

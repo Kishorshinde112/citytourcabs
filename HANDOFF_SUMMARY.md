@@ -12,15 +12,15 @@
 
 ---
 
-## 1. Quick Project Status & Credentials
+## 1. Quick Project Status & Access
+
+> **Security notice (Phase 2A):** No credentials are stored in this repository. Credentials that appeared in earlier commits or local files remain compromised after this edit and must be rotated: CMS admin passwords, `PAYLOAD_SECRET`, the Supabase database password, Cloudinary keys, and n8n tokens. Git history was **not** rewritten in this phase; coordinate any history purge separately.
 
 - **Live Production Domain**: `https://citytourcabs.in`
 - **GitHub Repository**: [github.com/Kishorshinde112/citytourcabs](https://github.com/Kishorshinde112/citytourcabs) (`origin/main`)
 - **Local Dev Server**: `http://localhost:3000` (run `npm run dev -- -p 3000`)
 - **Admin CMS Dashboard**: `http://localhost:3000/admin`
-  - **Admin Accounts**:
-    - `admin@citytourcabs.in` | Password: `CityTourCabs@2026!`
-    - `citytourcabs8@gmail.com` | Password: `CityTourCabs@2026!`
+  - **Admin Accounts**: credentials are supplied through deployment environment variables or the secret manager and are intentionally not committed. Use the admin password-reset flow, or the `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` environment variables when seeding a fresh database.
 - **Active Database**: **Supabase PostgreSQL** via IPv4 Pooler
   - Connection: `aws-0-ap-south-1.pooler.supabase.com:5432/postgres` (managed securely via `DATABASE_URI` in `.env`).
   - Switched from the historical SQLite archive (`data/citytourcabs.db`) to clean live PostgreSQL.
@@ -62,8 +62,8 @@
     - **Google Analytics 4 Measurement ID**: `G-E6E794WM68`
     - **Google Ads Tag ID**: `AW-18526387794`
 - **Official Conversion Label (`src/lib/analytics.ts`)**:
-  - Configured the required Google Ads conversion label: `GQMOCJ-eoaMdENL8ilJF`.
-  - `send_to` dispatches to: `'AW-18526387794/GQMOCJ-eoaMdENL8ilJF'`.
+  - Configured the required Google Ads conversion label: `GQMOCJ-eoaMdENL8iIJF`.
+  - `send_to` dispatches to: `'AW-18526387794/GQMOCJ-eoaMdENL8iIJF'`.
   - Dispatches GA4 recommended `'generate_lead'` event with `transaction_id`, currency (`INR`), and tour details.
 - **5-Layer Duplicate Protection**:
   1. **Route Guard**: Direct visits without reference IDs bounce to `/` before any tracking runs.
@@ -98,4 +98,4 @@ Before pushing new changes, always verify:
 1. `npm run typecheck` &rarr; Must exit with 0 errors (`tsc --noEmit`).
 2. `npm test` &rarr; All 9 security and booking validation tests must pass.
 3. `npm run build` &rarr; Next.js standalone production build must compile and optimize cleanly.
-4. Git Secrets check &rarr; Ensure `.env` is never staged or pushed.
+4. Git Secrets check &rarr; Ensure `.env`, `.env.local`, and deployment secrets are never staged or pushed. Run a secret scanner before release. Historical credentials require rotation; do not rewrite history without team coordination.

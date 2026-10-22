@@ -3,6 +3,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Public values only. Runtime secrets stay in `environment` below.
+      args:
+        NEXT_PUBLIC_SITE_URL: https://citytourcabs.in
+        NEXT_PUBLIC_SERVER_URL: https://citytourcabs.in
+        NEXT_PUBLIC_SITE_NAME: "City Tour Cabs"
+        NEXT_PUBLIC_GADS_CONVERSION_LABEL: ${NEXT_PUBLIC_GADS_CONVERSION_LABEL:-GQMOCJ-eoaMdENL8iIJF}
     image: citytourcabs:latest
     container_name: citytourcabs
     restart: unless-stopped
@@ -13,12 +19,19 @@ services:
       - NEXT_PUBLIC_SITE_URL=https://citytourcabs.in
       - NEXT_PUBLIC_SITE_NAME=City Tour Cabs
       - NEXT_PUBLIC_SERVER_URL=https://citytourcabs.in
-      - PAYLOAD_SECRET=f9a84e27c191a27e0c4b7d1e892f3a4b6c8d0e1f2a3b4c5d6e7f8a9b0c1d2e3f
-      - DATABASE_URI=file:/app/data/citytourcabs.db
-      - N8N_INTERNAL_URL=http://n8n:5678/webhook/booking-notification
-      - N8N_CHAT_WEBHOOK_URL=http://n8n:5678/webhook/citytourcabs-chat
+      # Required: PostgreSQL connection string (Supabase pooler in production).
+      - DATABASE_URI=${DATABASE_URI:?Set DATABASE_URI to the PostgreSQL connection string}
+      # Optional PEM CA bundle; setting it enables Postgres TLS verification.
+      - DB_SSL_CA=${DB_SSL_CA:-}
+      # Required: generate with `openssl rand -hex 32`. Never commit the value.
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET:?Set PAYLOAD_SECRET in the deployment environment}
+      # Keep schema pushes disabled in production; use reviewed migrations instead.
+      - DB_PUSH=${DB_PUSH:-false}
+      - N8N_INTERNAL_URL=${N8N_INTERNAL_URL:-http://n8n:5678/webhook/booking-notification}
+      - N8N_WEBHOOK_TOKEN=${N8N_WEBHOOK_TOKEN:-}
+      - N8N_CHAT_WEBHOOK_URL=${N8N_CHAT_WEBHOOK_URL:-}
+      - NEXT_PUBLIC_GADS_CONVERSION_LABEL=${NEXT_PUBLIC_GADS_CONVERSION_LABEL:-GQMOCJ-eoaMdENL8iIJF}
     volumes:
-      - ./data:/app/data
       - media_storage:/app/public/media
     networks:
       - dokploy-network

@@ -46,7 +46,11 @@ function FleetPlaceholder({ index }) {
   );
 }
 
-export default function FleetSection({ onOpenBookModal }) {
+export default function FleetSection({
+  onOpenBookModal,
+  title = 'Our Cabs Gallery',
+  subtitle = 'Take a look at our well-maintained fleet of comfortable and reliable vehicles.',
+}) {
   // No temporary local cards: only the final CMS cards are ever displayed.
   // Local data is used only if the CMS request fails or returns no vehicles.
   const [fleetList, setFleetList] = useState(null);
@@ -186,15 +190,16 @@ export default function FleetSection({ onOpenBookModal }) {
       className="py-16 md:py-24 bg-gray-900 text-white lazy-render-scroll"
       aria-busy={!isReady}
     >
+      <span id="fleet" className="block scroll-mt-24" aria-hidden="true" />
       <div className="container mx-auto px-4">
         {/* Keep the original scroll reveal on the section heading. */}
         <ScrollReveal>
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl md:text-4xl font-bold text-white font-[Reddit_Sans]">
-              Our Cabs Gallery
+              {title || 'Our Cabs Gallery'}
             </h2>
             <p className="text-gray-300 max-w-2xl mx-auto text-base sm:text-lg">
-              Take a look at our well-maintained fleet of comfortable and reliable vehicles.
+              {subtitle}
             </p>
           </div>
         </ScrollReveal>

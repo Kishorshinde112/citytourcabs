@@ -7,6 +7,20 @@ import { FAQ_DATA } from '../src/data/faqData'
 import { GALLERY_DATA } from '../src/data/routesData'
 
 async function seed() {
+  const databaseUri = process.env.DATABASE_URI || ''
+  const targetsRemotePostgres = /^postgres(ql)?:\/\//i.test(databaseUri)
+  const requiresConfirmation =
+    process.env.NODE_ENV === 'production' || targetsRemotePostgres
+
+  // Guardrail: seeding is destructive to existing CMS content and must never
+  // run against production or a remote database by accident.
+  if (requiresConfirmation && process.env.CONFIRM_SEED !== 'YES') {
+    throw new Error(
+      'Refusing to seed a production or remote database. ' +
+        'Set CONFIRM_SEED=YES only after verifying DATABASE_URI points to the intended target.',
+    )
+  }
+
   console.log('🌱 Starting comprehensive Payload CMS database seed...')
   const payload = await getPayload({ config })
 
@@ -17,13 +31,28 @@ async function seed() {
   })
 
   if (existingUsers.totalDocs === 0) {
-    console.log('Creating default admin user: citytourcabs8@gmail.com...')
+    const email = (process.env.SEED_ADMIN_EMAIL || '').trim()
+    const password = process.env.SEED_ADMIN_PASSWORD
+
+    if (!email || !email.includes('@')) {
+      throw new Error(
+        'Refusing to create the initial admin: set SEED_ADMIN_EMAIL to a valid admin email address.',
+      )
+    }
+
+    if (!password || password.length < 12) {
+      throw new Error(
+        'Refusing to create the initial admin: set SEED_ADMIN_PASSWORD to at least 12 characters.',
+      )
+    }
+
+    console.log('Creating initial admin user from SEED_ADMIN_EMAIL...')
     await payload.create({
       collection: 'users',
       data: {
         name: 'Administrator',
-        email: 'citytourcabs8@gmail.com',
-        password: 'CityTourCabs@2026!',
+        email,
+        password,
         role: 'admin',
       },
     })

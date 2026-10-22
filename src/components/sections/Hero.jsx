@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import useSettingsStore from '@/store/settingsStore';
+import { telHref } from '@/lib/phone';
 
 const DEFAULT_SLIDES = [
   {
@@ -30,12 +31,28 @@ const DEFAULT_SLIDES = [
   }
 ];
 
-export default function Hero() {
-  const [slides, setSlides] = useState(DEFAULT_SLIDES);
+function slideFromBlock(block) {
+  const background = typeof block?.image === 'object' ? block.image?.url : block?.image;
+  return {
+    ...DEFAULT_SLIDES[0],
+    title: block?.title || DEFAULT_SLIDES[0].title,
+    subtitle: block?.subtitle || DEFAULT_SLIDES[0].subtitle,
+    image: background || DEFAULT_SLIDES[0].image,
+  };
+}
+
+export default function Hero({ block = null }) {
+  const [slides, setSlides] = useState(() => (block?.title ? [slideFromBlock(block)] : DEFAULT_SLIDES));
   const [currentSlide, setCurrentSlide] = useState(0);
   const { phone } = useSettingsStore();
 
   useEffect(() => {
+    if (block?.title) {
+      setSlides([slideFromBlock(block)]);
+      setCurrentSlide(0);
+      return;
+    }
+
     async function loadCmsSlides() {
       try {
         const params = new URLSearchParams({ 'where[slug][equals]': 'home', limit: '1', depth: '2' });
@@ -43,7 +60,7 @@ export default function Hero() {
         if (!res.ok) return;
         const data = await res.json();
         const page = data.docs?.[0];
-        const hero = page?.layout?.find((block) => block.blockType === 'hero');
+        const hero = page?.layout?.find((item) => item.blockType === 'hero');
         if (hero?.title) {
           const background = typeof hero.image === 'object' ? hero.image?.url : null;
           setSlides([{...DEFAULT_SLIDES[0], title:hero.title,
@@ -57,7 +74,7 @@ export default function Hero() {
       }
     }
     loadCmsSlides();
-  }, []);
+  }, [block]);
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -71,9 +88,12 @@ export default function Hero() {
     <section id="home" className="relative h-[600px] md:h-[700px] flex items-center overflow-hidden">
       {slides.map((slide, idx) => {
         const isActive = idx === currentSlide;
+        // Only the visible slide may emit the page's single <h1>.
+        const SlideHeading = isActive ? 'h1' : 'div';
         return (
           <div
             key={idx}
+            aria-hidden={!isActive}
             className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
           >
             <div className="absolute inset-0">
@@ -96,12 +116,12 @@ export default function Hero() {
                 >
                   {slide.subtitle}
                 </p>
-                <h1
+                <SlideHeading
                   className="mb-4 text-4xl md:text-5xl font-bold leading-tight"
                   style={{ color: "white", fontFamily: "'Reddit Sans', sans-serif" }}
                 >
                   {slide.title}
-                </h1>
+                </SlideHeading>
                 <p className="text-lg md:text-xl mb-8 text-gray-200 max-w-2xl leading-relaxed">
                   {slide.description}
                 </p>
@@ -112,7 +132,7 @@ export default function Hero() {
                       {slide.buttonText || "Explore Tours"}
                     </button>
                   </a>
-                  <a href={`tel:${phone?.replace(/\s+/g, '')}`}>
+                  <a href={telHref(phone)}>
                     <button className="inline-flex items-center justify-center text-base font-medium h-12 rounded-md px-7 bg-white/10 border border-white text-white hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-colors w-full sm:w-auto cursor-pointer">
                       Call Now
                     </button>

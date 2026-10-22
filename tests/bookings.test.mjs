@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const BASE_URL = process.env.TEST_BASE_URL || 'https://citytourcabs.in';
+const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
 
 test('Security: GET /api/bookings is protected against unauthorized access', async () => {
   const res = await fetch(`${BASE_URL}/api/bookings`);

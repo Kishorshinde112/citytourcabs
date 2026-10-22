@@ -11,7 +11,7 @@ interface Lead {
   route?: string
   date?: string
   status?: string
-  leadType?: string
+  type?: string
   createdAt?: string
 }
 
@@ -26,28 +26,27 @@ export const DashboardView: React.FC = () => {
   useEffect(() => {
     async function fetchLeads() {
       try {
-        const res = await fetch('/api/bookings?limit=100&sort=-createdAt')
-        if (res.ok) {
-          const data = await res.json()
-          const docs: Lead[] = data.docs || []
+        const responses = await Promise.all([
+          fetch('/api/bookings?limit=10&sort=-createdAt'),
+          fetch('/api/bookings?limit=1&status=Pending'),
+          fetch('/api/bookings?limit=1&status=Confirmed'),
+          fetch('/api/bookings?limit=1&status=Completed'),
+        ])
+
+        const payloads = await Promise.all(
+          responses.map((res) => (res.ok ? res.json() : null)),
+        )
+
+        const recent = payloads[0]
+        if (recent) {
+          const docs: Lead[] = Array.isArray(recent.docs) ? recent.docs : []
           setLeads(docs.slice(0, 10))
-          setTotalLeads(data.totalDocs || docs.length)
-
-          let pending = 0
-          let confirmed = 0
-          let completed = 0
-
-          docs.forEach((d) => {
-            const st = (d.status || 'pending').toLowerCase()
-            if (st === 'pending') pending++
-            else if (st === 'confirmed') confirmed++
-            else if (st === 'completed') completed++
-          })
-
-          setPendingCount(pending)
-          setConfirmedCount(confirmed)
-          setCompletedCount(completed)
+          setTotalLeads(recent.totalDocs ?? docs.length)
         }
+
+        setPendingCount(payloads[1]?.totalDocs ?? 0)
+        setConfirmedCount(payloads[2]?.totalDocs ?? 0)
+        setCompletedCount(payloads[3]?.totalDocs ?? 0)
       } catch (err) {
         console.error('Failed to fetch dashboard leads:', err)
       } finally {
@@ -339,12 +338,12 @@ export const DashboardView: React.FC = () => {
                       <td>
                         <span
                           className={
-                            lead.leadType === 'quick_enquiry'
-                              ? 'lead-type-badge lead-type-badge--quick_enquiry'
-                              : 'lead-type-badge lead-type-badge--booking'
+                            String(lead.type || '').toLowerCase() === 'booking'
+                              ? 'lead-type-badge lead-type-badge--booking'
+                              : 'lead-type-badge lead-type-badge--quick_enquiry'
                           }
                         >
-                          {lead.leadType === 'quick_enquiry' ? 'Enquiry' : 'Booking'}
+                          {String(lead.type || '').toLowerCase() === 'booking' ? 'Booking' : 'Enquiry'}
                         </span>
                       </td>
                       <td style={{ fontWeight: 600 }}>{lead.name}</td>

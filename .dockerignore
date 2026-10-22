@@ -5,3 +5,26 @@ node_modules
 legacy_src
 *.log
 .DS_Store
+
+# Never send local secrets or local runtime data to the builder.
+.env
+.env.*
+.env*
+*.pem
+*.key
+*.p12
+*.crt
+.npmrc
+**/.npmrc
+data
+public/media
+scratch
+reference photots
+drizzle_generated
+CLAUDE_AGENT_HANDOVER.md
+SECURITY_FIXES_README.md
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+tsconfig.tsbuildinfo

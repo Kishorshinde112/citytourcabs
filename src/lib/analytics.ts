@@ -6,7 +6,24 @@ export const GADS_TAG_ID = 'AW-18526387794';
 
 // Optional custom conversion label from environment variable or Google Ads default
 export const GADS_CONVERSION_LABEL =
-  process.env.NEXT_PUBLIC_GADS_CONVERSION_LABEL || 'GQMOCJ-eoaMdENL8ilJF';
+  process.env.NEXT_PUBLIC_GADS_CONVERSION_LABEL || 'GQMOCJ-eoaMdENL8iIJF';
+
+const PRODUCTION_ANALYTICS_HOSTS = new Set([
+  'citytourcabs.in',
+  'www.citytourcabs.in',
+]);
+
+/** Only the production hostnames may load tags or emit conversion events. */
+export function isAnalyticsHostAllowed(
+  hostname = typeof window !== 'undefined' ? window.location.hostname : ''
+) {
+  const normalizedHost = hostname
+    .trim()
+    .toLowerCase()
+    .replace(/\.$/, '');
+
+  return PRODUCTION_ANALYTICS_HOSTS.has(normalizedHost);
+}
 
 declare global {
   interface Window {
@@ -23,51 +40,63 @@ declare global {
  */
 export function trackLeadEnquiry(enquiryId: string, tourName?: string) {
   if (typeof window === 'undefined') return;
+  if (!isAnalyticsHostAllowed()) return;
 
   const cleanId = (enquiryId || '').trim();
   if (!cleanId) return;
 
-  // Deduplication Latch: Check if this specific inquiry reference was already tracked in this session
+  // Deduplication latch: check if this specific enquiry reference was already dispatched.
   const storageKey = `google_lead_tracked_${cleanId}`;
   try {
     if (sessionStorage.getItem(storageKey)) {
-      return; // Already tracked, do not fire duplicate event
+      return; // Already dispatched in this session.
     }
-    sessionStorage.setItem(storageKey, 'true');
   } catch {
-    // ignore sessionStorage errors if cookies/storage are disabled
+    // Ignore sessionStorage errors if cookies/storage are disabled.
   }
 
-  // Ensure dataLayer exists
-  window.dataLayer = window.dataLayer || [];
+  const dataLayer: any[] = window.dataLayer || [];
+  window.dataLayer = dataLayer;
 
-  // Safe gtag dispatch helper
-  const sendGtag = (...args: any[]) => {
+  // Standard gtag command queue shape. gtag itself queues an arguments object.
+  function sendGtag(...args: any[]) {
     if (typeof window.gtag === 'function') {
       window.gtag(...args);
     } else {
-      window.dataLayer.push(args);
+      dataLayer.push(arguments);
     }
-  };
+  }
 
   const gadsSendTo = GADS_CONVERSION_LABEL
     ? `${GADS_TAG_ID}/${GADS_CONVERSION_LABEL}`
     : GADS_TAG_ID;
 
-  // 1. Google Ads Conversion Event with transaction_id deduplication
-  sendGtag('event', 'conversion', {
-    send_to: gadsSendTo,
-    transaction_id: cleanId,
-    value: 1.0,
-    currency: 'INR',
-  });
+  try {
+    // 1. Google Ads Conversion Event with transaction_id deduplication
+    sendGtag('event', 'conversion', {
+      send_to: gadsSendTo,
+      transaction_id: cleanId,
+      value: 1.0,
+      currency: 'INR',
+    });
 
-  // 2. Google Analytics 4 Recommended 'generate_lead' Event
-  sendGtag('event', 'generate_lead', {
-    transaction_id: cleanId,
-    value: 1.0,
-    currency: 'INR',
-    lead_type: 'Tour Enquiry',
-    tour_name: tourName || 'Tour Enquiry',
-  });
+    // 2. Google Analytics 4 Recommended 'generate_lead' Event
+    sendGtag('event', 'generate_lead', {
+      transaction_id: cleanId,
+      value: 1.0,
+      currency: 'INR',
+      lead_type: 'Tour Enquiry',
+      tour_name: tourName || 'Tour Enquiry',
+    });
+  } catch {
+    return;
+  }
+
+  // Only latch after both commands were queued or handed to gtag. This prevents
+  // duplicate sends, but does not by itself prove Google Ads received the event.
+  try {
+    sessionStorage.setItem(storageKey, 'true');
+  } catch {
+    // Ignore sessionStorage errors if cookies/storage are disabled.
+  }
 }

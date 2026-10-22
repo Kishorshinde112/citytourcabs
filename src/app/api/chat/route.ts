@@ -2,9 +2,21 @@ import { allowRequest } from '@/lib/rateLimit.mjs'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
+import { displayIndianPhone } from '@/lib/phone'
 
-function generateFallbackChatResponse(query: string): string {
+type ChatSettings = {
+  phone?: string | null
+  helpPhone?: string | null
+  chatbotWebhookUrl?: string | null
+}
+
+function generateFallbackChatResponse(query: string, settings?: ChatSettings | null): string {
   const q = (query || '').toLowerCase()
+  const phone = displayIndianPhone(settings?.phone)
+  const helpPhone = displayIndianPhone(settings?.helpPhone)
+  const contactDetails = phone
+    ? `- Call / WhatsApp our booking manager directly at: **${phone}**${helpPhone ? ` or Helpline **${helpPhone}**` : ''}.\n`
+    : ''
 
   if (q.includes('mumbai') || q.includes('darshan')) {
     return '🚖 **Mumbai Darshan Packages:**\n- Full-day guided sightseeing starting at just ₹2,499 (Sedan) / ₹3,499 (Ertiga SUV).\n- Covers Gateway of India, Marine Drive, Haji Ali, Siddhivinayak Temple, Bandra-Worli Sea Link, and more.\n- Includes toll, fuel, and experienced driver-cum-guide.\n\nWould you like to book or know timing options?'
@@ -27,10 +39,10 @@ function generateFallbackChatResponse(query: string): string {
   }
 
   if (q.includes('book') || q.includes('contact') || q.includes('call') || q.includes('phone') || q.includes('number') || q.includes('agent') || q.includes('help')) {
-    return "📞 **Instant Booking & Support:**\n- Call / WhatsApp our booking manager directly at: **+91 7021001921** or Helpline **+91 9967672660**.\n- You can also use the 'Book Now' form on this website or chat with us on WhatsApp for 24/7 instant confirmation!"
+    return `📞 **Instant Booking & Support:**\n${contactDetails}- You can also use the 'Book Now' form on this website for 24/7 instant confirmation!`
   }
 
-  return 'Namaste! 🙏 Welcome to **City Tour Cabs**.\n\nI can assist you with:\n1. 🚖 Mumbai Darshan & City Sightseeing\n2. ⛰️ Lonavala, Alibaug, Mahabaleshwar & Matheran getaways\n3. 🛕 Shirdi, Ashtavinayak & Jyotirlinga pilgrimage packages\n4. 🚘 Outstation one-way & round-trip AC cabs\n\nHow can I help you plan your journey today? You can also call us directly at **+91 7021001921**!'
+  return `Namaste! 🙏 Welcome to **City Tour Cabs**.\n\nI can assist you with:\n1. 🚖 Mumbai Darshan & City Sightseeing\n2. ⛰️ Lonavala, Alibaug, Mahabaleshwar & Matheran getaways\n3. 🛕 Shirdi, Ashtavinayak & Jyotirlinga pilgrimage packages\n4. 🚘 Outstation one-way & round-trip AC cabs\n\nHow can I help you plan your journey today?${phone ? ` You can also call us directly at **${phone}**!` : ''}`
 }
 
 export async function POST(req: Request) {
@@ -54,14 +66,21 @@ export async function POST(req: Request) {
       process.env.CHATBOT_WEBHOOK_URL ||
       process.env.CHAT_WEBHOOK_URL
 
-    if (!webhookUrl) {
+    let siteSettings: ChatSettings | null = null
+    const loadSettings = async () => {
+      if (siteSettings) return siteSettings
       try {
         const payload = await getPayload({ config })
-        const settings = await payload.findGlobal({ slug: 'site-settings' })
-        if (settings?.chatbotWebhookUrl) {
-          webhookUrl = settings.chatbotWebhookUrl
-        }
+        siteSettings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true })
       } catch (_) {}
+      return siteSettings
+    }
+
+    if (!webhookUrl) {
+      const settings = await loadSettings()
+      if (settings?.chatbotWebhookUrl) {
+        webhookUrl = settings.chatbotWebhookUrl
+      }
     }
 
     if (webhookUrl) {
@@ -144,7 +163,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const fallbackReply = generateFallbackChatResponse(message)
+    const fallbackReply = generateFallbackChatResponse(message, siteSettings || await loadSettings())
     return NextResponse.json({
       success: true,
       reply: fallbackReply,

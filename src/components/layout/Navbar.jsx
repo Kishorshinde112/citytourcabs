@@ -1,53 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Phone, Mail, MessageCircle, Menu, X, ChevronDown } from "lucide-react";
 import useSettingsStore from "@/store/settingsStore";
+import useTourLinks from "@/hooks/useTourLinks";
+import useCmsGlobal from "@/hooks/useCmsGlobal";
+import { displayIndianPhone, telHref, whatsappNumber } from "@/lib/phone";
+
+const DEFAULT_NAV_LINKS = [
+  { label: 'Home', url: '/' },
+  { label: 'Tour Packages', url: '/tours' },
+  { label: 'Our Fleet', url: '/#fleet' },
+  { label: 'About Us', url: '/#about' },
+  { label: 'Contact', url: '/#booking-form' },
+];
+
+const isToursLink = (url) => {
+  const clean = String(url || '').replace(/\/+$/, '');
+  return clean === '/tours' || clean === '/tour-packages';
+};
 
 export default function Navbar({ onOpenBookModal = () => {} }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { phone, email, announcement, siteName, logoUrl } = useSettingsStore();
-
-  const defaultTourOptions = [
-    { name: "Mumbai Darshan", id: "mumbai-darshan", href: "/tours/mumbai-darshan" },
-    { name: "Lonavala Trip", id: "lonavala-trip", href: "/tours/lonavala-trip" },
-    { name: "Alibaug Sightseeing", id: "alibaug-sightseeing", href: "/tours/alibaug-sightseeing" },
-    { name: "Matheran Sightseeing", id: "matheran-sightseeing", href: "/tours/matheran-sightseeing" },
-    { name: "Shirdi Tour", id: "shirdi-tour", href: "/tours/shirdi-tour" },
-    { name: "Mahabaleshwar Sightseeing", id: "mahabaleshwar-sightseeing", href: "/tours/mahabaleshwar-sightseeing" },
-    { name: "Igatpuri Tour", id: "igatpuri-tour", href: "/tours/igatpuri-tour" },
-    { name: "Ashtavinayak", id: "ashtavinayak", href: "/tours/ashtavinayak" },
-    { name: "3 Jyotirlinga in Maharashtra", id: "jyotirlinga-maharashtra", href: "/tours/3-jyotirlinga-in-maharashtra" },
-    { name: "Konkan Darshan", id: "konkan-darshan", href: "/tours/konkan-darshan" },
-  ];
-
-  const [tourOptions, setTourOptions] = useState(defaultTourOptions);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function loadTours() {
-      try {
-        const res = await fetch('/api/tours');
-        const data = await res.json();
-        if (isMounted && data.success && Array.isArray(data.tours) && data.tours.length > 0) {
-          setTourOptions(
-            data.tours.map((t) => ({
-              name: t.title,
-              id: t.slug || t.id,
-              href: t.href || `/${t.slug || t.id}`,
-            }))
-          );
-        }
-      } catch (err) {
-        console.error('Error fetching navbar tours:', err);
-      }
-    }
-    loadTours();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const { phone, whatsapp, email, announcement, siteName, logoUrl } = useSettingsStore();
+  const tourOptions = useTourLinks();
+  const navigation = useCmsGlobal('navigation', { links: DEFAULT_NAV_LINKS });
+  const navLinks = navigation?.links?.length ? navigation.links : DEFAULT_NAV_LINKS;
 
   const handleTourClick = () => {
     setDropdownOpen(false);
@@ -66,13 +45,13 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
                   className="font-handwritten text-base tracking-wide font-normal"
                   style={{ fontFamily: "'Caveat', cursive" }}
                 >
-                  Available 24/7 for your convenience
+                  {announcement?.text || 'Available 24/7 for your convenience'}
                 </span>
               </div>
               <div className="flex items-center gap-4 text-sm">
-                <a href={"tel:+91" + phone} className="flex items-center gap-2 hover:text-blue-100 transition-colors">
+                <a href={telHref(phone)} className="flex items-center gap-2 hover:text-blue-100 transition-colors">
                   <Phone className="h-4 w-4" />
-                  <span>+91 {phone}</span>
+                  <span>{displayIndianPhone(phone)}</span>
                 </a>
                 <span className="hidden sm:inline text-blue-300">|</span>
                 <a href={"mailto:" + email} className="flex items-center gap-2 hover:text-blue-100 transition-colors">
@@ -105,51 +84,58 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
 
             {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="/" className="text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium">
-                Home
-              </a>
-
-              <a href="/about" className="text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium">
-                About
-              </a>
-
-              {/* Tour Options Dropdown */}
-              <div
-                className="relative"
-                onMouseEnter={() => setDropdownOpen(true)}
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium py-2 cursor-pointer"
-                >
-                  <span>Tour Options</span>
-                  <ChevronDown className="ml-1 h-4 w-4 text-gray-500" />
-                </button>
-
-                {dropdownOpen && (
-                  <div className="absolute top-full left-0 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-fadeIn">
-                    {tourOptions.map((item, idx) => (
-                      <a
-                        key={idx}
-                        href={item.href}
-                        onClick={handleTourClick}
-                        className="block px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB] transition cursor-pointer"
+              {navLinks.map((link, idx) => {
+                if (isToursLink(link.url)) {
+                  return (
+                    <div
+                      key={`${link.url}-${idx}`}
+                      className="relative"
+                      onMouseEnter={() => setDropdownOpen(true)}
+                      onMouseLeave={() => setDropdownOpen(false)}
+                    >
+                      <button
+                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                        className="flex items-center text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium py-2 cursor-pointer"
                       >
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
+                        <span>{link.label}</span>
+                        <ChevronDown className="ml-1 h-4 w-4 text-gray-500" />
+                      </button>
 
-              <a href="/#gallery" className="text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium">
-                Our Cab Gallery
-              </a>
+                      {dropdownOpen && (
+                        <div className="absolute top-full left-0 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-fadeIn">
+                          <a
+                            href="/tours"
+                            onClick={handleTourClick}
+                            className="block px-4 py-2 text-xs font-semibold text-[#1A96EB] hover:bg-blue-50 transition cursor-pointer"
+                          >
+                            All Tour Packages
+                          </a>
+                          {tourOptions.map((item, itemIdx) => (
+                            <a
+                              key={itemIdx}
+                              href={item.href}
+                              onClick={handleTourClick}
+                              className="block px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB] transition cursor-pointer"
+                            >
+                              {item.name}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
 
-              <a href="/#contact" className="text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium">
-                Contact Us
-              </a>
+                return (
+                  <a
+                    key={`${link.url}-${idx}`}
+                    href={link.url}
+                    className="text-gray-700 hover:text-[#1A96EB] transition-colors text-sm font-medium"
+                  >
+                    {link.label}
+                  </a>
+                );
+              })}
             </nav>
 
             {/* Desktop Book Now CTA */}
@@ -165,7 +151,7 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
             {/* Mobile Hamburger Toggle */}
             <div className="flex md:hidden items-center gap-2">
               <a
-                href={"tel:+91" + phone}
+                href={telHref(phone)}
                 className="p-2 rounded-lg text-gray-700"
                 aria-label="Call Now"
               >
@@ -188,14 +174,14 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
           <div className="md:hidden border-t border-gray-100 bg-white px-4 pt-3 pb-6 space-y-2 text-gray-800 shadow-xl">
             <div className="grid grid-cols-2 gap-2 mb-3">
               <a
-                href={"tel:+91" + phone}
+                href={telHref(phone)}
                 className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-md bg-[#1A96EB] text-white font-semibold text-xs shadow-xs"
               >
                 <Phone className="w-3.5 h-3.5" />
                 Call Desk
               </a>
               <a
-                href={"https://wa.me/91" + phone + "?text=" + encodeURIComponent("Hi City Tour Cabs, I want to book a cab.")}
+                href={"https://wa.me/" + whatsappNumber(whatsapp || phone) + "?text=" + encodeURIComponent("Hi City Tour Cabs, I want to book a cab.")}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-xs shadow-xs"
@@ -205,51 +191,44 @@ export default function Navbar({ onOpenBookModal = () => {} }) {
               </a>
             </div>
 
-            <a
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB]"
-            >
-              Home
-            </a>
-            <a
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB]"
-            >
-              About
-            </a>
+            {navLinks.map((link, idx) => {
+              if (isToursLink(link.url)) {
+                return (
+                  <div key={`${link.url}-${idx}`} className="px-3 py-2">
+                    <a
+                      href="/tours"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1 hover:text-[#1A96EB]"
+                    >
+                      {link.label}
+                    </a>
+                    <div className="pl-2 space-y-1 border-l-2 border-blue-100 ml-1">
+                      {tourOptions.map((item, itemIdx) => (
+                        <a
+                          key={itemIdx}
+                          href={item.href}
+                          onClick={handleTourClick}
+                          className="block py-1 pl-2 text-xs font-semibold text-gray-600 hover:text-[#1A96EB] cursor-pointer"
+                        >
+                          {item.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
 
-            <div className="px-3 py-2">
-              <div className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Tour Options</div>
-              <div className="pl-2 space-y-1 border-l-2 border-blue-100 ml-1">
-                {tourOptions.map((item, idx) => (
-                  <a
-                    key={idx}
-                    href={item.href}
-                    onClick={handleTourClick}
-                    className="block py-1 pl-2 text-xs font-semibold text-gray-600 hover:text-[#1A96EB] cursor-pointer"
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <a
-              href="/#gallery"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB]"
-            >
-              Our Cab Gallery
-            </a>
-            <a
-              href="/#contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB]"
-            >
-              Contact Us
-            </a>
+              return (
+                <a
+                  key={`${link.url}-${idx}`}
+                  href={link.url}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#1A96EB]"
+                >
+                  {link.label}
+                </a>
+              );
+            })}
 
             <button
               onClick={() => {

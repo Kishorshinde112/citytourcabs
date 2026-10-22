@@ -1832,7 +1832,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'https://n8n.kishorlab.dev/webhook-test/4d6e3906-3c0c-4c18-bef2-cf30563485c0'"
+          "default": "''"
         },
         "updated_at": {
           "name": "updated_at",

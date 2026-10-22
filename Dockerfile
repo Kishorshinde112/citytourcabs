@@ -16,19 +16,28 @@ FROM base AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 
 # Stage 2: Build Next.js & Payload
 FROM base AS builder
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Public build-time values. These are safe to inline; never pass secrets here.
+ARG NEXT_PUBLIC_SITE_URL=https://citytourcabs.in
+ARG NEXT_PUBLIC_SERVER_URL=https://citytourcabs.in
+ARG NEXT_PUBLIC_SITE_NAME="City Tour Cabs"
+ARG NEXT_PUBLIC_GADS_CONVERSION_LABEL=
 
-# Set environment variables for build time
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PAYLOAD_CONFIG_PATH=src/payload.config.ts
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+ENV NEXT_PUBLIC_SITE_NAME=$NEXT_PUBLIC_SITE_NAME
+ENV NEXT_PUBLIC_GADS_CONVERSION_LABEL=$NEXT_PUBLIC_GADS_CONVERSION_LABEL
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
 # Build the standalone Next.js + Payload app
 RUN npm run build && rm -rf .next/standalone/data
@@ -56,10 +65,17 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy native packages and install sharp runtime
+# Copy the lockfile-installed native packages for the build platform. Installing
+# them at runtime was non-reproducible and hard-coded the ARM64 libsql package.
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/sharp ./node_modules/sharp
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@img ./node_modules/@img
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/color ./node_modules/color
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/color-convert ./node_modules/color-convert
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/color-name ./node_modules/color-name
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/color-string ./node_modules/color-string
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/simple-swizzle ./node_modules/simple-swizzle
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/is-arrayish ./node_modules/is-arrayish
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@libsql ./node_modules/@libsql
-RUN npm install sharp@0.33.5 @libsql/linux-arm64-gnu --no-save --legacy-peer-deps && \
-    chown -R nextjs:nodejs ./node_modules
 
 # Copy public assets & static files
 COPY --from=builder /app/public ./public

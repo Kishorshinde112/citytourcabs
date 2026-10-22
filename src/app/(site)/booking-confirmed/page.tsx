@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import BookingConfirmedClient from './BookingConfirmedClient';
 
 export const metadata: Metadata = {
-  title: 'Booking Confirmed | City Tour Cabs Mumbai',
-  description: 'Your booking has been received. Our team will contact you shortly to confirm your driver and cab details.',
+  title: 'Booking Request Received',
+  description: 'Your booking request has been received. Our team will contact you shortly to confirm your booking, driver and cab details.',
   robots: {
     index: false,
     follow: false,

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
 import useBookingsStore from '@/store/bookingsStore';
+import { displayIndianPhone, telHref } from '@/lib/phone';
 
 const TOUR_PACKAGES_MAP = {
   'Mumbai Darshan': [
@@ -59,9 +60,12 @@ const TOUR_PACKAGES_MAP = {
 
 const DEFAULT_DESTINATIONS = Object.keys(TOUR_PACKAGES_MAP);
 
-export default function BookingContactForm() {
+export default function BookingContactForm({
+  title = 'Get In Touch',
+  subtitle = 'Ready to book your tour? Fill out the form and our team will get back to you shortly to confirm your booking',
+}) {
   const router = useRouter();
-  const { phone, email } = useSettingsStore();
+  const { phone, email, officeAddress, workingHours } = useSettingsStore();
   const { addBooking } = useBookingsStore();
 
   const [destinations, setDestinations] = useState(DEFAULT_DESTINATIONS);
@@ -74,6 +78,12 @@ export default function BookingContactForm() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [minTravelDate, setMinTravelDate] = useState('');
+  const submittingRef = useRef(false);
+
+  useEffect(() => {
+    setMinTravelDate(new Date().toISOString().slice(0, 10));
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -109,6 +119,7 @@ export default function BookingContactForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submittingRef.current) return;
     setError('');
 
     if (!formData.destination) {
@@ -149,11 +160,13 @@ export default function BookingContactForm() {
 
     // Only show confirmation after the server returns a saved booking ID.
     let inquiryId;
+    submittingRef.current = true;
     try {
       const result = await addBooking(bookingPayload);
       inquiryId = result.booking.id;
       setSubmitted(true);
     } catch (err) {
+      submittingRef.current = false;
       setSubmitted(false);
       setError(err instanceof Error ? err.message : 'Submission failed. Please try again.');
       return;
@@ -178,7 +191,7 @@ export default function BookingContactForm() {
     } catch {}
 
     // Redirect to dedicated enquiry confirmed page
-    router.push(`/enquiry-confirmed?id=${inquiryId}`);
+    router.push('/enquiry-confirmed');
   };
 
   const currentPackages = formData.destination
@@ -187,14 +200,15 @@ export default function BookingContactForm() {
 
   return (
     <section id="contact" className="py-16 md:py-24 bg-gray-50 text-gray-900">
+      <span id="booking-form" className="block scroll-mt-24" aria-hidden="true" />
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="mb-4 text-3xl md:text-4xl font-bold font-[Reddit_Sans] text-gray-900">
-            Get In Touch
+            {title || 'Get In Touch'}
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
-            Ready to book your tour? Fill out the form and our team will get back to you shortly to confirm your booking
+            {subtitle}
           </p>
         </div>
 
@@ -217,10 +231,10 @@ export default function BookingContactForm() {
                   <div>
                     <p className="text-sm text-gray-500 mb-1 font-medium">Phone Number</p>
                     <a
-                      href={`tel:+91${phone}`}
+                      href={telHref(phone)}
                       className="text-gray-900 hover:text-[#1A96EB] transition-colors font-semibold"
                     >
-                      +91 {phone}
+                      {displayIndianPhone(phone)}
                     </a>
                   </div>
                 </div>
@@ -246,14 +260,18 @@ export default function BookingContactForm() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 mb-1 font-medium">Location</p>
-                    <p className="text-gray-900 font-semibold">Mumbai, Maharashtra</p>
+                    <p className="text-gray-900 font-semibold">
+                      {officeAddress || 'Shop No 4, Chembur West, Mumbai, Maharashtra 400071'}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-8 pt-8 border-t border-blue-200">
                 <h3 className="mb-4 font-bold text-lg font-display text-gray-900">Operating Hours</h3>
-                <div className="space-y-2 text-gray-700 font-medium">24 x 7 Available</div>
+                <div className="space-y-2 text-gray-700 font-medium">
+                  {workingHours || '24/7 Available (Open All 365 Days)'}
+                </div>
               </div>
             </div>
 
@@ -266,7 +284,7 @@ export default function BookingContactForm() {
                     Thank You!
                   </h4>
                   <p className="text-gray-600 text-sm max-w-md mx-auto">
-                    Your inquiry has been received. Opening WhatsApp to coordinate your booking with our team...
+                    Your inquiry has been received. Our team will contact you shortly to coordinate your booking.
                   </p>
                 </div>
               ) : (
@@ -355,6 +373,7 @@ export default function BookingContactForm() {
                     <input
                       type="date"
                       required
+                      min={minTravelDate || undefined}
                       value={formData.travelDate}
                       onChange={(e) => setFormData({ ...formData, travelDate: e.target.value })}
                       className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"

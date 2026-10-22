@@ -5,7 +5,7 @@ import config from '@/payload.config';
 import { isAuthorizedBookingStaff } from '@/lib/bookingAuth';
 import { validateBooking, BookingValidationError } from '@/lib/bookingValidation.mjs';
 import { allowRequest } from '@/lib/rateLimit.mjs';
-import { forwardBookingToN8n } from '@/lib/bookingNotifications';
+import { notifyBooking } from '@/lib/bookingNotifications';
 
 export const runtime = 'nodejs';
 const failure = (status: number, message: string) => NextResponse.json({ success:false, error:message }, {status});
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     const bookingId = `BK-${randomUUID()}`;
     // Public Payload CMS create is disabled; only the internal server API can bypass it.
     const booking = await payload.create({collection:'bookings',data:{...data,id:bookingId,status:'Pending' as const},overrideAccess:true});
-    const notified = await forwardBookingToN8n(booking);
+    const notified = await notifyBooking(payload, booking);
     return NextResponse.json({success:true,booking, notificationDelivered:notified},{status:201});
   } catch (err) {
     if (err instanceof BookingValidationError) return failure(400,err.message);

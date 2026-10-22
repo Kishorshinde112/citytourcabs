@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, ChevronDown, CheckCircle2, AlertCircle } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
@@ -85,7 +85,7 @@ const getTodayString = () => new Date().toISOString().split('T')[0];
 
 export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
   const router = useRouter();
-  const { phone: supportPhone } = useSettingsStore();
+  const { phone: supportPhone, promoPopup } = useSettingsStore();
   const { addBooking } = useBookingsStore();
 
   const isEnquiry = Boolean(initialData.isEnquiry || initialData.type === 'Inquiry');
@@ -106,6 +106,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const submittingRef = useRef(false);
 
   // Fetch dynamic tours from API
   useEffect(() => {
@@ -133,6 +134,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
   // Sync state when modal opens or initialData changes
   useEffect(() => {
     if (isOpen) {
+      submittingRef.current = false;
       setError('');
       setSuccess(false);
       setLoading(false);
@@ -140,8 +142,10 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
       const targetDest =
         initialData.destination ||
         initialData.tourName ||
+        initialData.dropCity ||
         initialData.title ||
         initialData.drop ||
+        initialData.tripType ||
         '';
       setDestination(targetDest);
 
@@ -175,9 +179,14 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
   if (!isOpen) return null;
 
   const currentPackages = TOUR_PACKAGES_MAP[destination] || ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
+  const destinationOptions =
+    destination && !destinations.includes(destination)
+      ? [destination, ...destinations]
+      : destinations;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submittingRef.current) return;
     setError('');
 
     // Validation
@@ -208,6 +217,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
       return;
     }
 
+    submittingRef.current = true;
     setLoading(true);
 
     const cleanWhatsapp = whatsappNumber.trim().replace(/[^0-9+]/g, '');
@@ -256,15 +266,12 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
       // Close modal and redirect
       setTimeout(() => {
         onClose();
-        router.push(
-          isEnquiry
-            ? `/enquiry-confirmed?id=${refId}`
-            : `/booking-confirmed?id=${refId}`
-        );
+        router.push(isEnquiry ? '/enquiry-confirmed' : '/booking-confirmed');
       }, 700);
     } catch (err) {
       console.error('Submission failed:', err);
       setError('Submission failed. Please try again or call us directly.');
+      submittingRef.current = false;
       setLoading(false);
     }
   };
@@ -287,8 +294,9 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         <button
           type="button"
           onClick={onClose}
+          disabled={loading}
           aria-label="Close"
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1.5 rounded-lg transition cursor-pointer"
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1.5 rounded-lg transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <X className="w-5 h-5" />
         </button>
@@ -297,12 +305,22 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         <div className="mb-6">
           {isEnquiry ? (
             <div className="text-center">
+              {promoPopup?.discountBadge && (
+                <span className="mb-2 inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-orange-700">
+                  {promoPopup.discountBadge}
+                </span>
+              )}
               <h2 className="text-xl md:text-2xl font-bold text-orange-600 mb-1 leading-snug">
-                Get 5% to 10% Discount and free Tour ITINERARY on your first ride
+                {promoPopup?.headline || 'Get 5% to 10% Discount and free Tour ITINERARY on your first ride'}
               </h2>
               <p className="text-base font-semibold text-slate-800">
-                Submit your Enquiry Now!
+                {promoPopup?.subtext || 'Submit your Enquiry Now!'}
               </p>
+              {promoPopup?.couponCode && (
+                <p className="mt-2 text-sm text-slate-600">
+                  Use code <strong className="text-orange-700">{promoPopup.couponCode}</strong>
+                </p>
+              )}
             </div>
           ) : (
             <div>
@@ -328,7 +346,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         {success && (
           <div className="mb-5 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
-            <span>Booking confirmed! Redirecting to confirmation page...</span>
+            <span>Request received! Redirecting to confirmation...</span>
           </div>
         )}
 
@@ -349,7 +367,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                 className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
               >
                 <option value="">Select Destination</option>
-                {destinations.map((dest, idx) => (
+                {destinationOptions.map((dest, idx) => (
                   <option key={idx} value={dest}>
                     {dest}
                   </option>

@@ -17,6 +17,10 @@ test('Reject invalid dates, phones, and oversized names',()=>{
     {...base,phone:'abc'}, {...base,name:'x'.repeat(101)},
   ]) assert.throws(()=>validateBooking(input,now),BookingValidationError);
 });
+test('Accept the supported 8+ passenger option within normal bounds',()=>{
+  assert.equal(validateBooking({...base,passengers:'8+'},now).passengers,'8+');
+  assert.throws(()=>validateBooking({...base,passengers:'51+'},now),BookingValidationError);
+});
 test('IP limiter caps submissions per window',()=>{
   assert.equal(allowRequest('test-ip',{limit:2,windowMs:1000,now:0}),true);
   assert.equal(allowRequest('test-ip',{limit:2,windowMs:1000,now:0}),true);

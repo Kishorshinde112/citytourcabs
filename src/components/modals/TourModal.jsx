@@ -6,6 +6,7 @@ import {
   Phone, MessageCircle, Star, Sparkles, Shield, ChevronRight
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
+import { telHref, whatsappNumber } from '@/lib/phone';
 
 export default function TourModal({ tour, onClose, onBookClick }) {
   if (!tour) return null;
@@ -20,7 +21,7 @@ export default function TourModal({ tour, onClose, onBookClick }) {
       `*Duration:* ${tour.duration}\n` +
       `*Starting Fare:* ${tour.startingPrice}\n\n` +
       `Hello, I would like to inquire about booking the *${tour.title}* package. Please share available car options and best discounted rate.`;
-    window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(text)}`, '_blank');
+    window.open(`https://wa.me/${whatsappNumber(phone)}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
@@ -202,7 +203,7 @@ export default function TourModal({ tour, onClose, onBookClick }) {
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <a
-              href={`tel:+91${phone}`}
+              href={telHref(phone)}
               className="py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition"
             >
               <Phone className="w-4 h-4 text-indigo-400" />

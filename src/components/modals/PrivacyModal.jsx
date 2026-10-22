@@ -3,6 +3,7 @@
 import React from 'react';
 import { X, ShieldCheck } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
+import { displayIndianPhone } from '@/lib/phone';
 
 export default function PrivacyModal({ isOpen, onClose }) {
   const { phone, email } = useSettingsStore();
@@ -51,7 +52,7 @@ export default function PrivacyModal({ isOpen, onClose }) {
 
           <div>
             <h4 className="font-bold text-slate-900">5. Contact Information</h4>
-            <p>For any inquiries or grievances, contact our grievance officer at <strong>{email}</strong> or call <strong>+91 {phone}</strong>.</p>
+            <p>For any inquiries or grievances, contact our grievance officer at <strong>{email}</strong> or call <strong>{displayIndianPhone(phone)}</strong>.</p>
           </div>
         </div>
 

@@ -24,13 +24,12 @@ export const DEFAULT_SETTINGS = {
   footer: {
     bio: 'City Tour Cabs is Mumbai\'s trusted cab service. Clean sanitized cabs, experienced polite chauffeurs, and transparent flat pricing for Mumbai Darshan and outstation trips.',
     copyright: '© 2026 City Tour Cabs. All rights reserved.',
-    facebookUrl: 'https://facebook.com',
-    instagramUrl: 'https://instagram.com',
+    facebookUrl: '',
+    instagramUrl: '',
   },
-  chatbotWebhookUrl: 'https://n8n.kishorlab.dev/webhook-test/4d6e3906-3c0c-4c18-bef2-cf30563485c0',
 };
 
-const useSettingsStore = create((set, get) => ({
+const useSettingsStore = create((set) => ({
   ...DEFAULT_SETTINGS,
   loading: false,
 
@@ -39,19 +38,20 @@ const useSettingsStore = create((set, get) => ({
       const res = await fetch('/api/globals/site-settings');
       if (res.ok) {
         const data = await res.json();
-        if (data && (data.phone || data.businessName || data.siteName)) {
+        if (data && (data.phone || data.businessName || data.siteName || data.logo)) {
+          const logoUrl = typeof data.logo === 'string' ? data.logo : data.logo?.url;
           set({
             siteName: data.businessName || data.siteName || DEFAULT_SETTINGS.siteName,
+            logoUrl: logoUrl || DEFAULT_SETTINGS.logoUrl,
             phone: data.phone || DEFAULT_SETTINGS.phone,
             helpPhone: data.helpPhone || DEFAULT_SETTINGS.helpPhone,
             email: data.email || DEFAULT_SETTINGS.email,
-            whatsapp: data.whatsapp || DEFAULT_SETTINGS.whatsapp,
+            whatsapp: data.whatsapp || data.whatsappNumber || DEFAULT_SETTINGS.whatsapp,
             officeAddress: data.officeAddress || DEFAULT_SETTINGS.officeAddress,
             workingHours: data.workingHours || DEFAULT_SETTINGS.workingHours,
             announcement: data.announcement || DEFAULT_SETTINGS.announcement,
             promoPopup: data.promoPopup || DEFAULT_SETTINGS.promoPopup,
             footer: data.footer || DEFAULT_SETTINGS.footer,
-            chatbotWebhookUrl: data.chatbotWebhookUrl || DEFAULT_SETTINGS.chatbotWebhookUrl,
           });
         }
       }
@@ -60,21 +60,6 @@ const useSettingsStore = create((set, get) => ({
     }
   },
 
-  updateSettings: async (newSettings) => {
-    set((state) => ({ ...state, ...newSettings }));
-    try {
-      const res = await fetch('/api/globals/site-settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newSettings),
-      });
-      if (res.ok) {
-        get().fetchSettings();
-      }
-    } catch (err) {
-      console.error('Failed to sync settings with server:', err);
-    }
-  },
 }));
 
 if (typeof window !== 'undefined') {

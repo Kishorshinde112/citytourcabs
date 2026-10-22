@@ -46,7 +46,7 @@ const DrawerInner: React.FC<DrawerInnerProps> = ({ collectionSlug, id, onClose }
       : collectionSlug === 'pages'
       ? 'Page'
       : collectionSlug
-  const [bookingMeta, setBookingMeta] = useState<{ phone?: string; name?: string; leadType?: string; route?: string } | null>(null)
+  const [bookingMeta, setBookingMeta] = useState<{ phone?: string; name?: string; type?: string; route?: string } | null>(null)
   const [copiedState, setCopiedState] = useState(false)
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const DrawerInner: React.FC<DrawerInnerProps> = ({ collectionSlug, id, onClose }
             setBookingMeta({
               phone: data.phone,
               name: data.name,
-              leadType: data.leadType,
+              type: data.type,
               route: data.route,
             })
           }
@@ -140,12 +140,12 @@ const DrawerInner: React.FC<DrawerInnerProps> = ({ collectionSlug, id, onClose }
             <span className="font-mono text-slate-600">{normalized.telNumber}</span>
             <span
               className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
-                bookingMeta.leadType === 'quick_enquiry'
-                  ? 'bg-purple-100 text-purple-800 border border-purple-200'
-                  : 'bg-blue-100 text-blue-800 border border-blue-200'
+                String(bookingMeta.type || '').toLowerCase() === 'booking'
+                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                  : 'bg-purple-100 text-purple-800 border border-purple-200'
               }`}
             >
-              {bookingMeta.leadType === 'quick_enquiry' ? 'Quick Enquiry' : 'Full Booking'}
+              {String(bookingMeta.type || '').toLowerCase() === 'booking' ? 'Full Booking' : 'Quick Enquiry'}
             </span>
           </div>
           <div className="flex items-center gap-2">

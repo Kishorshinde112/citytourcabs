@@ -3,19 +3,33 @@ import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// 1. Load Cloudinary URLs
+// 1. Safety confirmation: this script DELETEs and replaces rows in the target database.
+if (process.env.CONFIRM_SUPABASE_MIGRATION !== 'YES') {
+  throw new Error(
+    'Refusing to run the destructive migration. This script deletes existing rows in the target PostgreSQL tables. ' +
+      'Set CONFIRM_SUPABASE_MIGRATION=YES only after verifying DATABASE_URI points to the intended database.',
+  );
+}
+
+// 2. Configure PostgreSQL Client (credentials must come from the environment)
+const connectionString = process.env.DATABASE_URI;
+if (!connectionString) {
+  throw new Error('DATABASE_URI is required to run the Supabase migration.');
+}
+if (!/^postgres(ql)?:\/\//i.test(connectionString)) {
+  throw new Error('DATABASE_URI must be a PostgreSQL connection string.');
+}
+const pg = new Client({
+  connectionString,
+  ssl: { rejectUnauthorized: false },
+});
+
+// 3. Load Cloudinary URLs
 const cloudinaryCachePath = path.join(process.cwd(), 'scripts', 'cloudinary_urls.json');
 const cloudinaryUrls = new Map(Object.entries(JSON.parse(fs.readFileSync(cloudinaryCachePath, 'utf8'))).map(([k, v]) => [Number(k), v]));
 console.log(`Loaded ${cloudinaryUrls.size} Cloudinary URLs from cache.`);
 
-// 2. Configure PostgreSQL Client
-const password = encodeURIComponent('Nishantmansi@2023');
-const pg = new Client({
-  connectionString: process.env.DATABASE_URI || `postgresql://postgres:${password}@db.ttvmkvvnpwgtwtwlzjig.supabase.co:5432/postgres`,
-  ssl: { rejectUnauthorized: false },
-});
-
-// 3. Open SQLite Database Archive
+// 4. Open SQLite Database Archive
 const sqlite = new DatabaseSync('data/citytourcabs.db');
 
 async function migrate() {

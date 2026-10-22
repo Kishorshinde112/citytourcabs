@@ -1,50 +1,41 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
-import { Phone, Mail, MapPin } from "lucide-react";
+import React from "react";
+import { Clock, Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react";
 import useSettingsStore from "@/store/settingsStore";
+import useTourLinks from "@/hooks/useTourLinks";
+import useCmsGlobal from "@/hooks/useCmsGlobal";
+import { displayIndianPhone, telHref } from "@/lib/phone";
+
+const FALLBACK_GROUPS = [
+  {
+    title: 'Quick Links',
+    links: [
+      { label: 'Home', url: '/' },
+      { label: 'About Us', url: '/about' },
+      { label: 'Tour Packages', url: '/tours' },
+      { label: 'Contact Us', url: '/#contact' },
+    ],
+  },
+];
 
 export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal = () => {} }) {
-  const { phone, email, officeAddress, footer, siteName } = useSettingsStore();
+  const { phone, email, officeAddress, workingHours, footer, siteName } = useSettingsStore();
+  const tourLinks = useTourLinks();
+  const footerGlobal = useCmsGlobal('footer', null);
 
-  const defaultTourLinks = [
-    { name: "Mumbai Darshan", href: "/tours/mumbai-darshan" },
-    { name: "Lonavala Trip", href: "/tours/lonavala-trip" },
-    { name: "Alibaug Sightseeing", href: "/tours/alibaug-sightseeing" },
-    { name: "Matheran Sightseeing", href: "/tours/matheran-sightseeing" },
-    { name: "Shirdi Tour", href: "/tours/shirdi-tour" },
-    { name: "Mahabaleshwar Sightseeing", href: "/tours/mahabaleshwar-sightseeing" },
-    { name: "Igatpuri Tour", href: "/tours/igatpuri-tour" },
-    { name: "Ashtavinayak", href: "/tours/ashtavinayak" },
-    { name: "3 Jyotirlinga in Maharashtra", href: "/tours/3-jyotirlinga-in-maharashtra" },
-    { name: "Konkan Darshan", href: "/tours/konkan-darshan" },
+  const fallbackGroups = [
+    ...FALLBACK_GROUPS,
+    {
+      title: 'Popular Tours',
+      links: tourLinks.slice(0, 6).map((tour) => ({
+        label: tour.name,
+        url: tour.href,
+      })),
+    },
   ];
-
-  const [tourLinks, setTourLinks] = useState(defaultTourLinks);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function loadTours() {
-      try {
-        const res = await fetch('/api/tours');
-        const data = await res.json();
-        if (isMounted && data.success && Array.isArray(data.tours) && data.tours.length > 0) {
-          setTourLinks(
-            data.tours.map((t) => ({
-              name: t.title,
-              href: t.href || `/${t.slug || t.id}`,
-            }))
-          );
-        }
-      } catch (err) {
-        console.error('Error fetching footer tours:', err);
-      }
-    }
-    loadTours();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const groups = footerGlobal?.groups?.length ? footerGlobal.groups : fallbackGroups;
+  const copyright = footerGlobal?.copyright || footer?.copyright;
 
   return (
     <footer className="bg-gray-900 text-gray-300">
@@ -65,58 +56,60 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
             >
               Book Now
             </button>
-          </div>
 
-          {/* Col 2: Quick Links */}
-          <div>
-            <h3 className="mb-4 text-white font-bold font-[Reddit_Sans]">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <a className="text-sm hover:text-orange-600 transition-colors" href="/">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a className="text-sm hover:text-orange-600 transition-colors" href="/about">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a className="text-sm hover:text-orange-600 transition-colors" href="/#gallery">
-                  Our Cab Gallery
-                </a>
-              </li>
-              <li>
-                <a className="text-sm hover:text-orange-600 transition-colors" href="/#contact">
-                  Contact Us
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Services Offered */}
-          <div>
-            <h3 className="mb-4 text-white font-bold font-[Reddit_Sans]">Services Offered</h3>
-            <ul className="space-y-2">
-              {tourLinks.map((t, idx) => (
-                <li key={idx}>
-                  <a className="text-sm hover:text-orange-600 transition-colors" href={t.href}>
-                    {t.name}
+            {(footer?.facebookUrl || footer?.instagramUrl) && (
+              <div className="mt-5 flex items-center gap-3">
+                {footer?.facebookUrl && (
+                  <a
+                    href={footer.facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Facebook"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <Facebook className="h-5 w-5" />
                   </a>
-                </li>
-              ))}
-            </ul>
+                )}
+                {footer?.instagramUrl && (
+                  <a
+                    href={footer.instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Col 4: Contact Us */}
+          {/* CMS-managed footer link groups */}
+          {groups.map((group, groupIdx) => (
+            <div key={group.id || `${group.title}-${groupIdx}`}>
+              <h3 className="mb-4 text-white font-bold font-[Reddit_Sans]">{group.title}</h3>
+              <ul className="space-y-2">
+                {(group.links || []).map((link, linkIdx) => (
+                  <li key={link.id || `${link.url}-${linkIdx}`}>
+                    <a className="text-sm hover:text-orange-600 transition-colors" href={link.url}>
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          {/* Contact Us */}
           <div>
             <h3 className="mb-4 text-white font-bold font-[Reddit_Sans]">Contact Us</h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <a href={"tel:+91" + phone} className="text-sm hover:text-orange-600 transition-colors">
-                    +91 {phone}
+                  <a href={telHref(phone)} className="text-sm hover:text-orange-600 transition-colors">
+                    {displayIndianPhone(phone)}
                   </a>
                 </div>
               </div>
@@ -133,7 +126,16 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm leading-relaxed">{officeAddress || "Shop No 4, Chembur West, Mumbai, Maharashtra 400071"}</p>
+                  <p className="text-sm leading-relaxed">
+                    {officeAddress || "Shop No 4, Chembur West, Mumbai, Maharashtra 400071"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Clock className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm leading-relaxed">{workingHours || "24/7 Available (Open All 365 Days)"}</p>
                 </div>
               </div>
             </div>
@@ -144,7 +146,7 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
         {/* Bottom copyright */}
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <p className="text-sm text-gray-400">{footer?.copyright || "© 2026 CityTourCabs. All rights reserved."}</p>
+            <p className="text-sm text-gray-400">{copyright || "© 2026 CityTourCabs. All rights reserved."}</p>
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400">
               <a
                 href="/privacy-policy"
@@ -154,12 +156,12 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
               </a>
               <span>•</span>
               <a
-                href="https://www.pivisions.com"
+                href="https://kishorlab.dev"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-orange-600 transition-colors"
               >
-                Site design by PiVisions
+                Site design by Kishor Lab
               </a>
             </div>
           </div>

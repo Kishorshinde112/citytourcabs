@@ -3,9 +3,10 @@
 import React from 'react';
 import { Phone, MessageCircle, ArrowUp } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
+import { telHref, whatsappNumber } from '@/lib/phone';
 
 export default function FloatingActions({ onOpenBookModal = () => {}, onOpenEnquiryModal = () => {} }) {
-  const { phone } = useSettingsStore();
+  const { phone, whatsapp } = useSettingsStore();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -65,7 +66,7 @@ export default function FloatingActions({ onOpenBookModal = () => {}, onOpenEnqu
 
       {/* 2. Floating WhatsApp Button (Bottom Right) */}
       <a
-        href={`https://wa.me/91${phone}?text=${encodeURIComponent('Hi, I would like to inquire about your tour packages.')}`}
+        href={`https://wa.me/${whatsappNumber(whatsapp || phone)}?text=${encodeURIComponent('Hi, I would like to inquire about your tour packages.')}`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group cursor-pointer hidden sm:flex items-center justify-center"
@@ -80,7 +81,7 @@ export default function FloatingActions({ onOpenBookModal = () => {}, onOpenEnqu
       {/* Mobile Sticky Bottom Bar */}
       <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 p-2.5 px-3 flex items-center gap-2 shadow-2xl">
         <a
-          href={`tel:+91${phone}`}
+          href={telHref(phone)}
           className="flex-1 py-2.5 px-2 rounded-md bg-[#1A96EB] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs"
         >
           <Phone className="w-3.5 h-3.5" />
@@ -88,7 +89,7 @@ export default function FloatingActions({ onOpenBookModal = () => {}, onOpenEnqu
         </a>
 
         <a
-          href={`https://wa.me/91${phone}?text=Hi%20CityTourCabs,%20I%20want%20to%20book%20a%20cab.`}
+          href={`https://wa.me/${whatsappNumber(whatsapp || phone)}?text=Hi%20CityTourCabs,%20I%20want%20to%20book%20a%20cab.`}
           target="_blank"
           rel="noreferrer"
           className="flex-1 py-2.5 px-2 rounded-md bg-green-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs"

@@ -266,7 +266,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	\`help_phone\` text DEFAULT '9967672660',
   	\`support_email\` text DEFAULT 'citytourcabs8@gmail.com',
   	\`whatsapp_number\` text DEFAULT '917021001921',
-  	\`chatbot_webhook_url\` text DEFAULT 'https://n8n.kishorlab.dev/webhook-test/4d6e3906-3c0c-4c18-bef2-cf30563485c0',
+  \`chatbot_webhook_url\` text DEFAULT '',
   	\`updated_at\` text,
   	\`created_at\` text
   );

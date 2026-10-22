@@ -4,7 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, ArrowRight } from 'lucide-react';
 import ScrollReveal from '@/components/common/ScrollReveal';
 
-export default function TourPackages({ showMumbaiOnly = false, onSelectTour = undefined, onOpenBookModal = undefined }) {
+export default function TourPackages({
+  showMumbaiOnly = false,
+  onSelectTour = undefined,
+  onOpenBookModal = undefined,
+  headingAs: Heading = 'h2',
+  title = 'Explore Mumbai & Beyond',
+  subtitle = 'Discover our range of convenient and comfortable cab services tailored to your needs.',
+  tourIds = null,
+}) {
   const defaultTourCards = [
     {
       id: "mumbai-darshan",
@@ -129,9 +137,18 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
     };
   }, []);
 
-  const displayTours = showMumbaiOnly
-    ? tourCards.filter(t => t.id === 'mumbai-darshan')
-    : tourCards;
+  const selectedIds = Array.isArray(tourIds) && tourIds.length
+    ? tourIds
+        .map((tour) => (tour && typeof tour === 'object' ? tour.slug || tour.id : tour))
+        .filter(Boolean)
+        .map(String)
+    : null;
+
+  const displayTours = tourCards.filter((tour) => {
+    if (showMumbaiOnly && tour.id !== 'mumbai-darshan') return false;
+    if (!selectedIds) return true;
+    return selectedIds.includes(String(tour.id)) || selectedIds.some((id) => tour.href?.endsWith(`/${id}`));
+  });
 
   return (
     <section id="tours" className="py-16 md:py-24 bg-blue-50 text-gray-900">
@@ -140,11 +157,11 @@ export default function TourPackages({ showMumbaiOnly = false, onSelectTour = un
         {/* Section Header */}
         <ScrollReveal>
           <div className="mb-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
-              Explore Mumbai & Beyond
-            </h2>
+            <Heading className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
+              {title || 'Explore Mumbai & Beyond'}
+            </Heading>
             <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
-              Discover our range of convenient and comfortable cab services tailored to your needs.
+              {subtitle}
             </p>
           </div>
         </ScrollReveal>

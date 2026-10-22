@@ -39,7 +39,10 @@ const DEFAULT_IMAGES = [
   }
 ];
 
-export default function GallerySection() {
+export default function GallerySection({
+  title = 'Memories from Our Tours',
+  subtitle = 'Explore the beautiful moments captured during our tours and sightseeing trips.',
+}) {
   const [images, setImages] = useState(DEFAULT_IMAGES);
   const [desktopIndex, setDesktopIndex] = useState(0);
   const [mobileIndex, setMobileIndex] = useState(0);
@@ -109,10 +112,10 @@ export default function GallerySection() {
         <ScrollReveal>
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-[30px] font-[Reddit_Sans] font-bold text-gray-900">
-              Memories from Our Tours
+              {title || 'Memories from Our Tours'}
             </h2>
             <p className="max-w-2xl mx-auto text-base sm:text-lg" style={{ color: "#4b5563" }}>
-              Explore the beautiful moments captured during our tours and sightseeing trips.
+              {subtitle}
             </p>
           </div>
         </ScrollReveal>

@@ -26,7 +26,10 @@ const DEFAULT_REVIEWS = [
   },
 ];
 
-export default function Testimonials() {
+export default function Testimonials({
+  title = 'What Our Customers Say',
+  subtitle = "Don't just take our word for it - hear from our satisfied customers.",
+}) {
   const [reviews, setReviews] = useState(DEFAULT_REVIEWS);
 
   const sectionRef = React.useRef(null);
@@ -36,15 +39,20 @@ export default function Testimonials() {
 
     async function loadTestimonials() {
       try {
-        const res = await fetch('/api/testimonials');
+        const res = await fetch('/api/testimonials?limit=100&depth=0');
         if (res.ok && active) {
           const data = await res.json();
-          if (data.success && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+          const docs = Array.isArray(data.docs)
+            ? data.docs
+            : Array.isArray(data.testimonials)
+              ? data.testimonials
+              : [];
+          if (docs.length > 0) {
             setReviews(
-              data.testimonials.map((item) => ({
+              docs.map((item) => ({
                 name: item.name,
                 location: item.location || '',
-                text: item.comment || item.text,
+                text: item.text || item.comment,
                 rating: item.rating || 5,
               }))
             );
@@ -83,13 +91,13 @@ export default function Testimonials() {
         <ScrollReveal>
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-[Reddit_Sans]">
-              What Our Customers Say
+              {title || 'What Our Customers Say'}
             </h2>
             <p
               className="text-gray-600 max-w-2xl mx-auto font-handwritten"
               style={{ fontSize: "1.25rem", fontFamily: "'Caveat', cursive" }}
             >
-              Don't just take our word for it - hear from our satisfied customers.
+              {subtitle}
             </p>
           </div>
         </ScrollReveal>

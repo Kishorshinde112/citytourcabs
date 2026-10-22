@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,14 +8,15 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: [
           '/admin',
-          '/admin/*',
-          '/api/*',
+          '/admin/',
+          '/api/',
           '/booking-confirmed',
-          '/inquiry-confirmed',
           '/enquiry-confirmed',
+          '/inquiry-confirmed',
         ],
       },
     ],
     sitemap: 'https://citytourcabs.in/sitemap.xml',
+    host: 'https://citytourcabs.in',
   };
 }

@@ -1,6 +1,7 @@
 import sqlite3
 import json
 import datetime
+import os
 
 SRC_DB = '/home/ubuntu/cabs-citytour/data/payload.db'
 DST_DB = '/home/ubuntu/citytourcabs/data/citytourcabs.db'
@@ -13,6 +14,8 @@ def run_sync():
     dst_cur = dst.cursor()
 
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    # Optional; leave unset to skip storing a chat webhook.
+    webhook_url = (os.environ.get('N8N_CHAT_WEBHOOK_URL') or os.environ.get('CHATBOT_WEBHOOK_URL') or '').strip()
 
     # 1. Sync Tours & Tour Blocks
     tour_tables = [
@@ -91,10 +94,10 @@ def run_sync():
             whatsapp_number, updated_at, created_at
         ) VALUES (
             1, 'City Tour Cabs', '7021001921', '9967672660', 'citytourcabs8@gmail.com', '917021001921',
-            'https://n8n.kishorlab.dev/webhook-test/4d6e3906-3c0c-4c18-bef2-cf30563485c0', 'City Tour Cabs', '7021001921', 'citytourcabs8@gmail.com',
+            ?, 'City Tour Cabs', '7021001921', 'citytourcabs8@gmail.com',
             '917021001921', ?, ?
         )
-    """, (now_iso, now_iso))
+    """, (webhook_url, now_iso, now_iso))
     print("  -> Seeded site_settings")
 
     # 4. Clean up any foreign branding references

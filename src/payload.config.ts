@@ -4,6 +4,7 @@ import { buildConfig } from 'payload'
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import sharp from 'sharp'
 
 
 import { Users } from './collections/Users'
@@ -16,12 +17,36 @@ import { SiteSettings, Navigation, Footer } from './globals'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-if (process.env.NODE_ENV === 'production' && !process.env.PAYLOAD_SECRET) {
+const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build'
+const isProductionRuntime =
+  process.env.NODE_ENV === 'production' && !isBuildPhase
+
+const configuredDbUri = (process.env.DATABASE_URI || '').trim()
+
+// Production runtime must use PostgreSQL. The build phase is exempt because
+// the Docker builder intentionally has no production database credentials;
+// the fallback SQLite file is never used by a production server at runtime.
+if (isProductionRuntime && !configuredDbUri) {
+  throw new Error(
+    'DATABASE_URI must be set in production. Refusing to fall back to SQLite; set DATABASE_URI to the production PostgreSQL connection string.',
+  )
+}
+
+if (
+  isProductionRuntime &&
+  !/^postgres(ql)?:\/\//i.test(configuredDbUri)
+) {
+  throw new Error(
+    'Production DATABASE_URI must be a PostgreSQL connection string (postgres:// or postgresql://). SQLite and other database URLs are not supported in production.',
+  )
+}
+
+if (process.env.NODE_ENV === 'production' && !process.env.PAYLOAD_SECRET && !isBuildPhase) {
   throw new Error('PAYLOAD_SECRET must be set in production');
 }
 
-const rawDbUri = process.env.DATABASE_URI || 'file:./data/citytourcabs.db'
-const isPostgres = rawDbUri.startsWith('postgres://') || rawDbUri.startsWith('postgresql://')
+const rawDbUri = configuredDbUri || 'file:./data/citytourcabs.db'
+const isPostgres = /^postgres(ql)?:\/\//i.test(rawDbUri)
 
 const dbUri = (() => {
   if (rawDbUri.startsWith('file:')) {
@@ -41,8 +66,24 @@ const dbUri = (() => {
   return rawDbUri
 })()
 
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://citytourcabs.in'
+const csrfOrigins = [serverURL]
+
+// Localhost is a development convenience only; never widen production CSRF.
+if (process.env.NODE_ENV !== 'production') {
+  csrfOrigins.push('http://localhost:3000', 'http://127.0.0.1:3000')
+}
+
+// Supabase's pooler can present a self-signed chain. Keep the legacy fallback
+// until DB_SSL_CA is configured, then verify the full chain against that CA.
+const dbSsl = process.env.DB_SSL_CA
+  ? { ca: process.env.DB_SSL_CA.replace(/\\n/g, '\n'), rejectUnauthorized: true }
+  : { rejectUnauthorized: false }
+
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'https://citytourcabs.in',
+  serverURL,
+  csrf: csrfOrigins,
+  sharp,
   admin: {
     user: Users.slug,
     meta: {
@@ -75,17 +116,23 @@ export default buildConfig({
     ? postgresAdapter({
         pool: {
           connectionString: dbUri,
-          ssl: { rejectUnauthorized: false },
+          ssl: dbSsl,
         },
-        push: process.env.NODE_ENV !== 'production' || process.env.DB_PUSH === 'true',
+        push: process.env.DB_PUSH === 'true',
       })
     : sqliteAdapter({
         client: {
           url: dbUri,
         },
-        push: false,
+        push: process.env.NODE_ENV !== 'production' || process.env.DB_PUSH === 'true',
       }),
-  secret: process.env.PAYLOAD_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'local-dev-only-change-me'),
+  secret:
+    process.env.PAYLOAD_SECRET ||
+    (isBuildPhase
+      ? 'build-phase-placeholder-not-used-at-runtime'
+      : process.env.NODE_ENV === 'production'
+        ? ''
+        : 'local-dev-only-change-me'),
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

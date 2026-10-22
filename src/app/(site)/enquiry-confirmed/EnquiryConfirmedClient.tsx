@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   CheckCircle2,
   Phone,
@@ -15,15 +15,14 @@ import {
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
 import { trackLeadEnquiry } from '@/lib/analytics';
+import { displayIndianPhone, telHref, whatsappNumber } from '@/lib/phone';
 
 export default function EnquiryConfirmedClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { phone } = useSettingsStore();
   const [enquiry, setEnquiry] = useState<any>(null);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const enquiryIdRef = useRef<string>('');
   const hasTrackedRef = useRef<boolean>(false);
 
   useEffect(() => {
@@ -38,52 +37,40 @@ export default function EnquiryConfirmedClient() {
       // ignore
     }
 
-    const fallbackId = (
-      searchParams.get('id') ||
-      saved.id ||
-      ''
-    ).trim();
+    const enquiryId = (saved.id || '').trim();
 
-    // Route Guard: If no valid enquiry reference exists, redirect to home page immediately
-    if (!fallbackId) {
+    // Route Guard: If no confirmation data exists, redirect to home page immediately
+    if (!enquiryId) {
       setIsRedirecting(true);
       router.replace('/');
       return;
     }
 
-    enquiryIdRef.current = fallbackId;
+    const submissionType = String(saved.type || '').trim().toLowerCase();
+    if (submissionType === 'booking') {
+      router.replace('/booking-confirmed');
+      return;
+    }
 
     const resolvedTour =
-      searchParams.get('tour') ||
       saved.tourName ||
       saved.dropCity ||
       saved.tripType ||
       'Tour Enquiry';
 
     setEnquiry({
-      id: fallbackId,
-      name:
-        searchParams.get('name') ||
-        saved.name ||
-        '',
-      contact:
-        searchParams.get('contact') ||
-        saved.contact ||
-        saved.phone ||
-        '',
+      name: saved.name || '',
+      contact: saved.contact || saved.phone || '',
       tourName: resolvedTour,
-      travelDate:
-        searchParams.get('date') ||
-        saved.travelDate ||
-        '',
+      travelDate: saved.travelDate || '',
     });
 
     // Unified GA4 & Google Ads Lead Conversion tracking (with deduplication latches)
     if (!hasTrackedRef.current) {
       hasTrackedRef.current = true;
-      trackLeadEnquiry(fallbackId, resolvedTour);
+      trackLeadEnquiry(enquiryId, resolvedTour);
     }
-  }, [searchParams, router]);
+  }, [router]);
 
   // While checking authorization or redirecting, show spinner and block content
   if (isRedirecting || !enquiry) {
@@ -94,12 +81,8 @@ export default function EnquiryConfirmedClient() {
     );
   }
 
-  const enquiryId = enquiryIdRef.current || enquiry.id || '';
-
   const whatsappMessage =
-    `Hi City Tour Cabs, I just submitted an enquiry (Ref: ${enquiryId}). Please share tour details and fare quotation for ${encodeURIComponent(
-      enquiry.tourName || 'my tour'
-    )}.`;
+    `Hi City Tour Cabs, I just submitted an enquiry. Please share tour details and fare quotation for ${enquiry.tourName || 'my tour'}.`;
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden text-slate-100">
@@ -138,13 +121,6 @@ export default function EnquiryConfirmedClient() {
         {/* Enquiry Summary Card */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl mb-6 space-y-4">
 
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-              Enquiry Reference
-            </span>
-            <span className="text-yellow-400 font-black text-base">{enquiryId}</span>
-          </div>
-
           <div className="space-y-3">
 
             {/* Customer Name */}
@@ -164,7 +140,7 @@ export default function EnquiryConfirmedClient() {
                 <Phone className="w-4 h-4 text-yellow-400 shrink-0" />
                 <span className="text-zinc-400">Phone:</span>
                 <span className="text-white font-semibold ml-auto">
-                  +91 {enquiry.contact}
+                  {displayIndianPhone(enquiry.contact)}
                 </span>
               </div>
             )}
@@ -202,7 +178,7 @@ export default function EnquiryConfirmedClient() {
         <div className="grid grid-cols-2 gap-3 mb-4">
 
           <a
-            href={`tel:+91${phone}`}
+            href={telHref(phone)}
             className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-yellow-400 hover:bg-yellow-500 text-black font-black text-sm transition shadow-lg shadow-yellow-400/20"
           >
             <Phone className="w-4 h-4" />
@@ -210,7 +186,7 @@ export default function EnquiryConfirmedClient() {
           </a>
 
           <a
-            href={`https://wa.me/91${phone}?text=${encodeURIComponent(whatsappMessage)}`}
+            href={`https://wa.me/${whatsappNumber(phone)}?text=${encodeURIComponent(whatsappMessage)}`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-black text-sm transition shadow-lg"

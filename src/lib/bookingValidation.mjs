@@ -37,7 +37,9 @@ export function validateBooking(input, now = new Date()) {
   const type = input.type === 'Booking' ? 'Booking' : 'Inquiry';
   const route = text(input.route || input.tourName || input.destination || input.drop || 'Custom Trip', 200, 'Route');
   const passengers = text(input.passengers || input.noOfPassengers || '4', 3, 'Passenger count');
-  if (!/^\d{1,3}$/.test(passengers) || Number(passengers) < 1 || Number(passengers) > 50) {
+  // The booking modal exposes "8+" as a supported group-size option.
+  const passengerCount = passengers.endsWith('+') ? passengers.slice(0, -1) : passengers;
+  if (!/^\d{1,3}$/.test(passengerCount) || Number(passengerCount) < 1 || Number(passengerCount) > 50) {
     throw new BookingValidationError('Passenger count must be between 1 and 50');
   }
   return {

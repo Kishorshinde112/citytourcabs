@@ -1387,7 +1387,39 @@ export interface SiteSetting {
   email?: string | null;
   whatsapp?: string | null;
   chatbotWebhookUrl?: string | null;
+  /**
+   * When enabled, new bookings and enquiries are sent to the webhook URLs below.
+   */
+  notificationsEnabled?: boolean | null;
+  /**
+   * n8n webhook for booking requests. Falls back to N8N_INTERNAL_URL when empty.
+   */
+  bookingWebhookUrl?: string | null;
+  /**
+   * n8n webhook for quick enquiries. Falls back to N8N_INTERNAL_URL when empty.
+   */
+  enquiryWebhookUrl?: string | null;
   logo?: (number | null) | Media;
+  officeAddress?: string | null;
+  workingHours?: string | null;
+  announcement?: {
+    enabled?: boolean | null;
+    text?: string | null;
+  };
+  promoPopup?: {
+    enabled?: boolean | null;
+    delaySeconds?: number | null;
+    headline?: string | null;
+    subtext?: string | null;
+    discountBadge?: string | null;
+    couponCode?: string | null;
+  };
+  footer?: {
+    bio?: string | null;
+    copyright?: string | null;
+    facebookUrl?: string | null;
+    instagramUrl?: string | null;
+  };
   siteName?: string | null;
   supportPhone?: string | null;
   supportEmail?: string | null;
@@ -1445,7 +1477,36 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   email?: T;
   whatsapp?: T;
   chatbotWebhookUrl?: T;
+  notificationsEnabled?: T;
+  bookingWebhookUrl?: T;
+  enquiryWebhookUrl?: T;
   logo?: T;
+  officeAddress?: T;
+  workingHours?: T;
+  announcement?:
+    | T
+    | {
+        enabled?: T;
+        text?: T;
+      };
+  promoPopup?:
+    | T
+    | {
+        enabled?: T;
+        delaySeconds?: T;
+        headline?: T;
+        subtext?: T;
+        discountBadge?: T;
+        couponCode?: T;
+      };
+  footer?:
+    | T
+    | {
+        bio?: T;
+        copyright?: T;
+        facebookUrl?: T;
+        instagramUrl?: T;
+      };
   siteName?: T;
   supportPhone?: T;
   supportEmail?: T;
