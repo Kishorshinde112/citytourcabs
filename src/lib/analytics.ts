@@ -42,7 +42,7 @@ declare global {
 }
 
 /**
- * Tracks a successful lead enquiry across both Google Ads and Google Analytics 4.
+ * Tracks a successful lead enquiry for Google Analytics 4 and GTM.
  * Includes multiple layers of deduplication:
  * 1. Client-side sessionStorage latch (prevents page reloads from double-counting).
  * 2. transaction_id parameter (enables Google Ads and GA4 to deduplicate server-side).
@@ -76,20 +76,8 @@ export function trackLeadEnquiry(enquiryId: string, tourName?: string) {
     }
   }
 
-  const gadsSendTo = GADS_CONVERSION_LABEL
-    ? `${GADS_TAG_ID}/${GADS_CONVERSION_LABEL}`
-    : GADS_TAG_ID;
-
   try {
-    // 1. Google Ads Conversion Event with transaction_id deduplication
-    sendGtag('event', 'conversion', {
-      send_to: gadsSendTo,
-      transaction_id: cleanId,
-      value: 1.0,
-      currency: 'INR',
-    });
-
-    // 2. Google Analytics 4 Recommended 'generate_lead' Event
+    // 1. Google Analytics 4 Recommended 'generate_lead' Event
     sendGtag('event', 'generate_lead', {
       transaction_id: cleanId,
       value: 1.0,
@@ -98,17 +86,17 @@ export function trackLeadEnquiry(enquiryId: string, tourName?: string) {
       tour_name: tourName || 'Tour Enquiry',
     });
 
-    // 3. GTM-only signal for the unpublished Google Ads conversion tag.
-    // The existing direct Google Ads and GA4 events above remain unchanged.
+    // 2. GTM-only signal for the Google Ads conversion tag.
+    // Direct Google Ads conversion tracking was removed from this function.
     dataLayer.push({
-      event: 'citytourcabs_enquiry_success',
+      event: 'citytourcabs_enquiry_success_v2',
       transaction_id: cleanId,
     });
   } catch {
     return;
   }
 
-  // Only latch after both commands were queued or handed to gtag. This prevents
+  // Only latch after the GA4 command and GTM event were queued. This prevents
   // duplicate sends, but does not by itself prove Google Ads received the event.
   try {
     sessionStorage.setItem(storageKey, 'true');
