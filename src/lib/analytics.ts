@@ -97,6 +97,13 @@ export function trackLeadEnquiry(enquiryId: string, tourName?: string) {
       lead_type: 'Tour Enquiry',
       tour_name: tourName || 'Tour Enquiry',
     });
+
+    // 3. GTM-only signal for the unpublished Google Ads conversion tag.
+    // The existing direct Google Ads and GA4 events above remain unchanged.
+    dataLayer.push({
+      event: 'citytourcabs_enquiry_success',
+      transaction_id: cleanId,
+    });
   } catch {
     return;
   }
