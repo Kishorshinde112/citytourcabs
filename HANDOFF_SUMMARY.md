@@ -62,8 +62,8 @@
     - **Google Analytics 4 Measurement ID**: `G-E6E794WM68`
     - **Google Ads Tag ID**: `AW-18526387794`
 - **Official Conversion Label (`src/lib/analytics.ts`)**:
-  - Configured the required Google Ads conversion label: `GQMOCJ-eoaMdENL8iIJF`.
-  - `send_to` dispatches to: `'AW-18526387794/GQMOCJ-eoaMdENL8iIJF'`.
+  - Configured the required Google Ads conversion label: `4HTzCLqMl6cdENL8iIJF`.
+  - `send_to` dispatches to: `'AW-18526387794/4HTzCLqMl6cdENL8iIJF'`.
   - Dispatches GA4 recommended `'generate_lead'` event with `transaction_id`, currency (`INR`), and tour details.
 - **5-Layer Duplicate Protection**:
   1. **Route Guard**: Direct visits without reference IDs bounce to `/` before any tracking runs.

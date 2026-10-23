@@ -4,9 +4,18 @@
 export const GA4_MEASUREMENT_ID = 'G-E6E794WM68';
 export const GADS_TAG_ID = 'AW-18526387794';
 
-// Optional custom conversion label from environment variable or Google Ads default
+const CURRENT_GADS_CONVERSION_LABEL = '4HTzCLqMl6cdENL8iIJF';
+const LEGACY_GADS_CONVERSION_LABEL = 'GQMOCJ-eoaMdENL8iIJF';
+
+const configuredGadsConversionLabel =
+  process.env.NEXT_PUBLIC_GADS_CONVERSION_LABEL?.trim();
+
+// A stale deployment override must not reactivate the retired conversion action.
 export const GADS_CONVERSION_LABEL =
-  process.env.NEXT_PUBLIC_GADS_CONVERSION_LABEL || 'GQMOCJ-eoaMdENL8iIJF';
+  configuredGadsConversionLabel &&
+  configuredGadsConversionLabel !== LEGACY_GADS_CONVERSION_LABEL
+    ? configuredGadsConversionLabel
+    : CURRENT_GADS_CONVERSION_LABEL;
 
 const PRODUCTION_ANALYTICS_HOSTS = new Set([
   'citytourcabs.in',

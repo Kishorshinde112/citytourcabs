@@ -8,7 +8,7 @@ services:
         NEXT_PUBLIC_SITE_URL: https://citytourcabs.in
         NEXT_PUBLIC_SERVER_URL: https://citytourcabs.in
         NEXT_PUBLIC_SITE_NAME: "City Tour Cabs"
-        NEXT_PUBLIC_GADS_CONVERSION_LABEL: ${NEXT_PUBLIC_GADS_CONVERSION_LABEL:-GQMOCJ-eoaMdENL8iIJF}
+        NEXT_PUBLIC_GADS_CONVERSION_LABEL: ${NEXT_PUBLIC_GADS_CONVERSION_LABEL:-4HTzCLqMl6cdENL8iIJF}
     image: citytourcabs:latest
     container_name: citytourcabs
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
       - N8N_INTERNAL_URL=${N8N_INTERNAL_URL:-http://n8n:5678/webhook/booking-notification}
       - N8N_WEBHOOK_TOKEN=${N8N_WEBHOOK_TOKEN:-}
       - N8N_CHAT_WEBHOOK_URL=${N8N_CHAT_WEBHOOK_URL:-}
-      - NEXT_PUBLIC_GADS_CONVERSION_LABEL=${NEXT_PUBLIC_GADS_CONVERSION_LABEL:-GQMOCJ-eoaMdENL8iIJF}
+      - NEXT_PUBLIC_GADS_CONVERSION_LABEL=${NEXT_PUBLIC_GADS_CONVERSION_LABEL:-4HTzCLqMl6cdENL8iIJF}
     volumes:
       - media_storage:/app/public/media
     networks:
