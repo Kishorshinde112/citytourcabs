@@ -12,10 +12,6 @@ const TOUR_PACKAGES_MAP = {
     '8hrs 80 kms',
     '10hrs 100 kms',
     '12hrs 120 kms',
-    'South Mumbai Heritage Tour (8 Hours / 80 Km)',
-    'Suburban Bollywood & Beach Tour (10 Hours / 100 Km)',
-    'Full City Complete Darshan (12 Hours / 120 Km)',
-    'Custom Mumbai Darshan Plan',
   ],
   'Lonavala Trip': [
     'Lonavala 1-Day Sightseeing Tour',
