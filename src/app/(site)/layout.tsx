@@ -1,7 +1,43 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
+import { headers } from 'next/headers';
 import Script from 'next/script';
 import '@/app/globals.css';
+
+const GTM_CONTAINER_ID = 'GTM-PS2XBSRK';
+const PRODUCTION_ANALYTICS_HOSTS = new Set(['citytourcabs.in', 'www.citytourcabs.in']);
+
+const GTM_BOOTSTRAP = `
+  (function (w, d, s, l, i) {
+    var host = w.location.hostname.toLowerCase().replace(/\\.$/, '');
+    if (${JSON.stringify(Array.from(PRODUCTION_ANALYTICS_HOSTS))}.indexOf(host) === -1) return;
+    if (d.getElementById('gtm-script')) return;
+
+    w[l] = w[l] || [];
+    w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+
+    var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l !== 'dataLayer' ? '&l=' + l : '';
+    j.async = true;
+    j.id = 'gtm-script';
+    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+    f.parentNode.insertBefore(j, f);
+  })(window, document, 'script', 'dataLayer', '${GTM_CONTAINER_ID}');
+`;
+
+function normalizeHostname(host: string | null | undefined) {
+  return (host || '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase()
+    .replace(/:\d+$/, '')
+    .replace(/\.$/, '');
+}
+
+function isProductionAnalyticsHost(host: string | null | undefined) {
+  return PRODUCTION_ANALYTICS_HOSTS.has(normalizeHostname(host));
+}
 
 export const viewport: Viewport = {
   themeColor: '#1A96EB',
@@ -57,10 +93,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const requestHeaders = await headers();
+  const requestHost = requestHeaders.get('x-forwarded-host') || requestHeaders.get('host');
+  const showGtmNoscript = isProductionAnalyticsHost(requestHost);
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        {/* Google Tag Manager */}
+        <script dangerouslySetInnerHTML={{ __html: GTM_BOOTSTRAP }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -110,6 +152,19 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-white text-gray-900 font-sans antialiased selection:bg-[#1A96EB] selection:text-white">
+        {/* Google Tag Manager (noscript) */}
+        {showGtmNoscript && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${GTM_CONTAINER_ID}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
+        {/* End Google Tag Manager (noscript) */}
+
         {/* Google Tag (gtag.js) for GA4 (G-E6E794WM68) & Google Ads (AW-18526387794).
             Load only on the production hostnames so localhost and staging do not
             send analytics traffic. */}
