@@ -590,7 +590,15 @@ button[type="submit"]:not(.btn--secondary):hover {
   }
 }
 
+.admin-mobile-nav-toggle {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  .admin-mobile-nav-toggle {
+    display: flex;
+  }
+
   :root {
     --admin-drawer-width: 100vw;
   }

@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { headers } from 'next/headers';
 import Script from 'next/script';
 import '@/app/globals.css';
+import ContactClickTracking from '@/components/layout/ContactClickTracking';
 
 const GTM_CONTAINER_ID = 'GTM-PS2XBSRK';
 const PRODUCTION_ANALYTICS_HOSTS = new Set(['citytourcabs.in', 'www.citytourcabs.in']);
@@ -195,6 +196,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             })();
           `}
         </Script>
+        <ContactClickTracking />
         {children}
       </body>
     </html>

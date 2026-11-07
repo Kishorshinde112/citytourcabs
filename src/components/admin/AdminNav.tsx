@@ -146,7 +146,7 @@ export const AdminNav: React.FC<any> = () => {
       {/* Mobile Hamburger Toggle */}
       <button
         type="button"
-        className="admin-mobile-nav-toggle md:hidden"
+        className="admin-mobile-nav-toggle"
         onClick={() => setMobileOpen(!mobileOpen)}
         style={{
           position: 'fixed',
@@ -158,7 +158,6 @@ export const AdminNav: React.FC<any> = () => {
           borderRadius: '6px',
           padding: '6px',
           cursor: 'pointer',
-          display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: '0 2px 4px rgba(0,0,0,0.06)',

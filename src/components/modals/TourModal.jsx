@@ -13,16 +13,11 @@ export default function TourModal({ tour, onClose, onBookClick }) {
 
   const { phone } = useSettingsStore();
 
-  const handleWhatsAppBooking = () => {
-    // Opening WhatsApp is not a confirmed booking; don't insert a fake lead.
-
-    const text = `*🚖 City Tour Cabs - Tour Booking Request*\n\n` +
-      `*Package:* ${tour.title}\n` +
-      `*Duration:* ${tour.duration}\n` +
-      `*Starting Fare:* ${tour.startingPrice}\n\n` +
-      `Hello, I would like to inquire about booking the *${tour.title}* package. Please share available car options and best discounted rate.`;
-    window.open(`https://wa.me/${whatsappNumber(phone)}?text=${encodeURIComponent(text)}`, '_blank');
-  };
+  const whatsappMessage = `*🚖 City Tour Cabs - Tour Booking Request*\n\n` +
+    `*Package:* ${tour.title}\n` +
+    `*Duration:* ${tour.duration}\n` +
+    `*Starting Fare:* ${tour.startingPrice}\n\n` +
+    `Hello, I would like to inquire about booking the *${tour.title}* package. Please share available car options and best discounted rate.`;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fadeIn">
@@ -210,13 +205,15 @@ export default function TourModal({ tour, onClose, onBookClick }) {
               <span>Call Us</span>
             </a>
 
-            <button
-              onClick={handleWhatsAppBooking}
+            <a
+              href={`https://wa.me/${whatsappNumber(phone)}?text=${encodeURIComponent(whatsappMessage)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex-1 sm:flex-none py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Book on WhatsApp</span>
-            </button>
+            </a>
           </div>
         </div>
 
