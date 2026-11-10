@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -16,31 +16,57 @@ import {
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
 import { displayIndianPhone, telHref, whatsappNumber } from '@/lib/phone';
+import { isAnalyticsHostAllowed } from '@/lib/analytics';
+
+type BookingDetails = {
+  id: string;
+  name: string;
+  contact: string;
+  pickupLocation: string;
+  tourName: string;
+  travelDate: string;
+  carType: string;
+  type: 'Booking';
+};
+
+function asText(value: unknown): string {
+  return typeof value === 'string' || typeof value === 'number'
+    ? String(value)
+    : '';
+}
 
 export default function BookingConfirmedClient() {
   const router = useRouter();
   const { phone } = useSettingsStore();
-  const [booking, setBooking] = useState<any>(null);
-  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
+  const [booking, setBooking] = useState<BookingDetails | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const trackedBookingIds = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    let saved: any = {};
+    let saved: Record<string, unknown> = {};
+
     try {
-      const stored = sessionStorage.getItem('last_booking');
-      if (stored) {
-        saved = JSON.parse(stored);
+      const stored = window.sessionStorage.getItem('last_booking');
+      const parsed: unknown = stored ? JSON.parse(stored) : null;
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        saved = parsed as Record<string, unknown>;
       }
     } catch {
-      // ignore
+      // Invalid or unavailable session data must never create a conversion.
     }
 
-    const isEnq =
-      (saved.type || '').toLowerCase() === 'enquiry' ||
-      (saved.type || '').toLowerCase() === 'inquiry';
-    const bookingId = (saved.id || '').trim();
+    const bookingType = asText(saved.type).trim().toLowerCase();
+    const bookingId = asText(saved.id).trim();
 
-    // Route Guard: If no confirmation data exists, redirect to home page immediately
-    if (!bookingId) {
+    // An enquiry must stay in its own, existing GTM conversion flow.
+    if (bookingType === 'enquiry' || bookingType === 'inquiry') {
+      setIsRedirecting(true);
+      router.replace('/enquiry-confirmed');
+      return;
+    }
+
+    // Only a saved booking request with a backend-generated ID qualifies.
+    if (bookingType !== 'booking' || !bookingId) {
       setIsRedirecting(true);
       router.replace('/');
       return;
@@ -48,14 +74,50 @@ export default function BookingConfirmedClient() {
 
     setBooking({
       id: bookingId,
-      name: saved.name || '',
-      contact: saved.contact || saved.phone || '',
-      pickupLocation: saved.pickupLocation || saved.pickupCity || '',
-      tourName: saved.tourName || saved.dropCity || saved.tripType || 'Cab Service',
-      travelDate: saved.travelDate || '',
-      carType: saved.carType || 'Sedan (Dzire / Etios)',
-      type: isEnq ? 'Enquiry' : 'Booking',
+      name: asText(saved.name),
+      contact: asText(saved.contact) || asText(saved.phone),
+      pickupLocation: asText(saved.pickupLocation) || asText(saved.pickupCity),
+      tourName: asText(saved.tourName) || asText(saved.dropCity) || asText(saved.tripType) || 'Cab Service',
+      travelDate: asText(saved.travelDate),
+      carType: asText(saved.carType) || 'Sedan (Dzire / Etios)',
+      type: 'Booking',
     });
+
+    // Send a GTM-only event. Never dispatch a direct Google Ads conversion
+    // here: the GTM conversion tag should be the sole sender.
+    if (!isAnalyticsHostAllowed()) return;
+    if (trackedBookingIds.current.has(bookingId)) return;
+
+    const dedupKey = `ctc_booking_request_tracked_${bookingId}`;
+    try {
+      if (window.sessionStorage.getItem(dedupKey) === 'true') {
+        trackedBookingIds.current.add(bookingId);
+        return;
+      }
+    } catch {
+      // Ref-based deduplication still works if storage is unavailable.
+    }
+
+    try {
+      window.dataLayer ??= [];
+      window.dataLayer.push({
+        event: 'booking_request_success',
+        transaction_id: bookingId,
+        booking_id: bookingId,
+        lead_type: 'booking_request',
+      });
+
+      // Latch only after the event was queued. This confirms neither
+      // tag firing nor Google Ads acceptance/attribution.
+      trackedBookingIds.current.add(bookingId);
+      try {
+        window.sessionStorage.setItem(dedupKey, 'true');
+      } catch {
+        // No persistent latch when storage is disabled.
+      }
+    } catch {
+      // Do not mark as tracked if the dataLayer push failed.
+    }
   }, [router]);
 
   // While checking authorization or redirecting, show spinner and block content
@@ -67,13 +129,7 @@ export default function BookingConfirmedClient() {
     );
   }
 
-  const isEnquiry =
-    (booking.type || '').toLowerCase() === 'enquiry' ||
-    (booking.type || '').toLowerCase() === 'inquiry';
-
-  const whatsappMessage = isEnquiry
-    ? `Hi City Tour Cabs, I just submitted an enquiry. Please share fare quotation and details for ${booking.tourName || 'my tour'}.`
-    : `Hi City Tour Cabs, I just submitted a booking request. Please confirm my cab for ${booking.tourName || 'my trip'}.`;
+  const whatsappMessage = `Hi City Tour Cabs, I just submitted a booking request. Please confirm my cab for ${booking.tourName || 'my trip'}.`;
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden text-slate-100">
@@ -89,20 +145,13 @@ export default function BookingConfirmedClient() {
             <CheckCircle2 className="w-12 h-12 text-black" />
           </div>
           <div className="flex items-center gap-2 text-yellow-400 text-xs font-bold uppercase tracking-widest mb-2">
-            <Sparkles className="w-4 h-4" /> {isEnquiry ? 'Enquiry Confirmed' : 'Booking Request Received'}
+            <Sparkles className="w-4 h-4" /> Booking Request Received
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">
             Thank You, {booking.name || 'Valued Customer'}! 🎉
           </h1>
           <p className="text-zinc-400 text-sm max-w-sm">
-            {isEnquiry ? (
-              <>
-                Your enquiry request has been received. Our team will call you in{' '}
-                <span className="text-yellow-400 font-bold">a couple of minutes</span> to confirm your tour and cab details.
-              </>
-            ) : (
-              <>Your booking request has been received. Our team will contact you shortly to confirm your booking, driver and cab details.</>
-            )}
+            Your booking request has been received. Our team will contact you shortly to confirm your booking, driver and cab details.
           </p>
         </div>
 
