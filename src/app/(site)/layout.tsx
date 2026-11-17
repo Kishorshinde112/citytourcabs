@@ -196,6 +196,13 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             })();
           `}
         </Script>
+        {/* Umami Analytics */}
+        <Script
+          id="umami-analytics"
+          strategy="afterInteractive"
+          src="https://analytics.kishorlab.dev/script.js"
+          data-website-id="c308637f-6ddb-401d-8e71-09de9e4e5da7"
+        />
         <ContactClickTracking />
         {children}
       </body>

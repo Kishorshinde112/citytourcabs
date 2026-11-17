@@ -59,7 +59,9 @@ export async function POST(req: Request) {
     const bookingId = `BK-${randomUUID()}`;
     // Public Payload CMS create is disabled; only the internal server API can bypass it.
     const booking = await payload.create({collection:'bookings',data:{...data,id:bookingId,status:'Pending' as const},overrideAccess:true});
-    const notified = await notifyBooking(payload, booking);
+    const rawInput = input && typeof input === 'object' ? (input as Record<string, unknown>) : {};
+    const gclid = typeof rawInput.gclid === 'string' ? rawInput.gclid : undefined;
+    const notified = await notifyBooking(payload, { ...booking, ...(gclid ? { gclid } : {}) });
     return NextResponse.json({success:true,booking, notificationDelivered:notified},{status:201});
   } catch (err) {
     if (err instanceof BookingValidationError) return failure(400,err.message);

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
 import { displayIndianPhone, telHref, whatsappNumber } from '@/lib/phone';
-import { isAnalyticsHostAllowed } from '@/lib/analytics';
+import { isAnalyticsHostAllowed, GADS_TAG_ID, GADS_BOOKING_CONVERSION_LABEL } from '@/lib/analytics';
 
 type BookingDetails = {
   id: string;
@@ -96,6 +96,20 @@ export default function BookingConfirmedClient() {
       }
     } catch {
       // Ref-based deduplication still works if storage is unavailable.
+    }
+
+    try {
+      // Direct Google Ads Conversion Event dispatch for Booking Request
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'conversion', {
+          send_to: `${GADS_TAG_ID}/${GADS_BOOKING_CONVERSION_LABEL}`,
+          value: 1.0,
+          currency: 'INR',
+          transaction_id: bookingId,
+        });
+      }
+    } catch {
+      // Safe fallthrough
     }
 
     try {

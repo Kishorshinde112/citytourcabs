@@ -137,7 +137,13 @@ export default function BookingContactForm({
       return;
     }
 
+    let currentGclid = '';
+    try {
+      currentGclid = sessionStorage.getItem('ctc_gclid') || '';
+    } catch {}
+
     const bookingPayload = {
+      gclid: currentGclid,
       name: formData.fullName.trim(),
       phone: cleanPhone,
       contact: cleanPhone,

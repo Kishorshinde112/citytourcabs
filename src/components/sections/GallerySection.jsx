@@ -4,37 +4,49 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ScrollReveal from '@/components/common/ScrollReveal';
 
+function optimizeImageUrl(url) {
+  if (!url || typeof url !== "string") return url;
+  if (url.includes("images.unsplash.com")) {
+    const base = url.split("?")[0];
+    return `${base}?auto=format&fit=crop&w=600&q=75`;
+  }
+  if (url.includes("res.cloudinary.com") && url.includes("/upload/") && !url.includes("/upload/f_auto")) {
+    return url.replace("/upload/", "/upload/f_auto,q_auto,w_600/");
+  }
+  return url;
+}
+
 const DEFAULT_IMAGES = [
   {
-    src: "https://images.unsplash.com/photo-1727962238717-484248a1bfc1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0b3VyaXN0cyUyMHNpZ2h0c2VlaW5nJTIwaW5kaWF8ZW58MXx8fHwxNzYxMzczNDg4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1727962238717-484248a1bfc1?auto=format&fit=crop&w=600&q=75",
     alt: "Tourists exploring heritage sites"
   },
   {
-    src: "https://images.unsplash.com/photo-1664637517904-a53ba8966c11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdW1iYWklMjBnYXRld2F5JTIwaW5kaWF8ZW58MXx8fHwxNzYxMzczMjQ3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1664637517904-a53ba8966c11?auto=format&fit=crop&w=600&q=75",
     alt: "Gateway of India Mumbai"
   },
   {
-    src: "https://images.unsplash.com/photo-1677573949755-0efb406b9383?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW9wbGUlMjBlbmpveWluZyUyMGJlYWNofGVufDF8fHx8MTc2MTM3MzQ4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1677573949755-0efb406b9383?auto=format&fit=crop&w=600&q=75",
     alt: "Family enjoying beach vacation"
   },
   {
-    src: "https://images.unsplash.com/photo-1660985311930-5bf52268fede?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxoaWxsJTIwc3RhdGlvbiUyMHZpZXdwb2ludHxlbnwxfHx8fDE3NjEzNzM0ODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1660985311930-5bf52268fede?auto=format&fit=crop&w=600&q=75",
     alt: "Hill station scenic viewpoint"
   },
   {
-    src: "https://images.unsplash.com/photo-1738639412443-54b5c75510cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHx0ZW1wbGUlMjB2aXNpdCUyMHRvdXJpc3RzfGVufDF8fHx8MTc2MTM3MzQ5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1738639412443-54b5c75510cd?auto=format&fit=crop&w=600&q=75",
     alt: "Temple visit spiritual journey"
   },
   {
-    src: "https://images.unsplash.com/photo-1725598944473-5900a622824e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHx3YXRlcmZhbGwlMjBuYXR1cmUlMjB0b3VyaXN0c3xlbnwxfHx8fDE3NjEzNzM0OTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1725598944473-5900a622824e?auto=format&fit=crop&w=600&q=75",
     alt: "Waterfall nature exploration"
   },
   {
-    src: "https://images.unsplash.com/photo-1654630485983-98767fb83e9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxmYW1pbHklMjB2YWNhdGlvbiUyMGNhcnxlbnwxfHx8fDE3NjEzNzM0ODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1654630485983-98767fb83e9f?auto=format&fit=crop&w=600&q=75",
     alt: "Family car vacation memories"
   },
   {
-    src: "https://images.unsplash.com/photo-1704457874634-dc24029f312e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxsb25hdmFsYSUyMGhpbGxzfGVufDF8fHx8MTc2MTM3MzI0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+    src: "https://images.unsplash.com/photo-1704457874634-dc24029f312e?auto=format&fit=crop&w=600&q=75",
     alt: "Lonavala scenic hills"
   }
 ];
@@ -61,7 +73,7 @@ export default function GallerySection({
           if (docs.length > 0) {
             const mapped = docs
               .map((g) => ({
-                src: typeof g.image === 'object' && g.image?.url ? g.image.url : (g.image || g.imageUrl || ''),
+                src: optimizeImageUrl(typeof g.image === 'object' && g.image?.url ? g.image.url : (g.image || g.imageUrl || '')),
                 alt: g.title || 'Tour Photo',
               }))
               .filter((img) => Boolean(img.src));

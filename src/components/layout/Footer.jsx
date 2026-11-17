@@ -154,15 +154,6 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
               >
                 Privacy Policy
               </a>
-              <span>•</span>
-              <a
-                href="https://kishorlab.dev"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-orange-600 transition-colors"
-              >
-                Site design by Kishor Lab
-              </a>
             </div>
           </div>
         </div>

@@ -218,7 +218,13 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
 
     const cleanWhatsapp = whatsappNumber.trim().replace(/[^0-9+]/g, '');
 
+    let currentGclid = '';
+    try {
+      currentGclid = sessionStorage.getItem('ctc_gclid') || '';
+    } catch {}
+
     const bookingPayload = {
+      gclid: currentGclid,
       name: fullName.trim(),
       phone: cleanPhone,
       whatsapp: cleanWhatsapp || cleanPhone,
