@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Hero from '@/components/Hero';
-import TourPackages from '@/components/TourPackages';
-import FleetSection from '@/components/FleetSection';
-import WhyChooseUs from '@/components/WhyChooseUs';
-import GallerySection from '@/components/GallerySection';
-import Testimonials from '@/components/Testimonials';
-import BookingContactForm from '@/components/BookingContactForm';
-import TourModal from '@/components/TourModal';
-import PageBlocks from '@/components/PageBlocks';
+import Hero from '@/blocks/HeroBlock';
+import TourPackages from '@/modules/tours/components/TourGrid';
+import FleetSection from '@/modules/fleet/components/FleetGrid';
+import WhyChooseUs from '@/blocks/WhyChooseUsBlock';
+import Testimonials from '@/blocks/ReviewsBlock';
+import BookingContactForm from '@/modules/bookings/components/BookingContactForm';
+import TourModal from '@/modules/tours/components/TourModal';
+import RenderBlocks from '@/blocks/RenderBlocks';
 import { useBooking } from '@/components/booking/BookingContext';
 import { TOURS_DATA } from '@/data/toursData';
 
@@ -39,7 +38,7 @@ export default function HomeClient({ blocks = [] }: { blocks?: any[] }) {
   return (
     <>
       {hasCmsBlocks ? (
-        <PageBlocks blocks={blocks} />
+        <RenderBlocks blocks={blocks} />
       ) : (
         <>
           <Hero />
@@ -55,8 +54,6 @@ export default function HomeClient({ blocks = [] }: { blocks?: any[] }) {
           <FleetSection onOpenBookModal={(data: any) => openBooking(data)} />
 
           <Testimonials />
-
-          <GallerySection />
 
           <BookingContactForm />
         </>

@@ -1,10 +1,10 @@
 'use client';
 
 import React from "react";
-import BookingContactForm from "@/components/BookingContactForm";
+import BookingContactForm from "@/modules/bookings/components/BookingContactForm";
 import { useBooking } from "@/components/booking/BookingContext";
 import useSettingsStore from "@/store/settingsStore";
-import { displayIndianPhone, telHref } from "@/lib/phone";
+import { displayIndianPhone, telHref } from "@/shared/lib/phone";
 import { Shield, FileText, UserCheck, Eye, Lock, Mail } from "lucide-react";
 
 export default function PrivacyPolicyClient() {
@@ -242,7 +242,7 @@ export default function PrivacyPolicyClient() {
                 </p>
                 <p>
                   <strong>Location: </strong>
-                  {officeAddress || 'Shop No 4, Chembur West, Mumbai, Maharashtra 400071'}
+                  {officeAddress || 'Office No 1102 P2 Kanjurmarg east, Mumbai 400042'}
                 </p>
               </div>
             </div>

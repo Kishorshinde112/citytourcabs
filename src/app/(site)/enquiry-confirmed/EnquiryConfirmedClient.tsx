@@ -14,8 +14,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import useSettingsStore from '@/store/settingsStore';
-import { trackLeadEnquiry } from '@/lib/analytics';
-import { displayIndianPhone, telHref, whatsappNumber } from '@/lib/phone';
+import { trackLeadEnquiry } from '@/shared/lib/analytics';
+import { displayIndianPhone, telHref, whatsappNumber } from '@/shared/lib/phone';
 
 export default function EnquiryConfirmedClient() {
   const router = useRouter();

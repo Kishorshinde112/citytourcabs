@@ -1,13 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Reddit+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+/*
+  Fonts are loaded with next/font in app/layout.tsx (no @import here).
+  They expose the CSS variables --font-reddit and --font-caveat.
+*/
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* #1a96eb fails WCAG contrast on white (about 3.2:1). #1578bc is about 4.7:1. */
+  --brand-blue: #1578bc;
+  --brand-blue-dark: #0f5f96;
+  --brand-blue-bright: #1a96eb;
+  /* decorative use only, not for text on white */
+}
+
 @layer base {
   body {
     @apply bg-slate-50 text-slate-800 font-sans;
     overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 
@@ -15,82 +27,105 @@
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Glassmorphism Classes */
-.glass-nav {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-}
+/*
+  Decorative helpers live in @layer components so Tailwind removes
+  any that are not referenced in your source files.
+*/
+@layer components {
 
-.glass-dark {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+  /* Glassmorphism */
+  .glass-nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(241, 245, 249, 1);
-}
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
-.bg-radial-gradient {
-  background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
-}
+  .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(241, 245, 249, 1);
+  }
 
-.hero-pattern {
-  background-image: radial-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
+  .bg-radial-gradient {
+    background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+  }
 
-.dark-hero-pattern {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
+  .hero-pattern {
+    background-image: radial-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
 
-/* Badge Glow */
-.glow-amber {
-  box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.5);
-}
-.glow-green {
-  box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.5);
-}
+  .dark-hero-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
 
-/* Tour Flex Layout */
-.tour-flex-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-@media (min-width: 1024px) {
+  /* Badge Glow */
+  .glow-amber {
+    box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.5);
+  }
+
+  .glow-green {
+    box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.5);
+  }
+
+  /* Tour Flex Layout */
   .tour-flex-layout {
-    flex-direction: row;
-    align-items: flex-start;
-    flex-wrap: nowrap;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
-  .tour-flex-left {
-    flex-basis: 60%;
-    max-width: 60%;
-    min-width: 0;
+
+  @media (min-width: 1024px) {
+    .tour-flex-layout {
+      flex-direction: row;
+      align-items: flex-start;
+      flex-wrap: nowrap;
+    }
+
+    .tour-flex-left {
+      flex-basis: 60%;
+      max-width: 60%;
+      min-width: 0;
+    }
+
+    .tour-flex-right {
+      flex-basis: 40%;
+      max-width: 40%;
+      min-width: 0;
+    }
   }
-  .tour-flex-right {
-    flex-basis: 40%;
-    max-width: 40%;
-    min-width: 0;
+
+  /*
+    Defers painting of offscreen sections. Do NOT use on above-the-fold content.
+    "auto" remembers the real height after the first render, so the scrollbar jumps less.
+  */
+  .lazy-render-scroll {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
   }
 }
 
@@ -101,18 +136,7 @@
   color: #1f2937;
 }
 
-.tour-content h1,
-.tour-content h2,
-.tour-content h3,
-.tour-content h4,
-.tour-content h5,
-.tour-content h6,
-.tour-content p,
-.tour-content div,
-.tour-content span,
-.tour-content ul,
-.tour-content ol,
-.tour-content li {
+.tour-content :is(h1, h2, h3, h4, h5, h6, p, div, span, ul, ol, li) {
   text-align: left !important;
 }
 
@@ -165,50 +189,66 @@
   margin: 1.75rem 0;
 }
 
-/* Rate Table Styles */
+/* Rate Table Styles (CMS HTML tables). Scrolls sideways on small screens instead of crushing columns. */
+.rate-table-html {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0.5rem;
+}
+
 .rate-table-html table {
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
   margin-bottom: 0;
   font-size: 1rem;
   background: #f9fafb;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  table-layout: fixed;
 }
-.rate-table-html th, .rate-table-html td {
+
+.rate-table-html th,
+.rate-table-html td {
   padding: 0.75rem 1rem;
   text-align: center;
   border-bottom: 1px solid #e5e7eb;
   word-break: break-word;
 }
+
 .rate-table-html th {
-  background: #1a96eb;
+  background: var(--brand-blue);
   color: #fff;
   font-weight: 600;
   font-size: 1.05rem;
 }
+
 .rate-table-html tr:last-child td {
   border-bottom: none;
 }
+
 .rate-table-html tr:hover td {
   background: #e0f2fe;
 }
+
 .rate-table-html td {
   color: #374151;
 }
+
 @media (max-width: 640px) {
   .rate-table-html {
     margin-left: -1rem;
     margin-right: -1rem;
+    border-radius: 0;
   }
+
   .rate-table-html table {
     font-size: 0.85rem;
   }
-  .rate-table-html th, .rate-table-html td {
+
+  .rate-table-html th,
+  .rate-table-html td {
     padding: 0.4rem 0.5rem;
     font-size: 0.85rem;
   }
+
   .rate-table-html th {
     font-size: 0.9rem;
   }
@@ -308,7 +348,7 @@
   background: #ffffff;
   border-radius: 0.5rem;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   border: 1px solid #e2e8f0;
 }
 
@@ -357,27 +397,27 @@
   color: #c2410c;
 }
 
+/*
+  TEMPORARY font compatibility block. It keeps the existing font-handwritten and
+  font-[Reddit_Sans] classes working with next/font (no !important needed).
+  Once tailwind.config has fontFamily.display and fontFamily.handwritten,
+  switch components to font-display / font-handwritten and delete this block.
+*/
 .font-handwritten,
 [class*="font-handwritten"] {
-  font-family: 'Caveat', cursive !important;
+  font-family: var(--font-caveat), 'Caveat', cursive;
 }
 
 .font-\[Reddit_Sans\],
 [class*="font-\[Reddit_Sans\]"] {
-  font-family: 'Reddit Sans', sans-serif !important;
+  font-family: var(--font-reddit), 'Reddit Sans', sans-serif;
 }
 
+/* Brand colour helpers (move to tailwind.config as brand.blue.500 when convenient) */
 .text-brand-blue-500 {
-  color: #1a96eb;
+  color: var(--brand-blue);
 }
 
 .hover\:text-brand-blue-500:hover {
-  color: #1a96eb;
+  color: var(--brand-blue-dark);
 }
-
-/* Scroll-triggered content visibility optimization (zero layout shift, defers offscreen painting) */
-.lazy-render-scroll {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 600px;
-}
-

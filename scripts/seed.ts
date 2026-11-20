@@ -78,7 +78,7 @@ async function seed() {
           tagline: tour.subtitle || '',
           duration: 'Full Day / Multi-Day',
           starting_price: '₹2,300',
-          hero_image: tour.heroImage || '/assets/about-banner.jpg',
+          hero_image: tour.heroImage || 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351872/citytourcabs/assets/about-banner.jpg',
           description: tour.subtitle || tour.title,
           rate_table_html: tour.rightHtml || '',
           itinerary_html: tour.leftHtml || '',
@@ -146,7 +146,7 @@ async function seed() {
         },
         slides: [
           {
-            image: '/assets/bd08021da8c244de8eafa9a4f86c4e2a30099151-CaKyNwZu.png',
+            image: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351883/citytourcabs/assets/bd08021da8c244de8eafa9a4f86c4e2a30099151-CaKyNwZu.jpg',
             subtitle: 'Discover the City of Dreams',
             title: 'Mumbai Sightseeing Tours',
             description: 'Explore Mumbai\'s iconic landmarks with our expert drivers who know every corner, every story, and every hidden gem of the city.',
@@ -154,7 +154,7 @@ async function seed() {
             buttonText: 'Explore Mumbai Tours',
           },
           {
-            image: '/assets/0b74c7f86c8df43750abbbe95621c390702852bc-C6i9-JQP.png',
+            image: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351857/citytourcabs/assets/0b74c7f86c8df43750abbbe95621c390702852bc-C6i9-JQP.jpg',
             subtitle: 'Escape to the Hills',
             title: 'Lonavala Weekend Getaway',
             description: 'Experience the scenic beauty of Lonavala with our comfortable cabs and knowledgeable drivers who will make your hill station trip unforgettable.',
@@ -187,12 +187,12 @@ async function seed() {
         hero: {
           title: 'About Us',
           subtitle: 'Your trusted local cab partner in Mumbai',
-          backgroundImage: '/assets/about-banner.jpg',
+          backgroundImage: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351872/citytourcabs/assets/about-banner.jpg',
         },
         aboutContent: {
           welcomeTitle: 'Welcome to CityTourCabs',
           welcomeDescription: 'We make city travel easy, affordable, and comfortable with fast doorstep pickup and drop, reliable service, and friendly professional drivers who truly care about your experience.',
-          driverImage: '/assets/about-driver.jpg',
+          driverImage: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351881/citytourcabs/assets/about-driver.jpg',
           statsYears: '12+',
           statsCustomers: '50,000+',
           statsCabs: '45+',

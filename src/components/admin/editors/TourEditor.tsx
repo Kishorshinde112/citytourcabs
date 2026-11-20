@@ -41,10 +41,10 @@ export const TourEditor: React.FC<any> = (props) => {
     if (props?.doc?.id) return props.doc.id
     const segments = (params?.segments as string[]) || []
     if (segments.length >= 3 && segments[1] === 'tours') {
-      return segments[2]
+      return segments[2] === 'create' ? null : segments[2]
     }
     const match = typeof window !== 'undefined' ? window.location.pathname.match(/\/collections\/tours\/([^/?#]+)/) : null
-    return match ? match[1] : '1'
+    return match && match[1] !== 'create' ? match[1] : null
   }, [params, props?.id, props?.doc?.id])
 
   const [activeTab, setActiveTab] = useState<
@@ -52,6 +52,7 @@ export const TourEditor: React.FC<any> = (props) => {
   >('overview')
 
   const [loading, setLoading] = useState<boolean>(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [saving, setSaving] = useState<boolean>(false)
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -61,7 +62,7 @@ export const TourEditor: React.FC<any> = (props) => {
   // Auth State & In-Place Re-Authentication
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false)
-  const [authEmail, setAuthEmail] = useState<string>('citytourcabs8@gmail.com')
+  const [authEmail, setAuthEmail] = useState<string>('')
   const [authPassword, setAuthPassword] = useState<string>('')
   const [authLoading, setAuthLoading] = useState<boolean>(false)
   const [authError, setAuthError] = useState<string | null>(null)
@@ -111,17 +112,23 @@ export const TourEditor: React.FC<any> = (props) => {
   useEffect(() => {
     let isMounted = true
     async function loadTour() {
-      if (!tourId) return
+      if (!tourId) {
+        setLoading(false)
+        return
+      }
       setLoading(true)
+      setLoadError(null)
       try {
         const token = localStorage.getItem('payload-token') || localStorage.getItem('adminToken')
         const headers: Record<string, string> = { 'Content-Type': 'application/json' }
         if (token) headers['Authorization'] = `Bearer ${token}`
 
         const res = await fetch(`/api/tours/${tourId}`, { credentials: 'include', headers })
-        if (res.ok) {
-          const data = await res.json()
-          if (!isMounted) return
+        if (!res.ok) {
+          throw new Error(`Failed to load tour: ${res.statusText || res.status}`)
+        }
+        const data = await res.json()
+        if (!isMounted) return
 
           // Extract fields from top-level or from first layout block
           const detailsBlock =
@@ -194,9 +201,9 @@ export const TourEditor: React.FC<any> = (props) => {
             rawDoc: data,
           })
           setIsDirty(false)
-        }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to load tour document:', err)
+        if (isMounted) setLoadError(err?.message || 'Failed to load tour document from server.')
       } finally {
         if (isMounted) setLoading(false)
       }
@@ -273,49 +280,71 @@ export const TourEditor: React.FC<any> = (props) => {
         heroImage: doc.heroImage || '',
         description: doc.description || '',
         tripType: doc.tripType || doc.title,
+        duration: doc.duration || '',
+        primaryCtaLabel: doc.primaryCtaLabel || 'Book Now',
+        primaryCtaAction: doc.primaryCtaAction || 'open_booking_modal',
+        secondaryCtaLabel: doc.secondaryCtaLabel || 'Submit Enquiry (Get Discount)',
+        secondaryCtaAction: doc.secondaryCtaAction || 'open_enquiry_modal',
+        guideMessage: doc.guideMessage || '',
         attractionTitle: doc.attractionTitle || 'Tour Highlights points to visit',
         attractions: (doc.attractions || []).map((a: any) => ({
           ...(a.id && !String(a.id).startsWith('att-') ? { id: a.id } : {}),
           emoji: a.emoji || '📍',
           name: a.name || '',
           desc: a.desc || '',
+          image: a.image || '',
         })),
         rateColumns: (doc.rateColumns || []).map((c: any) => ({
           ...(c.id && !String(c.id).startsWith('col-') ? { id: c.id } : {}),
           colName: c.colName || '',
         })),
-        rates: (doc.rates || []).map((r: any) => ({
-          ...(r.id && !String(r.id).startsWith('rate-') ? { id: r.id } : {}),
-          vehicle: r.vehicle || '',
-          h8: r.h8 || '',
-          h10: r.h10 || '',
-          h12: r.h12 || '',
-          extra: r.extra || '',
-          col1: r.col1 || '',
-          col2: r.col2 || '',
-        })),
+        rates: (doc.rates || []).map((r: any) => {
+          const rateRow: any = {
+            ...(r.id && !String(r.id).startsWith('rate-') ? { id: r.id } : {}),
+            vehicle: r.vehicle || '',
+            h8: r.h8 || '',
+            h10: r.h10 || '',
+            h12: r.h12 || '',
+            extra: r.extra || '',
+          }
+          // Dynamically preserve all package columns (col1, col2, col3, etc.)
+          Object.keys(r).forEach((k) => {
+            if (k.startsWith('col')) {
+              rateRow[k] = r[k] || ''
+            }
+          })
+          return rateRow
+        }),
         tempoTraveller13Rate: doc.tempoTraveller13Rate || '',
         tempoTraveller17Rate: doc.tempoTraveller17Rate || '',
         coverageDetails: doc.coverageDetails || '',
         rules: (doc.rules || []).map((r: any) => ({
           ...(r.id && !String(r.id).startsWith('r-') ? { id: r.id } : {}),
           text: r.text || '',
+          style: r.style || 'normal',
+          active: r.active !== false,
         })),
       }
 
-      // Preserve any existing non-tourDetails layout blocks
+      // Preserve any existing non-tourDetails layout blocks and merge properties
       let finalLayout: any[] = [updatedLayoutBlock]
       if (Array.isArray(doc.rawDoc?.layout) && doc.rawDoc.layout.length > 0) {
         const detailsIdx = doc.rawDoc.layout.findIndex((b: any) => b.blockType === 'tourDetails')
         if (detailsIdx >= 0) {
           finalLayout = [...doc.rawDoc.layout]
-          finalLayout[detailsIdx] = updatedLayoutBlock
+          finalLayout[detailsIdx] = {
+            ...doc.rawDoc.layout[detailsIdx],
+            ...updatedLayoutBlock,
+          }
+        } else {
+          finalLayout = [...doc.rawDoc.layout, updatedLayoutBlock]
         }
       }
 
       const payloadBody = {
         title: doc.title,
         slug: doc.slug,
+        duration: doc.duration || '',
         displayOrder: Number(doc.displayOrder) >= 0 ? Number(doc.displayOrder) : 0,
         startingPrice: doc.startingPrice || '',
         layout: finalLayout,
@@ -506,7 +535,7 @@ export const TourEditor: React.FC<any> = (props) => {
   }
 
   const cleanSlug = doc.slug.startsWith('/') ? doc.slug.slice(1) : doc.slug
-  const publicUrl = `/${cleanSlug}`
+  const publicUrl = `/tours/${cleanSlug}`
 
   return (
     <div className="min-h-screen bg-[#F3F5F7] text-slate-900 font-sans pb-24">
@@ -595,9 +624,11 @@ export const TourEditor: React.FC<any> = (props) => {
                 }
                 handleSave()
               }}
-              disabled={saving}
+              disabled={saving || Boolean(loadError) || !tourId}
               className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold shadow-2xs transition cursor-pointer ${
-                saveSuccess
+                loadError
+                  ? 'bg-rose-100 text-rose-500 cursor-not-allowed border border-rose-300'
+                  : saveSuccess
                   ? 'bg-emerald-600 text-white'
                   : isDirty
                   ? 'bg-yellow-400 hover:bg-yellow-500 text-slate-950 ring-2 ring-yellow-400/50'
@@ -655,6 +686,22 @@ export const TourEditor: React.FC<any> = (props) => {
 
       {/* Main Workspace Canvas */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6">
+        {loadError && (
+          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span className="font-medium">Error: {loadError}. Saving has been disabled to prevent accidental data loss.</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-2xs transition cursor-pointer"
+            >
+              Reload Page
+            </button>
+          </div>
+        )}
+
         {saveError && (
           <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -1197,7 +1244,7 @@ export const TourEditor: React.FC<any> = (props) => {
                     const val = e.target.value
                     updateDoc((p) => ({ ...p, seo: { ...p.seo, canonical: val } }))
                   }}
-                  placeholder={`https://citytourcabs.in/${cleanSlug}`}
+                  placeholder={`https://citytourcabs.in/tours/${cleanSlug}`}
                   className="w-full px-3 py-2 text-xs bg-[#EEF1F4] border border-slate-300 rounded-lg outline-none font-mono"
                 />
               </div>

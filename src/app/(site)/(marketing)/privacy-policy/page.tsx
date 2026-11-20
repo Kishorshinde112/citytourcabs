@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import PrivacyPolicyClient from './PrivacyPolicyClient';
-import PageBlocks from '@/components/PageBlocks';
+import RenderBlocks from '@/blocks/RenderBlocks';
 import { getPageBySlug } from '@/lib/cmsPages';
 
 export const revalidate = 300;
@@ -31,5 +31,5 @@ export default async function PrivacyPolicyPage() {
     return <PrivacyPolicyClient />;
   }
 
-  return <PageBlocks blocks={page.layout} />;
+  return <RenderBlocks blocks={page.layout} />;
 }

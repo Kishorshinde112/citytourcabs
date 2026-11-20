@@ -8,8 +8,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug('home');
   const seo = (page as any)?.seo;
 
+  const homeTitle = seo?.title || 'City Tour Cabs - Best Cab & Taxi Service in Mumbai';
+
   return {
-    ...(seo?.title ? { title: seo.title } : {}),
+    title: {
+      absolute: homeTitle,
+    },
     ...(seo?.description ? { description: seo.description } : {}),
     alternates: {
       canonical: seo?.canonical || 'https://citytourcabs.in/',

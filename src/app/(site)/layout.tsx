@@ -2,8 +2,8 @@ import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import { headers } from 'next/headers';
 import Script from 'next/script';
-import '@/app/globals.css';
-import ContactClickTracking from '@/components/layout/ContactClickTracking';
+import '@/app/(site)/globals.css';
+import ContactClickTracking from '@/shared/layout/ContactClickTracking';
 
 const GTM_CONTAINER_ID = 'GTM-PS2XBSRK';
 const PRODUCTION_ANALYTICS_HOSTS = new Set(['citytourcabs.in', 'www.citytourcabs.in']);
@@ -116,25 +116,25 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'TaxiService',
+              '@type': ['LocalBusiness', 'TaxiService'],
               name: 'City Tour Cabs',
-              image: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
-              '@id': 'https://citytourcabs.in',
+              image: 'https://res.cloudinary.com/o0mbamog/image/upload/f_auto,q_auto,w_1200,h_630,c_fill/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
+              '@id': 'https://citytourcabs.in/#business',
               url: 'https://citytourcabs.in',
               telephone: '+917021001921',
               priceRange: '₹₹',
               address: {
                 '@type': 'PostalAddress',
-                streetAddress: 'Dadar / Mumbai Central',
+                streetAddress: 'Office No 1102 P2 Kanjurmarg East',
                 addressLocality: 'Mumbai',
                 addressRegion: 'Maharashtra',
-                postalCode: '400014',
+                postalCode: '400042',
                 addressCountry: 'IN',
               },
               geo: {
                 '@type': 'GeoCoordinates',
-                latitude: 19.076,
-                longitude: 72.8777,
+                latitude: 19.1306,
+                longitude: 72.9324,
               },
               areaServed: [
                 'Mumbai',
@@ -148,7 +148,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
                 'Ashtavinayak',
                 'Konkan',
               ],
-            }),
+            }).replace(/</g, '\\u003c'),
           }}
         />
       </head>
@@ -196,13 +196,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             })();
           `}
         </Script>
-        {/* Umami Analytics */}
-        <Script
-          id="umami-analytics"
-          strategy="afterInteractive"
-          src="https://analytics.kishorlab.dev/script.js"
-          data-website-id="c308637f-6ddb-401d-8e71-09de9e4e5da7"
-        />
         <ContactClickTracking />
         {children}
       </body>

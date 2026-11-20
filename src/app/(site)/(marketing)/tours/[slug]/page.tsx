@@ -5,9 +5,9 @@ import { getPayload } from 'payload';
 import config from '@/payload.config';
 import tourPagesData from '@/data/tourPagesData.json';
 import TourDetailClient from './TourDetailClient';
+import { TourSchema } from '@/modules/tours/schema';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 
 type Args = {
   params: Promise<{
@@ -286,5 +286,19 @@ export default async function TourDetailPage({ params }: Args) {
     notFound();
   }
 
-  return <TourDetailClient slug={slug} data={data} />;
+  return (
+    <>
+      <TourSchema
+        tour={{
+          id: slug,
+          slug,
+          title: data.title,
+          tagline: data.subtitle,
+          heroImage: data.heroImage,
+          startingPrice: data.startingPrice,
+        }}
+      />
+      <TourDetailClient slug={slug} data={data} />
+    </>
+  );
 }

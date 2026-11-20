@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import PageBlocks from '@/components/PageBlocks';
+import { notFound, permanentRedirect } from 'next/navigation';
+import RenderBlocks from '@/blocks/RenderBlocks';
 import { getPageBySlug } from '@/lib/cmsPages';
+import { createMetadata } from '@/modules/seo/metadata';
 
 export const revalidate = 300;
 
@@ -11,6 +12,15 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+
+  if (slug === 'home') {
+    return {
+      alternates: {
+        canonical: 'https://citytourcabs.in/',
+      },
+    };
+  }
+
   const page = await getPageBySlug(slug);
 
   if (!page) {
@@ -19,19 +29,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const seo = (page as any)?.seo;
 
-  return {
+  return createMetadata({
     title: seo?.title || page.title,
-    ...(seo?.description ? { description: seo.description } : {}),
-    alternates: {
-      canonical:
-        seo?.canonical ||
-        (slug === 'home' ? 'https://citytourcabs.in/' : `https://citytourcabs.in/${slug}`),
-    },
-  };
+    description: seo?.description,
+    canonical: seo?.canonical || `/${slug}`,
+    image: seo?.ogImage?.url,
+  });
 }
 
 export default async function CmsPage({ params }: PageProps) {
   const { slug } = await params;
+
+  if (slug === 'home') {
+    permanentRedirect('/');
+  }
+
   const page = await getPageBySlug(slug);
 
   if (!page) {
@@ -39,7 +51,7 @@ export default async function CmsPage({ params }: PageProps) {
   }
 
   if (page.layout?.length) {
-    return <PageBlocks blocks={page.layout} />;
+    return <RenderBlocks blocks={page.layout} />;
   }
 
   return (

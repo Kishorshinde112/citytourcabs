@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { isAnalyticsHostAllowed, GADS_TAG_ID, GADS_PHONE_CONVERSION_LABEL, GADS_WHATSAPP_CONVERSION_LABEL } from '@/lib/analytics';
+import { isAnalyticsHostAllowed } from '@/lib/analytics';
 
 type ContactEvent = 'phone_click' | 'whatsapp_click';
 type DebugStatus =
@@ -43,18 +43,6 @@ function getContactEvent(url: URL): ContactEvent | null {
 export default function ContactClickTracking() {
   useEffect(() => {
     if (!isAnalyticsHostAllowed()) return;
-
-    // Capture gclid from URL params and persist in sessionStorage
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const urlGclid = params.get('gclid');
-      if (urlGclid && urlGclid.trim()) {
-        sessionStorage.setItem('ctc_gclid', urlGclid.trim());
-      }
-    } catch {
-      // Storage might be disabled
-    }
-
 
     let lastClickKey = '';
     let lastClickAt = 0;
@@ -152,45 +140,6 @@ export default function ContactClickTracking() {
         window.setTimeout(() => {
           if (!callbackObserved) report('gtm_callback_not_observed');
         }, 3000);
-      }
-
-      try {
-        // Direct Google Ads Conversion Event dispatch (in addition to GTM dataLayer)
-        if (typeof window.gtag === 'function') {
-          const sendTo =
-            event === 'phone_click'
-              ? `${GADS_TAG_ID}/${GADS_PHONE_CONVERSION_LABEL}`
-              : `${GADS_TAG_ID}/${GADS_WHATSAPP_CONVERSION_LABEL}`;
-
-          window.gtag('event', 'conversion', {
-            send_to: sendTo,
-            value: 1.0,
-            currency: 'INR',
-          });
-        }
-      } catch (e) {
-        // Safe fallthrough
-      }
-
-            // Also report offline conversion to server if gclid was present
-      try {
-        const storedGclid = window.sessionStorage.getItem('ctc_gclid');
-        if (storedGclid) {
-          fetch('/api/conversion', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              gclid: storedGclid,
-              conversionName: event === 'phone_click' ? 'Phone Click' : 'WhatsApp Click',
-              value: 1.0,
-              currency: 'INR',
-              time: new Date().toISOString(),
-            }),
-            keepalive: true,
-          }).catch(() => {});
-        }
-      } catch {
-        // Fallthrough
       }
 
       try {

@@ -23,11 +23,14 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { TourEditor as TourEditor_b18cfc1e19c62a9c4eb20616c6d0e4fb } from '@/components/admin/editors/TourEditor'
 import { PageEditor as PageEditor_8f5e5d022b5c6408bd2e884b0207b1ec } from '@/components/admin/editors/PageEditor'
+import { IdCell as IdCell_342112c25296fee7ac9bf8d82769e964 } from '@/components/admin/cells/IdCell'
 import { LeadTypeCell as LeadTypeCell_fd00ae72830f6b0edcc6264e27fae17e } from '@/components/admin/cells/LeadTypeCell'
 import { PhoneCell as PhoneCell_7fdc1fd156b3ad8c504fc00b4229aae0 } from '@/components/admin/cells/PhoneCell'
 import { LeadActionsCell as LeadActionsCell_80bd0d60533aadc90648e7de42852c2d } from '@/components/admin/cells/LeadActionsCell'
 import { StatusCell as StatusCell_6f9876d3fac4aa97df1d90eb6f72f93a } from '@/components/admin/cells/StatusCell'
+import { InfiniteScrollTable as InfiniteScrollTable_77fd1691d05377f7be2f48a1cc106645 } from '@/components/admin/InfiniteScrollTable'
 import { RecordDrawer as RecordDrawer_fd3bda4e1c1a7582fb3327827f044924 } from '@/components/admin/RecordDrawer'
+import { BookingDateFilter as BookingDateFilter_6def794a2df7c4c2bdac113f96037dea } from '@/components/admin/BookingDateFilter'
 import { AdminNav as AdminNav_2623bc737c612ce9420322f2210a7f19 } from '@/components/admin/AdminNav'
 import { Icon as Icon_534076e2c753ea5d539a54b05f456b1b } from '@/components/admin/Icon'
 import { Logo as Logo_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
@@ -61,11 +64,14 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/editors/TourEditor#TourEditor": TourEditor_b18cfc1e19c62a9c4eb20616c6d0e4fb,
   "@/components/admin/editors/PageEditor#PageEditor": PageEditor_8f5e5d022b5c6408bd2e884b0207b1ec,
+  "@/components/admin/cells/IdCell#IdCell": IdCell_342112c25296fee7ac9bf8d82769e964,
   "@/components/admin/cells/LeadTypeCell#LeadTypeCell": LeadTypeCell_fd00ae72830f6b0edcc6264e27fae17e,
   "@/components/admin/cells/PhoneCell#PhoneCell": PhoneCell_7fdc1fd156b3ad8c504fc00b4229aae0,
   "@/components/admin/cells/LeadActionsCell#LeadActionsCell": LeadActionsCell_80bd0d60533aadc90648e7de42852c2d,
   "@/components/admin/cells/StatusCell#StatusCell": StatusCell_6f9876d3fac4aa97df1d90eb6f72f93a,
+  "@/components/admin/InfiniteScrollTable#InfiniteScrollTable": InfiniteScrollTable_77fd1691d05377f7be2f48a1cc106645,
   "@/components/admin/RecordDrawer#RecordDrawer": RecordDrawer_fd3bda4e1c1a7582fb3327827f044924,
+  "@/components/admin/BookingDateFilter#BookingDateFilter": BookingDateFilter_6def794a2df7c4c2bdac113f96037dea,
   "@/components/admin/AdminNav#AdminNav": AdminNav_2623bc737c612ce9420322f2210a7f19,
   "@/components/admin/Icon#Icon": Icon_534076e2c753ea5d539a54b05f456b1b,
   "@/components/admin/Logo#Logo": Logo_a44df17d0fc3dcd873dae43dc3bf66bd,

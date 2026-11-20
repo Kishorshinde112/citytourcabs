@@ -1,0 +1,16 @@
+import { revalidatePath } from 'next/cache';
+
+export function triggerRevalidation(slug?: string) {
+  try {
+    revalidatePath('/', 'page');
+    revalidatePath('/tours', 'page');
+    if (slug) {
+      revalidatePath(`/${slug}`, 'page');
+      revalidatePath(`/tours/${slug}`, 'page');
+    }
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[revalidate] Cache revalidation skipped outside request lifecycle:', err);
+    }
+  }
+}

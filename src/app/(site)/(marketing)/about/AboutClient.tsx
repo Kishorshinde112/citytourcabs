@@ -2,10 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import BookingContactForm from "@/components/BookingContactForm";
+import BookingContactForm from "@/modules/bookings/components/BookingContactForm";
 import { useBooking } from "@/components/booking/BookingContext";
 import useSettingsStore from "@/store/settingsStore";
-import { displayIndianPhone, telHref } from "@/lib/phone";
+import { displayIndianPhone, telHref } from "@/shared/lib/phone";
 
 export default function AboutClient() {
   const { phone } = useSettingsStore();

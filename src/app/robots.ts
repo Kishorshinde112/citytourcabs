@@ -6,17 +6,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/admin',
-          '/admin/',
-          '/api/',
-          '/booking-confirmed',
-          '/enquiry-confirmed',
-          '/inquiry-confirmed',
-        ],
+        disallow: ['/admin', '/api/', '/booking-confirmed', '/enquiry-confirmed'],
       },
     ],
     sitemap: 'https://citytourcabs.in/sitemap.xml',
-    host: 'https://citytourcabs.in',
   };
 }

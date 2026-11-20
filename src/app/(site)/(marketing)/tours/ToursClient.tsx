@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import TourPackages from '@/components/TourPackages';
-import TourModal from '@/components/TourModal';
+import TourPackages from '@/modules/tours/components/TourGrid';
+import TourModal from '@/modules/tours/components/TourModal';
 import { useBooking } from '@/components/booking/BookingContext';
 
 export default function ToursClient() {

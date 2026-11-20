@@ -5,6 +5,8 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: 'https',

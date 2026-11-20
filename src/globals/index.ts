@@ -48,7 +48,7 @@ export const SiteSettings: GlobalConfig = {
       name: 'officeAddress',
       type: 'text',
       label: 'Office Address',
-      defaultValue: 'Shop No 4, Chembur West, Mumbai, Maharashtra 400071',
+      defaultValue: 'Office No 1102 P2 Kanjurmarg east, Mumbai 400042',
     },
     {
       name: 'workingHours',

@@ -26,43 +26,40 @@ const TOUR_PACKAGES_MAP = {
     '12hrs 120 kms',
   ],
   'Lonavala Trip': [
-    'Lonavala 1-Day Sightseeing Tour',
-    'Lonavala & Khandala 2-Days Tour',
-    'Weekend Hills Scenic Tour',
+    'Lonavala sameday return',
+    'Lonavala 2D/1N',
   ],
   'Alibaug Sightseeing': [
-    'Alibaug Coastal Sightseeing (1 Day)',
-    'Kashid Beach & Murud Janjira (2 Days)',
-    'Alibaug Family Getaway',
+    'Alibaug sameday return',
+    'Alibaug 2D/1N',
   ],
   'Matheran Sightseeing': [
-    'Matheran Eco-Station Day Trip',
-    'Matheran Nature & Sunset Tour',
+    'Matheran sameday return',
+    'Matheran 2D/1N'
   ],
   'Shirdi Tour': [
-    'Shirdi 1-Day Express Darshan',
-    'Shirdi & Shani Shingnapur (2 Days)',
-    'Shirdi Complete Pilgrimage',
+    'Shirdi sameday return',
+    'Shirdi 2D/1N',
   ],
   'Mahabaleshwar Sightseeing': [
-    'Mahabaleshwar & Panchgani (2 Days)',
-    'Scenic Points & Venna Lake Tour',
+    'Mahabaleshwar 2D/1N',
+    'Mahabaleshwar 3D/2N'
   ],
   'Igatpuri Tour': [
-    'Igatpuri Nature & Waterfall Tour (1 Day)',
-    'Igatpuri Weekend Retreat (2 Days)',
+    'Igatpuri sameday return',
+    'Igatpuri 2D/1N',
   ],
   'Ashtavinayak': [
-    'Ashtavinayak 2-Days Yatra (8 Ganesha Temples)',
-    'Ashtavinayak 3-Days Complete Pilgrimage',
+    'Ashtavinayak 3D/2N',
+    'Ashtavinayak 4D/3N',
   ],
   '3 Jyotirlinga in Maharashtra': [
-    'Trimbakeshwar, Bhimashankar & Grishneshwar 3-Days Tour',
-    'Jyotirlinga Fast-Track Yatra',
+    'Trimbakeshwar, Bhimashankar & Grishneshwar 3D/2N',
+    '3 Jyotirlinga 4D/3N',
   ],
   'Konkan Darshan': [
-    'Coastal Konkan 3-Days Tour',
-    'Konkan Beaches, Forts & Temples (4 Days)',
+    'Konkan 3D/2N',
+    'Konkan 4D/3N',
   ],
 };
 
@@ -150,7 +147,13 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
         : ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
       setPackageName(initialData.packageName || initialData.package || (availablePackages.length === 1 ? availablePackages[0] : ''));
 
-      setCarType(initialData.carType || initialData.vehicle || '');
+      const initialCar = initialData.carType || initialData.vehicle || '';
+      const isInitialMumbai = targetDest.trim().toLowerCase().includes('mumbai darshan');
+      if (!isInitialMumbai && initialCar.toLowerCase().includes('wagon')) {
+        setCarType('');
+      } else {
+        setCarType(initialCar);
+      }
       setFullName(initialData.fullName || initialData.name || '');
       setPhoneNumber(initialData.phoneNumber || initialData.phone || initialData.contact || '');
       setWhatsappNumber(initialData.whatsappNumber || initialData.whatsapp || '');
@@ -170,9 +173,20 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
       ? (TOUR_PACKAGES_MAP[newDest] || ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'])
       : ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
     setPackageName(pkgs.length === 1 ? pkgs[0] : '');
+
+    // Auto-reset Wagon R if switching away from Mumbai Darshan
+    const isMumbai = newDest.trim().toLowerCase().includes('mumbai darshan');
+    if (!isMumbai && carType.toLowerCase().includes('wagon')) {
+      setCarType('');
+    }
   };
 
   if (!isOpen) return null;
+
+  const isMumbaiDarshan = (destination || '').trim().toLowerCase().includes('mumbai darshan');
+  const availableCarTypes = isMumbaiDarshan
+    ? CAR_TYPES
+    : CAR_TYPES.filter((c) => !c.toLowerCase().includes('wagon'));
 
   const currentPackages = TOUR_PACKAGES_MAP[destination] || ['8hrs 80 kms', '10hrs 100 kms', '12hrs 120 kms'];
   const destinationOptions =
@@ -218,13 +232,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
 
     const cleanWhatsapp = whatsappNumber.trim().replace(/[^0-9+]/g, '');
 
-    let currentGclid = '';
-    try {
-      currentGclid = sessionStorage.getItem('ctc_gclid') || '';
-    } catch {}
-
     const bookingPayload = {
-      gclid: currentGclid,
       name: fullName.trim(),
       phone: cleanPhone,
       whatsapp: cleanWhatsapp || cleanPhone,
@@ -287,8 +295,8 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
 
       <div
         className={`relative bg-white rounded-xl w-full ${isEnquiry
-            ? 'max-w-[420px] p-6'
-            : 'max-w-2xl p-6 sm:p-8'
+          ? 'max-w-[420px] p-6'
+          : 'max-w-2xl p-6 sm:p-8'
           } max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-200 my-auto`}
       >
 
@@ -425,7 +433,7 @@ export default function QuickBookModal({ isOpen, onClose, initialData = {} }) {
                     className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
                   >
                     <option value="">Select Car Type</option>
-                    {CAR_TYPES.map((car, idx) => (
+                    {availableCarTypes.map((car, idx) => (
                       <option key={idx} value={car}>
                         {car}
                       </option>

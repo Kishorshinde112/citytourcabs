@@ -8,10 +8,19 @@ export const Bookings: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
+    listSearchableFields: ['date', 'name', 'phone', 'route', 'id'],
     defaultColumns: ['id', 'type', 'name', 'phone', 'actions', 'route', 'vehicle', 'date', 'status', 'createdAt'],
     group: 'LEADS & BOOKINGS',
+    pagination: {
+      defaultLimit: 200,
+      limits: [50, 100, 200, 500],
+    },
     components: {
-      afterListTable: ['@/components/admin/RecordDrawer#RecordDrawer'],
+      beforeListTable: ['@/components/admin/BookingDateFilter#BookingDateFilter'],
+      afterListTable: [
+        '@/components/admin/InfiniteScrollTable#InfiniteScrollTable',
+        '@/components/admin/RecordDrawer#RecordDrawer',
+      ],
     },
   },
   access: {
@@ -25,6 +34,11 @@ export const Bookings: CollectionConfig = {
       name: 'id',
       type: 'text',
       defaultValue: () => 'BK-' + Math.floor(100000 + Math.random() * 900000),
+      admin: {
+        components: {
+          Cell: '@/components/admin/cells/IdCell#IdCell',
+        },
+      },
     },
     {
       name: 'type',

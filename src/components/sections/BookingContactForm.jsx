@@ -14,43 +14,40 @@ const TOUR_PACKAGES_MAP = {
     '12hrs 120 kms',
   ],
   'Lonavala Trip': [
-    'Lonavala 1-Day Sightseeing Tour',
-    'Lonavala & Khandala 2-Days Tour',
-    'Weekend Hills Scenic Tour',
+    'Lonavala sameday return',
+    'Lonavala 2D/1N',
   ],
   'Alibaug Sightseeing': [
-    'Alibaug Coastal Sightseeing (1 Day)',
-    'Kashid Beach & Murud Janjira (2 Days)',
-    'Alibaug Family Getaway',
+    'Alibaug sameday return',
+    'Alibaug 2D/1N',
   ],
   'Matheran Sightseeing': [
-    'Matheran Eco-Station Day Trip',
-    'Matheran Nature & Sunset Tour',
+    'Matheran sameday return',
+    'Matheran 2D/1N',
   ],
   'Shirdi Tour': [
-    'Shirdi 1-Day Express Darshan',
-    'Shirdi & Shani Shingnapur (2 Days)',
-    'Shirdi Complete Pilgrimage',
+    'Shirdi sameday return',
+    'Shirdi 2D/1N',
   ],
   'Mahabaleshwar Sightseeing': [
-    'Mahabaleshwar & Panchgani (2 Days)',
-    'Scenic Points & Venna Lake Tour',
+    'Mahabaleshwar 2D/1N',
+    'Mahabaleshwar 3D/2N',
   ],
   'Igatpuri Tour': [
-    'Igatpuri Nature & Waterfall Tour (1 Day)',
-    'Igatpuri Weekend Retreat (2 Days)',
+    'Igatpuri sameday return',
+    'Igatpuri 2D/1N',
   ],
   'Ashtavinayak': [
-    'Ashtavinayak 2-Days Yatra (8 Ganesha Temples)',
-    'Ashtavinayak 3-Days Complete Pilgrimage',
+    'Ashtavinayak 3D/2N',
+    'Ashtavinayak 4D/3N',
   ],
   '3 Jyotirlinga in Maharashtra': [
-    'Trimbakeshwar, Bhimashankar & Grishneshwar 3-Days Tour',
-    'Jyotirlinga Fast-Track Yatra',
+    'Trimbakeshwar, Bhimashankar & Grishneshwar 3D/2N',
+    '3 Jyotirlinga 4D/3N',
   ],
   'Konkan Darshan': [
-    'Coastal Konkan 3-Days Tour',
-    'Konkan Beaches, Forts & Temples (4 Days)',
+    'Konkan 3D/2N',
+    'Konkan 4D/3N',
   ],
 };
 
@@ -137,13 +134,7 @@ export default function BookingContactForm({
       return;
     }
 
-    let currentGclid = '';
-    try {
-      currentGclid = sessionStorage.getItem('ctc_gclid') || '';
-    } catch {}
-
     const bookingPayload = {
-      gclid: currentGclid,
       name: formData.fullName.trim(),
       phone: cleanPhone,
       contact: cleanPhone,
@@ -190,7 +181,7 @@ export default function BookingContactForm({
           type: 'Enquiry',
         })
       );
-    } catch {}
+    } catch { }
 
     // Redirect to dedicated enquiry confirmed page
     router.push('/enquiry-confirmed');
@@ -263,7 +254,7 @@ export default function BookingContactForm({
                   <div>
                     <p className="text-sm text-gray-500 mb-1 font-medium">Location</p>
                     <p className="text-gray-900 font-semibold">
-                      {officeAddress || 'Shop No 4, Chembur West, Mumbai, Maharashtra 400071'}
+                      {officeAddress || 'Office No 1102 P2 Kanjurmarg east, Mumbai 400042'}
                     </p>
                   </div>
                 </div>

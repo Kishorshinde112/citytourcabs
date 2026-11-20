@@ -47,7 +47,9 @@ export const PricingTableEditor: React.FC<PricingTableEditorProps> = ({
   onChange,
 }) => {
   // Determine if this tour uses standard hours (e.g. Mumbai Darshan) or custom packages (e.g. Konkan)
-  const hasStandardHours = rates.some((r) => Boolean(r.h8 || r.h10 || r.h12))
+  const hasStandardHours = rates.some(
+    (r) => Boolean((r.h8 && r.h8 !== '₹0') || (r.h10 && r.h10 !== '₹0') || (r.h12 && r.h12 !== '₹0'))
+  )
   const isCustomColumns = !hasStandardHours && rateColumns && rateColumns.length > 0
 
   // Display columns definition
@@ -83,19 +85,21 @@ export const PricingTableEditor: React.FC<PricingTableEditorProps> = ({
 
   // Add Vehicle
   const handleAddVehicle = () => {
-    const newRates = [
-      ...rates,
-      {
-        id: `rate-${Date.now()}`,
-        vehicle: 'New Vehicle (e.g. Innova Crysta)',
-        h8: '₹0',
-        h10: '₹0',
-        h12: '₹0',
-        extra: '₹0/km',
-        col1: '₹0',
-        col2: '₹0',
-      },
-    ]
+    const initialRate: PricingRateRow = {
+      id: `rate-${Date.now()}`,
+      vehicle: 'New Vehicle (e.g. Innova Crysta)',
+      extra: '₹0/km',
+    }
+    if (isCustomColumns) {
+      rateColumns.forEach((_, i) => {
+        initialRate[`col${i + 1}`] = '₹0'
+      })
+    } else {
+      initialRate.h8 = '₹0'
+      initialRate.h10 = '₹0'
+      initialRate.h12 = '₹0'
+    }
+    const newRates = [...rates, initialRate]
     onChange({ rateColumns, rates: newRates, tempoTraveller13Rate, tempoTraveller17Rate, coverageDetails })
   }
 

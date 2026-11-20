@@ -19,7 +19,7 @@ const FALLBACK_GROUPS = [
   },
 ];
 
-export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal = () => {} }) {
+export default function Footer({ onOpenPrivacyModal = () => { }, onOpenBookModal = () => { } }) {
   const { phone, email, officeAddress, workingHours, footer, siteName } = useSettingsStore();
   const tourLinks = useTourLinks();
   const footerGlobal = useCmsGlobal('footer', null);
@@ -127,7 +127,7 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
                 <MapPin className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm leading-relaxed">
-                    {officeAddress || "Shop No 4, Chembur West, Mumbai, Maharashtra 400071"}
+                    {officeAddress || "Office No 1102 P2 Kanjurmarg east, Mumbai 400042"}
                   </p>
                 </div>
               </div>
@@ -153,6 +153,15 @@ export default function Footer({ onOpenPrivacyModal = () => {}, onOpenBookModal 
                 className="hover:text-orange-600 transition-colors"
               >
                 Privacy Policy
+              </a>
+              <span>•</span>
+              <a
+                href=""
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-orange-600 transition-colors"
+              >
+
               </a>
             </div>
           </div>

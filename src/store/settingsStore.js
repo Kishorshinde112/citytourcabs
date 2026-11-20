@@ -5,9 +5,9 @@ export const DEFAULT_SETTINGS = {
   logoUrl: "https://res.cloudinary.com/o0mbamog/image/upload/v1792351891/citytourcabs/assets/citytourcabs-logo.png",
   phone: '7021001921',
   helpPhone: '9967672660',
-  email: 'citytourcabs8@gmail.com',
+  email: 'citytourcabs1@gmail.com',
   whatsapp: '917021001921',
-  officeAddress: 'Shop No 4, Chembur West, Mumbai, Maharashtra 400071',
+  officeAddress: 'Office No 1102 P2 Kanjurmarg east, Mumbai 400042',
   workingHours: '24/7 Available (Open All 365 Days)',
   announcement: {
     enabled: true,

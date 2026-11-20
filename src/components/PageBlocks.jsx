@@ -6,7 +6,6 @@ import TourPackages from '@/components/sections/TourPackages';
 import WhyChooseUs from '@/components/sections/WhyChooseUs';
 import FleetSection from '@/components/sections/FleetSection';
 import Testimonials from '@/components/sections/Testimonials';
-import GallerySection from '@/components/sections/GallerySection';
 import BookingContactForm from '@/components/sections/BookingContactForm';
 import FAQSection from '@/components/sections/FAQSection';
 import AboutSection from '@/components/sections/AboutSection';
@@ -45,8 +44,6 @@ export default function PageBlocks({ blocks = [] }) {
             return <FleetSection key={key} title={block.title} />;
           case 'testimonials':
             return <Testimonials key={key} title={block.title} />;
-          case 'gallery':
-            return <GallerySection key={key} title={block.title} />;
           case 'about':
             return <AboutSection key={key} block={block} />;
           case 'faq':

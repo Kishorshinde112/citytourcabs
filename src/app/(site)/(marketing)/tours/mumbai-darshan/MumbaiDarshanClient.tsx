@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Phone, Check, Sparkles, ArrowRight } from 'lucide-react';
 import { useBooking } from '@/components/booking/BookingContext';
 import useSettingsStore from '@/store/settingsStore';
@@ -81,12 +82,13 @@ export default function MumbaiDarshanClient() {
         {/* ================= HERO BANNER ================= */}
         <section className="relative bg-black text-white py-16 sm:py-20 overflow-hidden border-b border-gray-200">
           <div className="absolute inset-0 bg-black/60 z-10" />
-          <div
-            className="absolute inset-0 bg-cover bg-center opacity-45"
-            style={{
-              backgroundImage:
-                "url('https://res.cloudinary.com/o0mbamog/image/upload/v1792352358/citytourcabs/assets/tours/mumbai-darshan.jpg')",
-            }}
+          <Image
+            alt="Mumbai Darshan Sightseeing Cab Tour"
+            className="object-cover opacity-45"
+            fill
+            priority
+            sizes="100vw"
+            src="https://res.cloudinary.com/o0mbamog/image/upload/f_auto,q_auto,w_1200/v1792352358/citytourcabs/assets/tours/mumbai-darshan.jpg"
           />
           <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
             <h1 className="text-4xl sm:text-5xl font-extrabold font-display tracking-tight text-white">
