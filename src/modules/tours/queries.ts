@@ -2,6 +2,7 @@ import { getPayload } from 'payload';
 import config from '@/payload.config';
 import { TourPackage } from './types';
 import { getFallbackTour, FALLBACK_TOURS_CATALOG } from './fallback';
+import { defaultTourCards, TourCardItem } from './defaultTours';
 
 export async function getTourBySlug(slug: string): Promise<TourPackage | null> {
   const fallback = getFallbackTour(slug);
@@ -88,4 +89,51 @@ export async function getAllTours(): Promise<TourPackage[]> {
     rating: t.rating,
     reviewsCount: t.reviewsCount,
   }));
+}
+
+export async function getInitialTourCards(): Promise<TourCardItem[]> {
+  try {
+    const payload = await getPayload({ config });
+    const res = await payload.find({
+      collection: 'tours',
+      limit: 100,
+      depth: 1,
+      overrideAccess: true,
+    });
+
+    if (res.docs && res.docs.length > 0) {
+      const staticMap = new Map(defaultTourCards.map((t) => [t.id, t]));
+      return res.docs.map((doc: any) => {
+        const staticTour =
+          staticMap.get(doc.slug) ||
+          defaultTourCards.find((t) => t.id === doc.slug || t.href === `/${doc.slug}`) ||
+          ({} as any);
+        const details = Array.isArray(doc.layout)
+          ? doc.layout.find((b: any) => b.blockType === 'tourDetails')
+          : null;
+        const cmsImage =
+          typeof details?.heroImage === 'string' && !details.heroImage.includes('unsplash.com')
+            ? details.heroImage
+            : null;
+        const finalImage =
+          cmsImage ||
+          (typeof doc.banner === 'string' ? doc.banner : null) ||
+          staticTour.image ||
+          'https://res.cloudinary.com/o0mbamog/image/upload/v1792351884/citytourcabs/assets/about-banner.jpg';
+
+        return {
+          id: doc.slug || staticTour.id,
+          title: doc.title || staticTour.title,
+          badge: details?.subtitle || doc.subtitle || staticTour.badge || '',
+          description: details?.description || doc.shortDescription || staticTour.description || '',
+          image: finalImage,
+          href: `/tours/${doc.slug || staticTour.id}`,
+        };
+      });
+    }
+  } catch (err) {
+    console.warn('[Tour Queries] Using default tour cards fallback for SSR:', err instanceof Error ? err.message : err);
+  }
+
+  return defaultTourCards;
 }

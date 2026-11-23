@@ -3,7 +3,7 @@ import { getPayload } from 'payload';
 import config from '@/payload.config';
 import tourPagesData from '@/data/tourPagesData.json';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 const STATIC_ROUTES: Array<{
   path: string;
@@ -94,5 +94,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...routes, ...tourEntries, ...pageEntries];
+  const allEntries = [...routes, ...tourEntries, ...pageEntries];
+  const uniqueMap = new Map<string, MetadataRoute.Sitemap[number]>();
+
+  for (const entry of allEntries) {
+    let normalizedUrl = entry.url.trim();
+    if (normalizedUrl.length > baseUrl.length && normalizedUrl.endsWith('/')) {
+      normalizedUrl = normalizedUrl.slice(0, -1);
+    }
+    if (!uniqueMap.has(normalizedUrl)) {
+      uniqueMap.set(normalizedUrl, { ...entry, url: normalizedUrl });
+    }
+  }
+
+  return Array.from(uniqueMap.values());
 }

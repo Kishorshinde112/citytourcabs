@@ -12,7 +12,13 @@ import RenderBlocks from '@/blocks/RenderBlocks';
 import { useBooking } from '@/components/booking/BookingContext';
 import { TOURS_DATA } from '@/data/toursData';
 
-export default function HomeClient({ blocks = [] }: { blocks?: any[] }) {
+export default function HomeClient({
+  blocks = [],
+  initialTours = null,
+}: {
+  blocks?: any[];
+  initialTours?: any[] | null;
+}) {
   const { openBooking } = useBooking();
   const [selectedTour, setSelectedTour] = useState<any>(null);
 
@@ -38,7 +44,7 @@ export default function HomeClient({ blocks = [] }: { blocks?: any[] }) {
   return (
     <>
       {hasCmsBlocks ? (
-        <RenderBlocks blocks={blocks} />
+        <RenderBlocks blocks={blocks} initialTours={initialTours} />
       ) : (
         <>
           <Hero />
@@ -47,6 +53,7 @@ export default function HomeClient({ blocks = [] }: { blocks?: any[] }) {
             showMumbaiOnly={false}
             onSelectTour={(tour: any) => setSelectedTour(tour)}
             onOpenBookModal={(data: any) => openBooking(data)}
+            initialTours={initialTours}
           />
 
           <WhyChooseUs />

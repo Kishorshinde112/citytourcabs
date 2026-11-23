@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import ToursClient from './ToursClient';
+import { getInitialTourCards } from '@/modules/tours/queries';
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Cab Tour Packages from Mumbai',
@@ -18,6 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ToursListingPage() {
-  return <ToursClient />;
+export default async function ToursListingPage() {
+  const initialTours = await getInitialTourCards();
+  return <ToursClient initialTours={initialTours} />;
 }

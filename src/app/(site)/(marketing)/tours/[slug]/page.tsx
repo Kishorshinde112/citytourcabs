@@ -247,17 +247,35 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     };
   }
 
-  const title = data.seo?.title || data.title;
+  const rawTitle = data.seo?.title || data.title;
+  // Strip trailing branding suffixes (e.g. '| City Tour Cabs Mumbai' or '| City Tour Cabs')
+  // so layout.tsx's template '%s | City Tour Cabs Mumbai' appends it cleanly without duplication.
+  const title = rawTitle
+    .replace(/\s*\|\s*City Tour Cabs(\s+Mumbai)?\s*$/i, '')
+    .trim();
+
   const description =
     data.seo?.description ||
     data.subtitle ||
     `Book guided cab tour for ${data.title} with experienced drivers and sanitized cabs.`;
   const image = data.heroImage || 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png';
 
+  // Normalize canonical URL: ensure it always resolves to self-referencing https://citytourcabs.in/tours/${slug}
+  const defaultCanonical = `https://citytourcabs.in/tours/${slug}`;
+  let canonical = defaultCanonical;
+  if (data.seo?.canonical) {
+    const rawCanonical = data.seo.canonical.trim().replace(/\/+$/, '');
+    if (rawCanonical.startsWith('https://citytourcabs.in/tours/')) {
+      canonical = rawCanonical;
+    } else {
+      canonical = defaultCanonical;
+    }
+  }
+
   return {
     title,
     description,
-    alternates: { canonical: data.seo?.canonical || `https://citytourcabs.in/tours/${slug}` },
+    alternates: { canonical },
     openGraph: {
       title,
       description,

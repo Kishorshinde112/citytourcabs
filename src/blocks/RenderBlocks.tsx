@@ -17,7 +17,13 @@ import BookingFormSection from '@/components/sections/BookingFormSection';
 /**
  * RenderBlocks: Master switch that maps Payload CMS block arrays to React UI components.
  */
-export default function RenderBlocks({ blocks = [] }: { blocks?: any[] }) {
+export default function RenderBlocks({
+  blocks = [],
+  initialTours = null,
+}: {
+  blocks?: any[];
+  initialTours?: any[] | null;
+}) {
   if (!Array.isArray(blocks) || blocks.length === 0) return null;
 
   return (
@@ -35,6 +41,7 @@ export default function RenderBlocks({ blocks = [] }: { blocks?: any[] }) {
                 key={key}
                 title={block.title}
                 tourIds={block.tours}
+                initialTours={initialTours}
               />
             );
           case 'whyChooseUs':

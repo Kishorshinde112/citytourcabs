@@ -5,13 +5,17 @@ import TourPackages from '@/modules/tours/components/TourGrid';
 import TourModal from '@/modules/tours/components/TourModal';
 import { useBooking } from '@/components/booking/BookingContext';
 
-export default function ToursClient() {
+export default function ToursClient({ initialTours = null }: { initialTours?: any[] | null }) {
   const { openBooking } = useBooking();
   const [selectedTour, setSelectedTour] = useState<any>(null);
 
   return (
     <div className="pt-12">
-      <TourPackages headingAs="h1" onSelectTour={(tour: any) => setSelectedTour(tour)} />
+      <TourPackages
+        headingAs="h1"
+        onSelectTour={(tour: any) => setSelectedTour(tour)}
+        initialTours={initialTours}
+      />
 
       {selectedTour && (
         <TourModal
