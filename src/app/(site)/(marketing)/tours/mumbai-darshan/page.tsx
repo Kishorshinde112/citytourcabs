@@ -2,8 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import MumbaiDarshanClient from './MumbaiDarshanClient';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Mumbai Darshan Tour Packages | Full Day Sightseeing Cab Service',

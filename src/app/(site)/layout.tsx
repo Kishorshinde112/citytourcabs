@@ -2,8 +2,30 @@ import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import { headers } from 'next/headers';
 import Script from 'next/script';
+import { Poppins, Reddit_Sans, Caveat } from 'next/font/google';
 import '@/app/(site)/globals.css';
 import ContactClickTracking from '@/shared/layout/ContactClickTracking';
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
+
+const redditSans = Reddit_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-reddit',
+  display: 'swap',
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-caveat',
+  display: 'swap',
+});
 
 const GTM_CONTAINER_ID = 'GTM-PS2XBSRK';
 const PRODUCTION_ANALYTICS_HOSTS = new Set(['citytourcabs.in', 'www.citytourcabs.in']);
@@ -100,16 +122,13 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const showGtmNoscript = isProductionAnalyticsHost(requestHost);
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html
+      lang="en"
+      className={`scroll-smooth ${poppins.variable} ${redditSans.variable} ${caveat.variable}`}
+    >
       <head>
         {/* Google Tag Manager */}
         <script dangerouslySetInnerHTML={{ __html: GTM_BOOTSTRAP }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Poppins:wght@400;500;600;700&family=Reddit+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
-          rel="stylesheet"
-        />
         {/* LocalBusiness JSON-LD Schema */}
         <script
           type="application/ld+json"
@@ -152,7 +171,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           }}
         />
       </head>
-      <body className="bg-white text-gray-900 font-sans antialiased selection:bg-[#1A96EB] selection:text-white">
+      <body className={`${poppins.className} bg-white text-gray-900 font-sans antialiased selection:bg-[#1A96EB] selection:text-white`}>
         {/* Google Tag Manager (noscript) */}
         {showGtmNoscript && (
           <noscript>

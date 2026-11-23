@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import useSettingsStore from '@/store/settingsStore';
 import { telHref } from '@/lib/phone';
 
@@ -88,8 +89,8 @@ export default function Hero({ block = null }) {
     <section id="home" className="relative h-[600px] md:h-[700px] flex items-center overflow-hidden">
       {slides.map((slide, idx) => {
         const isActive = idx === currentSlide;
-        // Only the visible slide may emit the page's single <h1>.
-        const SlideHeading = isActive ? 'h1' : 'div';
+        // Stabilize primary heading: slide 0 is always <h1>, secondary slides are <h2>
+        const SlideHeading = idx === 0 ? 'h1' : 'h2';
         return (
           <div
             key={idx}
@@ -97,14 +98,17 @@ export default function Hero({ block = null }) {
             className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
           >
             <div className="absolute inset-0">
-              <img
-                src={slide.image}
-                alt={slide.title}
-                loading={idx === 0 ? 'eager' : 'lazy'}
-                fetchPriority={idx === 0 ? 'high' : 'auto'}
-                decoding="async"
-                className="w-full h-full object-cover"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  priority={idx === 0}
+                  sizes="100vw"
+                  quality={80}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div className="absolute inset-0 bg-black/50" />
             </div>
 

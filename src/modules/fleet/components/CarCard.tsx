@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Users, Luggage } from 'lucide-react';
 import { Vehicle } from '../types';
