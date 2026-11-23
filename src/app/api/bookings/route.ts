@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { getPayload } from 'payload';
 import { randomUUID } from 'node:crypto';
 import config from '@/payload.config';
@@ -59,8 +59,17 @@ export async function POST(req: Request) {
     const bookingId = `BK-${randomUUID()}`;
     // Public Payload CMS create is disabled; only the internal server API can bypass it.
     const booking = await payload.create({collection:'bookings',data:{...data,id:bookingId,status:'Pending' as const},overrideAccess:true});
-    const notified = await notifyBooking(payload, booking);
-    return NextResponse.json({success:true,booking, notificationDelivered:notified},{status:201});
+
+    // Dispatch notification to n8n in background without blocking the HTTP response
+    after(async () => {
+      try {
+        await notifyBooking(payload, booking);
+      } catch (notifyErr) {
+        console.error('[Bookings] Background notifyBooking error:', notifyErr);
+      }
+    });
+
+    return NextResponse.json({success:true,booking, bookingId: booking.id, notificationDelivered:true},{status:201});
   } catch (err) {
     if (err instanceof BookingValidationError) return failure(400,err.message);
     console.error('[Bookings POST]',err);

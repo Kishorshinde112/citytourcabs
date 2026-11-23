@@ -2,14 +2,26 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import FloatingActions from './FloatingActions';
-import QuickBookModal from '@/modules/bookings/components/QuickBookModal';
-import PrivacyModal from '@/components/modals/PrivacyModal';
-import AutoEnquiryModal from '@/modules/bookings/components/AutoEnquiryModal';
 import { BookingContext } from '@/components/booking/BookingContext';
 import useSettingsStore from '@/store/settingsStore';
+
+// Dynamic imports with ssr: false for heavy modals so their JS bundles are not loaded during initial mobile hydration
+const QuickBookModal = dynamic(
+  () => import('@/modules/bookings/components/QuickBookModal'),
+  { ssr: false }
+);
+const PrivacyModal = dynamic(
+  () => import('@/components/modals/PrivacyModal'),
+  { ssr: false }
+);
+const AutoEnquiryModal = dynamic(
+  () => import('@/modules/bookings/components/AutoEnquiryModal'),
+  { ssr: false }
+);
 
 /**
  * Single owner of the marketing-site chrome and lead modals.
@@ -71,13 +83,17 @@ export default function SiteShell({ children }) {
           onOpenEnquiryModal={() => openEnquiry()}
         />
 
-        <QuickBookModal
-          isOpen={bookModalOpen}
-          onClose={() => setBookModalOpen(false)}
-          initialData={bookModalInitialData}
-        />
+        {bookModalOpen && (
+          <QuickBookModal
+            isOpen={bookModalOpen}
+            onClose={() => setBookModalOpen(false)}
+            initialData={bookModalInitialData}
+          />
+        )}
 
-        <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
+        {privacyModalOpen && (
+          <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
+        )}
 
         {!bookModalOpen && (
           <AutoEnquiryModal
