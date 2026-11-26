@@ -87,6 +87,10 @@ export default function SiteShell({
     return () => clearTimeout(timer);
   }, [autoPopupEnabled, autoPopupDelay]);
 
+  const initialDestinations = Array.isArray(tourLinks) && tourLinks.length > 0
+    ? tourLinks.map((t) => t?.label).filter(Boolean)
+    : null;
+
   return (
     <SiteSettingsProvider settings={siteSettings}>
       <BookingContext.Provider value={{ openBooking, openEnquiry, openPrivacy }}>
@@ -116,6 +120,7 @@ export default function SiteShell({
               isOpen={bookModalOpen}
               onClose={() => setBookModalOpen(false)}
               initialData={bookModalInitialData}
+              initialDestinations={initialDestinations}
             />
           )}
 
@@ -123,11 +128,12 @@ export default function SiteShell({
             <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
           )}
 
-          {!bookModalOpen && (
+          {autoEnquiryOpen && !bookModalOpen && (
             <AutoEnquiryModal
               isOpen={autoEnquiryOpen}
               onClose={() => setAutoEnquiryOpen(false)}
               initialData={enquiryInitialData}
+              initialDestinations={initialDestinations}
             />
           )}
         </div>

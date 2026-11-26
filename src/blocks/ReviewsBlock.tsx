@@ -116,7 +116,7 @@ export default function Testimonials({
                     <Quote className="h-8 w-8 text-orange-700 opacity-20 mb-4" aria-hidden="true" />
 
                     {/* Stars */}
-                    <div className="flex gap-1 mb-4" aria-label={`${ratingCount} out of 5 stars`}>
+                    <div role="img" className="flex gap-1 mb-4" aria-label={`${ratingCount} out of 5 stars`}>
                       {[...Array(ratingCount)].map((_, i) => (
                         <Star key={i} className="h-4 w-4 fill-amber-500 text-amber-500" aria-hidden="true" />
                       ))}

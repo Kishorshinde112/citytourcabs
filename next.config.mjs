@@ -4,6 +4,22 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
+  experimental: {
+    inlineCss: true,
+  },
+  webpack: (config, { dev, isServer, webpack }) => {
+    // Next 15's SWC async-to-generator transform on fetch-server-response leaves
+    // require('../../dev/hot-reloader/app/hot-reloader-app') visible to Webpack's parser
+    // before minification, pulling ~800KB of next-devtools into rootMainFiles.
+    if (!dev && !isServer) {
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /hot-reloader[\\/]app[\\/]hot-reloader-app|next-devtools/,
+        })
+      );
+    }
+    return config;
+  },
   images: {
     loader: 'custom',
     loaderFile: './src/lib/imageLoader.ts',
@@ -87,4 +103,21 @@ const nextConfig = {
   },
 }
 
-export default withPayload(nextConfig)
+const payloadConfig = withPayload(nextConfig)
+
+// Scope Payload's Accept-CH / Critical-CH / Vary header rule to /admin only so public
+// marketing pages avoid a 307 client-hint round-trip on first load.
+const originalPayloadHeaders = payloadConfig.headers
+payloadConfig.headers = async () => {
+  const rules = originalPayloadHeaders ? await originalPayloadHeaders() : []
+  return rules.map((rule) =>
+    rule.source === '/:path*'
+      ? {
+          ...rule,
+          source: '/admin/:path*',
+        }
+      : rule
+  )
+}
+
+export default payloadConfig

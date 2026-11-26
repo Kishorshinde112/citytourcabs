@@ -108,7 +108,7 @@ export default function Hero({
             fetchPriority="high"
             loading="eager"
             sizes="100vw"
-            quality={75}
+            quality={65}
             className="w-full h-full object-cover"
           />
         </div>
