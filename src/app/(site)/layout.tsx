@@ -150,51 +150,88 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${poppins.className} bg-white text-gray-900 font-sans antialiased selection:bg-[#0F6EB8] selection:text-white`}>
         {/* GTM, GA4 (G-E6E794WM68), Google Ads (AW-18526387794), and Umami Analytics.
-            Loaded lazyOnload so conversion tags never block FCP/LCP/TBT while DATALAYER_STUB
-            in <head> queues any early clicks or booking events; host-gated to production. */}
-        <Script id="google-tags-init" strategy="lazyOnload">
+            - Ad clicks (?gclid/gbraid/wbraid/utm_), confirmation pages, and queued conversion
+              events load tags immediately on load.
+            - Normal page visits defer tag scripts until first user interaction (scroll/tap/
+              pointer/key) or 10s idle so third-party scripts never block FCP/LCP/TBT, while
+              DATALAYER_STUB in <head> queues any early events and gclid synchronously. */}
+        <Script id="google-tags-init" strategy="afterInteractive">
           {`
             (function () {
               var host = window.location.hostname.toLowerCase();
               if (host.endsWith('.')) host = host.slice(0, -1);
               if (host !== 'citytourcabs.in' && host !== 'www.citytourcabs.in') return;
 
-              var dataLayer = (window.dataLayer = window.dataLayer || []);
-              window.gtag = window.gtag || function () { dataLayer.push(arguments); };
-              dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+              var loaded = false;
+              function loadTags() {
+                if (loaded) return;
+                loaded = true;
 
-              if (!document.getElementById('gtm-script')) {
-                var gtmScript = document.createElement('script');
-                gtmScript.id = 'gtm-script';
-                gtmScript.async = true;
-                gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=${GTM_CONTAINER_ID}';
-                document.head.appendChild(gtmScript);
+                ['pointerdown', 'keydown', 'scroll', 'touchstart', 'mousemove'].forEach(function (evt) {
+                  window.removeEventListener(evt, loadTags, true);
+                });
+
+                var dataLayer = (window.dataLayer = window.dataLayer || []);
+                window.gtag = window.gtag || function () { dataLayer.push(arguments); };
+                dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+
+                if (!document.getElementById('gtm-script')) {
+                  var gtmScript = document.createElement('script');
+                  gtmScript.id = 'gtm-script';
+                  gtmScript.async = true;
+                  gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=${GTM_CONTAINER_ID}';
+                  document.head.appendChild(gtmScript);
+                }
+
+                window.gtag('js', new Date());
+                window.gtag('config', 'G-E6E794WM68', {
+                  page_path: window.location.pathname,
+                });
+                window.gtag('config', 'AW-18526387794', {
+                  page_path: window.location.pathname,
+                });
+
+                if (!document.getElementById('gtag-js')) {
+                  var gtagScript = document.createElement('script');
+                  gtagScript.id = 'gtag-js';
+                  gtagScript.async = true;
+                  gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-E6E794WM68';
+                  document.head.appendChild(gtagScript);
+                }
+
+                if (!document.getElementById('umami-analytics')) {
+                  var umamiScript = document.createElement('script');
+                  umamiScript.id = 'umami-analytics';
+                  umamiScript.defer = true;
+                  umamiScript.src = 'https://analytics.kishorlab.dev/script.js';
+                  umamiScript.setAttribute('data-website-id', 'c308637f-6ddb-401d-8e71-09de9e4e5da7');
+                  document.head.appendChild(umamiScript);
+                }
               }
 
-              window.gtag('js', new Date());
-              window.gtag('config', 'G-E6E794WM68', {
-                page_path: window.location.pathname,
+              window.__loadCtcTags = loadTags;
+
+              var path = window.location.pathname.replace(/\\/+$/, '') || '/';
+              var isConfirmation = path === '/booking-confirmed' || path === '/enquiry-confirmed';
+              var hasCampaignParam = /[?&](gclid|gbraid|wbraid|utm_source|utm_medium)=/i.test(window.location.search);
+              var hasStoredGclid = false;
+              try {
+                hasStoredGclid = Boolean(window.sessionStorage.getItem('ctc_gclid'));
+              } catch (e) {}
+
+              if (isConfirmation || hasCampaignParam || hasStoredGclid || (window.dataLayer && window.dataLayer.length > 0)) {
+                if (document.readyState === 'complete') {
+                  loadTags();
+                } else {
+                  window.addEventListener('load', loadTags, { once: true });
+                }
+                return;
+              }
+
+              ['pointerdown', 'keydown', 'scroll', 'touchstart', 'mousemove'].forEach(function (evt) {
+                window.addEventListener(evt, loadTags, { passive: true, capture: true, once: true });
               });
-              window.gtag('config', 'AW-18526387794', {
-                page_path: window.location.pathname,
-              });
-
-              if (!document.getElementById('gtag-js')) {
-                var gtagScript = document.createElement('script');
-                gtagScript.id = 'gtag-js';
-                gtagScript.async = true;
-                gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-E6E794WM68';
-                document.head.appendChild(gtagScript);
-              }
-
-              if (!document.getElementById('umami-analytics')) {
-                var umamiScript = document.createElement('script');
-                umamiScript.id = 'umami-analytics';
-                umamiScript.defer = true;
-                umamiScript.src = 'https://analytics.kishorlab.dev/script.js';
-                umamiScript.setAttribute('data-website-id', 'c308637f-6ddb-401d-8e71-09de9e4e5da7');
-                document.head.appendChild(umamiScript);
-              }
+              setTimeout(loadTags, 10000);
             })();
           `}
         </Script>

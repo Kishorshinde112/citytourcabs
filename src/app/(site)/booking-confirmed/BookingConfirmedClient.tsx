@@ -106,6 +106,7 @@ export default function BookingConfirmedClient() {
         booking_id: bookingId,
         lead_type: 'booking_request',
       });
+      (window as { __loadCtcTags?: () => void }).__loadCtcTags?.();
 
       // Latch only after the event was queued. This confirms neither
       // tag firing nor Google Ads acceptance/attribution.

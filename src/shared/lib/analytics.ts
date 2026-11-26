@@ -38,6 +38,7 @@ declare global {
   interface Window {
     dataLayer?: any[];
     gtag?: (...args: any[]) => void;
+    __loadCtcTags?: () => void;
   }
 }
 
@@ -92,6 +93,7 @@ export function trackLeadEnquiry(enquiryId: string, tourName?: string) {
       event: 'citytourcabs_enquiry_success_v2',
       transaction_id: cleanId,
     });
+    window.__loadCtcTags?.();
   } catch {
     return;
   }

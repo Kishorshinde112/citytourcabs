@@ -24,7 +24,7 @@ export function CarCard({ car, onBookClick }: CarCardProps) {
             fill
             quality={70}
             fetchPriority="low"
-            sizes="(max-width: 640px) 384px, (max-width: 768px) 640px, (max-width: 1024px) 50vw, 384px"
+            sizes="(max-width: 640px) 360px, (max-width: 768px) 640px, (max-width: 1024px) 50vw, 384px"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
           {car.tag && (

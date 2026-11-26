@@ -90,7 +90,7 @@ export default function Hero({
     if (slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 12000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
