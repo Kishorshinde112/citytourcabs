@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import HomeClient from './HomeClient';
+import RenderBlocks from '@/blocks/RenderBlocks';
 import { getPageBySlug } from '@/lib/cmsPages';
 import { getInitialTourCards } from '@/modules/tours/queries';
+import { getActiveFleet } from '@/modules/fleet/queries';
+import { getTestimonials } from '@/lib/cmsGlobals';
 
 export const revalidate = 300;
 
@@ -28,9 +31,25 @@ export default async function HomePage() {
     getInitialTourCards(),
   ]);
 
-  if (!page?.layout?.length) {
-    return <HomeClient initialTours={initialTours} />;
+  if (page?.layout?.length) {
+    return (
+      <>
+        <RenderBlocks blocks={page.layout} initialTours={initialTours} />
+        <HomeClient hasCmsBlocks initialTours={initialTours} />
+      </>
+    );
   }
 
-  return <HomeClient blocks={page.layout} initialTours={initialTours} />;
+  const [initialFleet, initialTestimonials] = await Promise.all([
+    getActiveFleet(),
+    getTestimonials(),
+  ]);
+
+  return (
+    <HomeClient
+      initialTours={initialTours}
+      initialFleet={initialFleet}
+      initialTestimonials={initialTestimonials}
+    />
+  );
 }

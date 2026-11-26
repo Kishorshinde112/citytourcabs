@@ -1,4 +1,5 @@
 import { isCmsAdmin } from '@/cms/access';
+import { CACHE_TAGS, triggerRevalidation } from '@/cms/hooks/revalidate';
 import type { GlobalConfig } from 'payload';
 
 export const Navigation: GlobalConfig = {
@@ -8,6 +9,14 @@ export const Navigation: GlobalConfig = {
     group: 'SETTINGS',
   },
   access: { read: () => true, update: isCmsAdmin },
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        triggerRevalidation(undefined, [CACHE_TAGS.navigation]);
+        return doc;
+      },
+    ],
+  },
   fields: [
     {
       name: 'links',

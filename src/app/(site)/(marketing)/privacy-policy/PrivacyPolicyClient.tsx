@@ -2,32 +2,30 @@
 
 import React from "react";
 import BookingContactForm from "@/modules/bookings/components/BookingContactForm";
-import { useBooking } from "@/components/booking/BookingContext";
-import useSettingsStore from "@/store/settingsStore";
+import { useSiteSettings } from "@/store/settingsStore";
 import { displayIndianPhone, telHref } from "@/shared/lib/phone";
 import { Shield, FileText, UserCheck, Eye, Lock, Mail } from "lucide-react";
 
 export default function PrivacyPolicyClient() {
-  const { phone, email, officeAddress } = useSettingsStore();
-  const { openBooking } = useBooking();
+  const { phone, email, officeAddress } = useSiteSettings();
 
   return (
     <div className="bg-white text-gray-900 font-sans">
       {/* Section 0: Hero Banner */}
-        <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-16 md:py-24">
+        <section className="bg-gradient-to-r from-orange-700 to-orange-800 text-white py-16 md:py-24">
           <div className="container mx-auto px-4 text-center max-w-3xl">
             <div className="flex justify-center mb-6">
               <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                <Shield className="h-10 w-10 text-white" />
+                <Shield className="h-10 w-10 text-white" aria-hidden="true" />
               </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold font-[Reddit_Sans] mb-4 text-white">
+            <h1 className="text-3xl md:text-4xl font-bold font-display mb-4 text-white">
               Privacy Policy
             </h1>
-            <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-orange-50 max-w-2xl mx-auto">
               Your privacy is important to us. This policy outlines how we collect, use, and protect your information.
             </p>
-            <p className="text-sm text-orange-200 mt-4">
+            <p className="text-sm text-orange-100 mt-4">
               Last Updated: October 26, 2025
             </p>
           </div>
@@ -46,9 +44,9 @@ export default function PrivacyPolicyClient() {
             <div className="mb-12">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
-                  <FileText className="h-6 w-6 text-orange-600" />
+                  <FileText className="h-6 w-6 text-orange-700" aria-hidden="true" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
+                <h2 className="text-2xl font-bold text-gray-900 font-display">
                   Information We Collect
                 </h2>
               </div>
@@ -85,9 +83,9 @@ export default function PrivacyPolicyClient() {
             <div className="mb-12">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
-                  <UserCheck className="h-6 w-6 text-orange-600" />
+                  <UserCheck className="h-6 w-6 text-orange-700" aria-hidden="true" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
+                <h2 className="text-2xl font-bold text-gray-900 font-display">
                   How We Use Your Information
                 </h2>
               </div>
@@ -108,9 +106,9 @@ export default function PrivacyPolicyClient() {
             <div className="mb-12">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
-                  <Eye className="h-6 w-6 text-orange-600" />
+                  <Eye className="h-6 w-6 text-orange-700" aria-hidden="true" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
+                <h2 className="text-2xl font-bold text-gray-900 font-display">
                   Information Sharing and Disclosure
                 </h2>
               </div>
@@ -121,7 +119,7 @@ export default function PrivacyPolicyClient() {
                   <li><strong>Service Providers:</strong> Third-party companies that help us operate our business (payment processors, communication platforms)</li>
                   <li><strong>Legal Authorities:</strong> When required by law or to protect our rights and safety</li>
                 </ul>
-                <p className="font-medium text-orange-700">
+                <p className="font-medium text-orange-800">
                   We do not sell, rent, or trade your personal information to third parties for marketing purposes.
                 </p>
               </div>
@@ -131,9 +129,9 @@ export default function PrivacyPolicyClient() {
             <div className="mb-12">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
-                  <Lock className="h-6 w-6 text-orange-600" />
+                  <Lock className="h-6 w-6 text-orange-700" aria-hidden="true" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
+                <h2 className="text-2xl font-bold text-gray-900 font-display">
                   Data Security
                 </h2>
               </div>
@@ -148,9 +146,9 @@ export default function PrivacyPolicyClient() {
             <div className="mb-12">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
-                  <Shield className="h-6 w-6 text-orange-600" />
+                  <Shield className="h-6 w-6 text-orange-700" aria-hidden="true" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
+                <h2 className="text-2xl font-bold text-gray-900 font-display">
                   Your Rights
                 </h2>
               </div>
@@ -168,7 +166,7 @@ export default function PrivacyPolicyClient() {
 
             {/* 6. Cookies and Tracking Technologies */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
                 Cookies and Tracking Technologies
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -180,7 +178,7 @@ export default function PrivacyPolicyClient() {
 
             {/* 7. Third-Party Links */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
                 Third-Party Links
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -190,9 +188,9 @@ export default function PrivacyPolicyClient() {
               </div>
             </div>
 
-            {/* 8. Children&apos;s Privacy */}
+            {/* 8. Children's Privacy */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
                 Children&apos;s Privacy
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -204,7 +202,7 @@ export default function PrivacyPolicyClient() {
 
             {/* 9. Changes to This Privacy Policy */}
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 font-display">
                 Changes to This Privacy Policy
               </h2>
               <div className="text-gray-700 leading-relaxed">
@@ -217,26 +215,26 @@ export default function PrivacyPolicyClient() {
             {/* 10. Contact Us Card */}
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-8 border border-orange-200">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center shrink-0">
-                  <Mail className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-orange-700 rounded-full flex items-center justify-center shrink-0">
+                  <Mail className="h-6 w-6 text-white" aria-hidden="true" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 font-[Reddit_Sans]">
+                <h2 className="text-2xl font-bold text-gray-900 font-display">
                   Contact Us
                 </h2>
               </div>
-              <div className="text-gray-700 space-y-3">
+              <div className="text-gray-800 space-y-3">
                 <p className="mb-4">
                   If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
                 </p>
                 <p>
                   <strong>Email: </strong>
-                  <a className="text-orange-600 hover:text-orange-700 underline" href={`mailto:${email}`}>
+                  <a className="text-orange-700 hover:text-orange-800 underline font-medium" href={`mailto:${email}`}>
                     {email}
                   </a>
                 </p>
                 <p>
                   <strong>Phone: </strong>
-                  <a className="text-orange-600 hover:text-orange-700 underline" href={telHref(phone)}>
+                  <a className="text-orange-700 hover:text-orange-800 underline font-medium" href={telHref(phone)}>
                     {displayIndianPhone(phone)}
                   </a>
                 </p>

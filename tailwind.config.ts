@@ -5,18 +5,21 @@ const config: Config = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/blocks/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/modules/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/shared/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#1A96EB',
-          hover: '#1578BC',
+          DEFAULT: '#0F6EB8',
+          hover: '#0B5591',
         },
         brand: {
-          orange: '#ea580c',
-          blue: '#1A96EB',
+          orange: '#c2410c',
+          blue: '#0F6EB8',
         },
       },
       fontFamily: {

@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { headers } from 'next/headers';
 import Script from 'next/script';
 import { Poppins, Reddit_Sans, Caveat } from 'next/font/google';
 import '@/app/(site)/globals.css';
@@ -15,55 +14,36 @@ const poppins = Poppins({
 
 const redditSans = Reddit_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['600', '700'],
   variable: '--font-reddit',
   display: 'swap',
 });
 
 const caveat = Caveat({
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
+  weight: ['400', '700'],
   variable: '--font-caveat',
   display: 'swap',
 });
 
 const GTM_CONTAINER_ID = 'GTM-PS2XBSRK';
-const PRODUCTION_ANALYTICS_HOSTS = new Set(['citytourcabs.in', 'www.citytourcabs.in']);
 
-const GTM_BOOTSTRAP = `
-  (function (w, d, s, l, i) {
-    var host = w.location.hostname.toLowerCase().replace(/\\.$/, '');
-    if (${JSON.stringify(Array.from(PRODUCTION_ANALYTICS_HOSTS))}.indexOf(host) === -1) return;
-    if (d.getElementById('gtm-script')) return;
-
-    w[l] = w[l] || [];
-    w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-
-    var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l !== 'dataLayer' ? '&l=' + l : '';
-    j.async = true;
-    j.id = 'gtm-script';
-    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-    f.parentNode.insertBefore(j, f);
-  })(window, document, 'script', 'dataLayer', '${GTM_CONTAINER_ID}');
+const DATALAYER_STUB = `
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+  try {
+    var gclid = new URLSearchParams(window.location.search).get('gclid');
+    if (gclid) {
+      gclid = gclid.trim().slice(0, 256);
+      if (/^[A-Za-z0-9_.=-]+$/.test(gclid)) {
+        window.sessionStorage.setItem('ctc_gclid', gclid);
+      }
+    }
+  } catch (e) {}
 `;
 
-function normalizeHostname(host: string | null | undefined) {
-  return (host || '')
-    .split(',')[0]
-    .trim()
-    .toLowerCase()
-    .replace(/:\d+$/, '')
-    .replace(/\.$/, '');
-}
-
-function isProductionAnalyticsHost(host: string | null | undefined) {
-  return PRODUCTION_ANALYTICS_HOSTS.has(normalizeHostname(host));
-}
-
 export const viewport: Viewport = {
-  themeColor: '#1A96EB',
+  themeColor: '#0F6EB8',
   width: 'device-width',
   initialScale: 1,
 };
@@ -116,19 +96,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const requestHeaders = await headers();
-  const requestHost = requestHeaders.get('x-forwarded-host') || requestHeaders.get('host');
-  const showGtmNoscript = isProductionAnalyticsHost(requestHost);
-
+export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`scroll-smooth ${poppins.variable} ${redditSans.variable} ${caveat.variable}`}
     >
       <head>
-        {/* Google Tag Manager */}
-        <script dangerouslySetInnerHTML={{ __html: GTM_BOOTSTRAP }} />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        {/* Synchronous dataLayer / gtag stub so early events queue before afterInteractive scripts load */}
+        <script dangerouslySetInnerHTML={{ __html: DATALAYER_STUB }} />
         {/* LocalBusiness JSON-LD Schema */}
         <script
           type="application/ld+json"
@@ -171,23 +148,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           }}
         />
       </head>
-      <body className={`${poppins.className} bg-white text-gray-900 font-sans antialiased selection:bg-[#1A96EB] selection:text-white`}>
-        {/* Google Tag Manager (noscript) */}
-        {showGtmNoscript && (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${GTM_CONTAINER_ID}`}
-              height="0"
-              width="0"
-              style={{ display: 'none', visibility: 'hidden' }}
-            />
-          </noscript>
-        )}
-        {/* End Google Tag Manager (noscript) */}
-
-        {/* Google Tag (gtag.js) for GA4 (G-E6E794WM68) & Google Ads (AW-18526387794).
-            Load only on the production hostnames so localhost and staging do not
-            send analytics traffic. */}
+      <body className={`${poppins.className} bg-white text-gray-900 font-sans antialiased selection:bg-[#0F6EB8] selection:text-white`}>
+        {/* GTM, GA4 (G-E6E794WM68), Google Ads (AW-18526387794), and Umami Analytics.
+            Host-gated to production hostnames so localhost and staging do not emit analytics traffic. */}
         <Script id="google-tags-init" strategy="afterInteractive">
           {`
             (function () {
@@ -196,9 +159,18 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
               if (host !== 'citytourcabs.in' && host !== 'www.citytourcabs.in') return;
 
               var dataLayer = (window.dataLayer = window.dataLayer || []);
-              window.gtag = function () { dataLayer.push(arguments); };
-              window.gtag('js', new Date());
+              window.gtag = window.gtag || function () { dataLayer.push(arguments); };
+              dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
 
+              if (!document.getElementById('gtm-script')) {
+                var gtmScript = document.createElement('script');
+                gtmScript.id = 'gtm-script';
+                gtmScript.async = true;
+                gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=${GTM_CONTAINER_ID}';
+                document.head.appendChild(gtmScript);
+              }
+
+              window.gtag('js', new Date());
               window.gtag('config', 'G-E6E794WM68', {
                 page_path: window.location.pathname,
               });
@@ -206,22 +178,25 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
                 page_path: window.location.pathname,
               });
 
-              if (document.getElementById('gtag-js')) return;
-              var script = document.createElement('script');
-              script.id = 'gtag-js';
-              script.async = true;
-              script.src = 'https://www.googletagmanager.com/gtag/js?id=G-E6E794WM68';
-              document.head.appendChild(script);
+              if (!document.getElementById('gtag-js')) {
+                var gtagScript = document.createElement('script');
+                gtagScript.id = 'gtag-js';
+                gtagScript.async = true;
+                gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-E6E794WM68';
+                document.head.appendChild(gtagScript);
+              }
+
+              if (!document.getElementById('umami-analytics')) {
+                var umamiScript = document.createElement('script');
+                umamiScript.id = 'umami-analytics';
+                umamiScript.defer = true;
+                umamiScript.src = 'https://analytics.kishorlab.dev/script.js';
+                umamiScript.setAttribute('data-website-id', 'c308637f-6ddb-401d-8e71-09de9e4e5da7');
+                document.head.appendChild(umamiScript);
+              }
             })();
           `}
         </Script>
-        {/* Umami Analytics */}
-        <Script
-          id="umami-analytics"
-          strategy="afterInteractive"
-          src="https://analytics.kishorlab.dev/script.js"
-          data-website-id="c308637f-6ddb-401d-8e71-09de9e4e5da7"
-        />
         <ContactClickTracking />
         {children}
       </body>

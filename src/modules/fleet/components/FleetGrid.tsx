@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { Users, Luggage } from 'lucide-react';
 import ScrollReveal from '@/components/common/ScrollReveal';
 import { FLEET_DATA } from '@/data/fleetData';
@@ -17,19 +20,43 @@ const defaultFleet = FLEET_DATA.map((car) => ({
     : '',
 }));
 
-const normalize = (value) => String(value || '').trim().toLowerCase();
+const normalize = (value: unknown) => String(value || '').trim().toLowerCase();
 
 // The array in fleetData.js determines the card order.
 const orderById = new Map(FLEET_DATA.map((car, index) => [normalize(car.id), index]));
 const orderByName = new Map(FLEET_DATA.map((car, index) => [normalize(car.name), index]));
 
-function getOrder(car) {
+function getOrder(car: any) {
   return orderById.get(normalize(car.id)) ??
     orderByName.get(normalize(car.name)) ??
     999;
 }
 
-function FleetPlaceholder({ index }) {
+function mapFleetDocs(docs: any[]) {
+  const mapped = docs.map((car) => {
+    const original = defaultFleet.find(
+      (item) =>
+        normalize(item.id) === normalize(car.id) ||
+        normalize(item.name) === normalize(car.name)
+    );
+    const cmsImage =
+      typeof car.image === 'object' && car.image !== null
+        ? car.image.url
+        : car.image;
+
+    return {
+      ...car,
+      image: cmsImage || car.imageUrl || original?.image || FALLBACK_IMAGE,
+      seatsDesc: car.configuration || car.seatsDesc || '',
+      boot: car.bootSpace
+        ? `${car.bootSpace}${car.luggage ? ` (${car.luggage})` : ''}`
+        : car.boot || '',
+    };
+  });
+  return [...mapped].sort((a, b) => getOrder(a) - getOrder(b));
+}
+
+function FleetPlaceholder({ index }: { index: number }) {
   return (
     <div
       key={`fleet-placeholder-${index}`}
@@ -47,27 +74,31 @@ function FleetPlaceholder({ index }) {
 }
 
 export default function FleetSection({
-  onOpenBookModal = () => {},
   title = 'Our Cabs Gallery',
   subtitle = 'Take a look at our well-maintained fleet of comfortable and reliable vehicles.',
+  initialFleet = null,
 }: {
   onOpenBookModal?: any;
   title?: string;
   subtitle?: string;
+  initialFleet?: any[] | null;
 }) {
-  // No temporary local cards: only the final CMS cards are ever displayed.
-  // Local data is used only if the CMS request fails or returns no vehicles.
-  const [fleetList, setFleetList] = useState(null);
-  const sectionRef = useRef(null);
+  const hasInitial = Array.isArray(initialFleet) && initialFleet.length > 0;
+  const [fleetList, setFleetList] = useState<any[] | null>(() =>
+    hasInitial ? mapFleetDocs(initialFleet!) : null
+  );
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    if (hasInitial) return;
+
     let isMounted = true;
     let started = false;
-    let observer;
+    let observer: IntersectionObserver | undefined;
     const controller = new AbortController();
 
     async function loadFleet() {
-      if (started) return; // Fetch once, even if observer fires repeatedly.
+      if (started) return;
       started = true;
 
       try {
@@ -83,29 +114,7 @@ export default function FleetSection({
             ? data.fleet
             : [];
 
-        const mapped = docs.map((car) => {
-          const original = defaultFleet.find(
-            (item) =>
-              normalize(item.id) === normalize(car.id) ||
-              normalize(item.name) === normalize(car.name)
-          );
-          const cmsImage =
-            typeof car.image === 'object' && car.image !== null
-              ? car.image.url
-              : car.image;
-
-          return {
-            ...car,
-            image: cmsImage || car.imageUrl || original?.image || FALLBACK_IMAGE,
-            seatsDesc: car.configuration || car.seatsDesc || '',
-            boot: car.bootSpace
-              ? `${car.bootSpace}${car.luggage ? ` (${car.luggage})` : ''}`
-              : car.boot || '',
-          };
-        });
-
-        // Sort BEFORE displaying cards, so there is no order change later.
-        const sorted = [...mapped].sort((a, b) => getOrder(a) - getOrder(b));
+        const sorted = mapFleetDocs(docs);
         if (isMounted) setFleetList(sorted.length ? sorted : defaultFleet);
       } catch (error) {
         if (!isMounted || controller.signal.aborted) return;
@@ -114,12 +123,11 @@ export default function FleetSection({
       }
     }
 
-    // Original scroll-triggered lazy API request: 300px before gallery appears.
     if (typeof IntersectionObserver !== 'undefined' && sectionRef.current) {
       observer = new IntersectionObserver(
         (entries) => {
           if (entries[0]?.isIntersecting) {
-            observer.disconnect();
+            observer?.disconnect();
             loadFleet();
           }
         },
@@ -127,7 +135,7 @@ export default function FleetSection({
       );
       observer.observe(sectionRef.current);
     } else {
-      loadFleet(); // Fallback for browsers without IntersectionObserver.
+      loadFleet();
     }
 
     return () => {
@@ -135,43 +143,38 @@ export default function FleetSection({
       observer?.disconnect();
       controller.abort();
     };
-  }, []);
+  }, [hasInitial]);
 
   const isReady = fleetList !== null;
-  // Placeholders reserve layout space; they do NOT fetch images or CMS data.
   const cards = isReady ? fleetList : Array.from({ length: 6 }, () => null);
   const firstRow = cards.slice(0, 3);
   const secondRow = cards.slice(3);
 
-  const renderCard = (car, idx, rowOffset) => (
+  const renderCard = (car: any, idx: number, rowOffset: number) => (
     <ScrollReveal key={car.id || car.name} delay={(rowOffset + idx) * 0.1} className="h-full">
-
-      <div
-        className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full flex flex-col cursor-default"
-      >
-
-        <div className="relative h-48 overflow-hidden group">
-          <img
-            src={car.image}
+      <div className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full flex flex-col cursor-default">
+        <div className="relative h-48 overflow-hidden group bg-gray-700">
+          <Image
+            src={car.image || FALLBACK_IMAGE}
             alt={car.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-            loading="lazy"
-            decoding="async"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover group-hover:scale-110 transition-transform duration-300"
           />
         </div>
         <div className="p-6 flex-1 flex flex-col">
-          <h3 className="mb-3 font-bold text-lg text-white font-[Reddit_Sans]">
+          <h3 className="mb-3 font-bold text-lg text-white font-display">
             {car.name}
           </h3>
-          <div className="space-y-2 text-gray-300 text-sm flex-1">
+          <div className="space-y-2 text-gray-200 text-sm flex-1">
             <div className="flex items-start gap-2">
-              <Users className="h-4 w-4 shrink-0 mt-0.5 text-orange-500" />
+              <Users className="h-4 w-4 shrink-0 mt-0.5 text-orange-400" aria-hidden="true" />
               <span>
                 <strong className="text-white">{car.seats}</strong> {car.seatsDesc}
               </span>
             </div>
             <div className="flex items-start gap-2">
-              <Luggage className="h-4 w-4 shrink-0 mt-0.5 text-orange-500" />
+              <Luggage className="h-4 w-4 shrink-0 mt-0.5 text-orange-400" aria-hidden="true" />
               <span>{car.boot}</span>
             </div>
           </div>
@@ -180,7 +183,7 @@ export default function FleetSection({
     </ScrollReveal>
   );
 
-  const renderItem = (car, idx, rowOffset) =>
+  const renderItem = (car: any, idx: number, rowOffset: number) =>
     car ? (
       renderCard(car, idx, rowOffset)
     ) : (
@@ -196,10 +199,9 @@ export default function FleetSection({
     >
       <span id="fleet" className="block scroll-mt-24" aria-hidden="true" />
       <div className="container mx-auto px-4">
-        {/* Keep the original scroll reveal on the section heading. */}
         <ScrollReveal>
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-white font-[Reddit_Sans]">
+            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-white font-display">
               {title || 'Our Cabs Gallery'}
             </h2>
             <p className="text-gray-300 max-w-2xl mx-auto text-base sm:text-lg">

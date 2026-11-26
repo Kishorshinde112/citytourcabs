@@ -181,7 +181,7 @@
   word-break: break-word;
 }
 .rate-table-html th {
-  background: #1a96eb;
+  background: #0F6EB8;
   color: #fff;
   font-weight: 600;
   font-size: 1.05rem;
@@ -357,20 +357,20 @@
 
 .font-handwritten,
 [class*="font-handwritten"] {
-  font-family: 'Caveat', cursive !important;
+  font-family: var(--font-caveat), cursive !important;
 }
 
 .font-\[Reddit_Sans\],
 [class*="font-\[Reddit_Sans\]"] {
-  font-family: 'Reddit Sans', sans-serif !important;
+  font-family: var(--font-reddit), sans-serif !important;
 }
 
 .text-brand-blue-500 {
-  color: #1a96eb;
+  color: #0F6EB8;
 }
 
 .hover\:text-brand-blue-500:hover {
-  color: #1a96eb;
+  color: #0F6EB8;
 }
 
 /* Scroll-triggered content visibility optimization (zero layout shift, defers offscreen painting) */

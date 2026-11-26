@@ -7,7 +7,10 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import FloatingActions from './FloatingActions';
 import { BookingContext } from '@/components/booking/BookingContext';
-import useSettingsStore from '@/store/settingsStore';
+import useSettingsStore, {
+  SiteSettingsProvider,
+  normalizeSiteSettings,
+} from '@/store/settingsStore';
 
 // Dynamic imports with ssr: false for heavy modals so their JS bundles are not loaded during initial mobile hydration
 const QuickBookModal = dynamic(
@@ -27,9 +30,19 @@ const AutoEnquiryModal = dynamic(
  * Single owner of the marketing-site chrome and lead modals.
  * Every page under (site)/(marketing) renders content only.
  */
-export default function SiteShell({ children }) {
+export default function SiteShell({
+  children,
+  siteSettings = null,
+  navigation = null,
+  footer = null,
+  tourLinks = null,
+}) {
   const pathname = usePathname();
-  const promoPopup = useSettingsStore((state) => state.promoPopup);
+  const hydrateSettings = useSettingsStore((state) => state.hydrateSettings);
+  const storePromoPopup = useSettingsStore((state) => state.promoPopup);
+  const resolvedSettings = siteSettings ? normalizeSiteSettings(siteSettings) : null;
+  const promoPopup = resolvedSettings?.promoPopup || storePromoPopup;
+
   const [bookModalOpen, setBookModalOpen] = useState(false);
   const [bookModalInitialData, setBookModalInitialData] = useState({});
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
@@ -40,6 +53,14 @@ export default function SiteShell({ children }) {
   useEffect(() => {
     bookModalOpenRef.current = bookModalOpen;
   }, [bookModalOpen]);
+
+  useEffect(() => {
+    if (siteSettings) {
+      hydrateSettings(siteSettings);
+    } else {
+      useSettingsStore.getState().fetchSettings();
+    }
+  }, [siteSettings, hydrateSettings]);
 
   const openBooking = useCallback((initialData = {}) => {
     setAutoEnquiryOpen(false);
@@ -57,7 +78,7 @@ export default function SiteShell({ children }) {
 
   // Timed discount enquiry modal. Legal pages should never interrupt the reader.
   const autoPopupEnabled = pathname !== '/privacy-policy' && promoPopup?.enabled !== false;
-  const autoPopupDelay = Math.max(1, Number(promoPopup?.delaySeconds) || 5) * 1000;
+  const autoPopupDelay = Math.max(1, Number(promoPopup?.delaySeconds) || 7) * 1000;
   useEffect(() => {
     if (!autoPopupEnabled) return undefined;
     const timer = setTimeout(() => {
@@ -67,42 +88,50 @@ export default function SiteShell({ children }) {
   }, [autoPopupEnabled, autoPopupDelay]);
 
   return (
-    <BookingContext.Provider value={{ openBooking, openEnquiry, openPrivacy }}>
-      <div className="min-h-screen bg-white text-gray-900 font-sans flex flex-col selection:bg-[#1A96EB] selection:text-white pb-14 sm:pb-0">
-        <Navbar onOpenBookModal={() => openBooking()} />
-
-        <main className="flex-1">{children}</main>
-
-        <Footer
-          onOpenPrivacyModal={openPrivacy}
-          onOpenBookModal={() => openBooking()}
-        />
-
-        <FloatingActions
-          onOpenBookModal={() => openBooking()}
-          onOpenEnquiryModal={() => openEnquiry()}
-        />
-
-        {bookModalOpen && (
-          <QuickBookModal
-            isOpen={bookModalOpen}
-            onClose={() => setBookModalOpen(false)}
-            initialData={bookModalInitialData}
+    <SiteSettingsProvider settings={siteSettings}>
+      <BookingContext.Provider value={{ openBooking, openEnquiry, openPrivacy }}>
+        <div className="min-h-screen bg-white text-gray-900 font-sans flex flex-col selection:bg-[#0F6EB8] selection:text-white pb-14 sm:pb-0">
+          <Navbar
+            onOpenBookModal={() => openBooking()}
+            initialNavigation={navigation}
+            initialTourLinks={tourLinks}
           />
-        )}
 
-        {privacyModalOpen && (
-          <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
-        )}
+          <main className="flex-1">{children}</main>
 
-        {!bookModalOpen && (
-          <AutoEnquiryModal
-            isOpen={autoEnquiryOpen}
-            onClose={() => setAutoEnquiryOpen(false)}
-            initialData={enquiryInitialData}
+          <Footer
+            onOpenPrivacyModal={openPrivacy}
+            onOpenBookModal={() => openBooking()}
+            initialFooter={footer}
+            initialTourLinks={tourLinks}
           />
-        )}
-      </div>
-    </BookingContext.Provider>
+
+          <FloatingActions
+            onOpenBookModal={() => openBooking()}
+            onOpenEnquiryModal={() => openEnquiry()}
+          />
+
+          {bookModalOpen && (
+            <QuickBookModal
+              isOpen={bookModalOpen}
+              onClose={() => setBookModalOpen(false)}
+              initialData={bookModalInitialData}
+            />
+          )}
+
+          {privacyModalOpen && (
+            <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
+          )}
+
+          {!bookModalOpen && (
+            <AutoEnquiryModal
+              isOpen={autoEnquiryOpen}
+              onClose={() => setAutoEnquiryOpen(false)}
+              initialData={enquiryInitialData}
+            />
+          )}
+        </div>
+      </BookingContext.Provider>
+    </SiteSettingsProvider>
   );
 }

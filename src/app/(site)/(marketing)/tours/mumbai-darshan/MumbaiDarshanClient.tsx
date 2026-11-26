@@ -4,8 +4,9 @@ import React from 'react';
 import Image from 'next/image';
 import { Phone, Check, Sparkles, ArrowRight } from 'lucide-react';
 import { useBooking } from '@/components/booking/BookingContext';
-import useSettingsStore from '@/store/settingsStore';
+import { useSiteSettings } from '@/store/settingsStore';
 import ScrollReveal from '@/components/common/ScrollReveal';
+import { displayIndianPhone, telHref } from '@/lib/phone';
 
 interface HighlightSpot {
   name: string;
@@ -58,7 +59,7 @@ const RATE_CARD_ROWS = [
 ];
 
 export default function MumbaiDarshanClient() {
-  const { phone } = useSettingsStore();
+  const { phone } = useSiteSettings();
   const { openBooking, openEnquiry } = useBooking();
 
   const handleOpenBookModal = (extra = {}) => {
@@ -94,31 +95,30 @@ export default function MumbaiDarshanClient() {
             <h1 className="text-4xl sm:text-5xl font-extrabold font-display tracking-tight text-white">
               Mumbai Darshan
             </h1>
-            <p className="text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto font-medium">
+            <p className="text-lg sm:text-xl text-gray-100 max-w-2xl mx-auto font-medium">
               Discover Mumbai iconic landmarks with expert local driver-guides!
             </p>
             <div className="pt-3 flex flex-wrap justify-center items-center gap-3">
               <button
                 type="button"
                 onClick={scrollToRateCard}
-                className="px-6 py-2.5 rounded-xl bg-[#0090ff] hover:bg-[#007cdb] text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-500/20 transition flex items-center gap-1.5 cursor-pointer"
+                className="px-6 py-2.5 rounded-xl bg-[#0F6EB8] hover:bg-[#0B5591] text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-500/20 transition flex items-center gap-1.5 cursor-pointer"
               >
                 <span>View Rate Card</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
               <button
                 type="button"
                 onClick={() => openEnquiry()}
-                className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/40 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 cursor-pointer shadow backdrop-blur-sm"
+                className="px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/40 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 cursor-pointer shadow backdrop-blur-sm"
               >
-
                 <span>Submit Enquiry (Get Discount)</span>
               </button>
               <a
-                href={`tel:+91${phone}`}
-                className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/30 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow backdrop-blur-sm"
+                href={telHref(phone)}
+                className="px-5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/30 text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow backdrop-blur-sm"
               >
-                <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                <Phone className="w-3.5 h-3.5 text-emerald-300" aria-hidden="true" />
                 <span>Call Desk</span>
               </a>
             </div>
@@ -135,11 +135,11 @@ export default function MumbaiDarshanClient() {
                 <ScrollReveal>
                   {/* 1. Tagline */}
                   <div>
-                    <h3 className="text-lg font-bold text-[#2dc26b] flex items-center gap-2">
-                      🚗 Get drivers who act as a guide
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                      Explore Mumbai's iconic landmarks with expert drivers who know every historic corner, scenic seaside view, and hidden culinary gem.
+                    <h2 className="text-lg font-bold text-emerald-700 flex items-center gap-2">
+                      Get drivers who act as a guide
+                    </h2>
+                    <p className="text-sm text-gray-700 mt-2 leading-relaxed">
+                      Explore Mumbai&apos;s iconic landmarks with expert drivers who know every historic corner, scenic seaside view, and hidden culinary gem.
                     </p>
                     <div className="border-b border-dashed border-gray-300 my-6" />
                   </div>
@@ -155,8 +155,8 @@ export default function MumbaiDarshanClient() {
                           key={idx}
                           className="flex items-start gap-2.5 text-xs sm:text-sm text-gray-700 leading-relaxed"
                         >
-                          <Check className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-                          <span className={idx === 0 ? 'text-red-600 font-medium' : 'text-gray-700'}>
+                          <Check className="w-4 h-4 text-orange-700 shrink-0 mt-0.5" aria-hidden="true" />
+                          <span className={idx === 0 ? 'text-red-700 font-medium' : 'text-gray-700'}>
                             {rule}
                           </span>
                         </div>
@@ -173,12 +173,12 @@ export default function MumbaiDarshanClient() {
                     <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-3">
                       {TOUR_HIGHLIGHTS.map((spot, idx) => (
                         <div key={idx} className="flex items-start gap-3">
-                          <span className="text-xl shrink-0 mt-0.5">📍</span>
+                          <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">📍</span>
                           <div>
                             <span className="font-bold text-gray-900 text-sm">
                               {spot.name}
                             </span>
-                            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                            <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
                               {spot.desc}
                             </p>
                           </div>
@@ -195,9 +195,9 @@ export default function MumbaiDarshanClient() {
                   {/* 1. Rate Card Table */}
                   <div
                     id="rate-card"
-                  className="scroll-mt-24 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm"
-                >
-                  <div className="bg-[#0090ff] text-white p-4 font-black text-base flex items-center justify-between">
+                    className="scroll-mt-24 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm"
+                  >
+                  <div className="bg-[#0F6EB8] text-white p-4 font-black text-base flex items-center justify-between">
                     <span>Rate Card</span>
                   </div>
                   <div className="overflow-x-auto">
@@ -226,7 +226,7 @@ export default function MumbaiDarshanClient() {
                             <td className="p-3 text-center border-r border-gray-200 font-medium">
                               {row.h12}
                             </td>
-                            <td className="p-3 text-center text-[11px] whitespace-pre-line text-gray-500">
+                            <td className="p-3 text-center text-[11px] whitespace-pre-line text-gray-600">
                               <div>{row.extraKm}</div>
                               <div>{row.extraHr}</div>
                             </td>
@@ -260,12 +260,12 @@ export default function MumbaiDarshanClient() {
                   <div className="font-bold text-gray-900 text-sm mb-1">
                     Package Coverage Details
                   </div>
-                  <div className="whitespace-pre-line text-gray-600 space-y-1">
+                  <div className="whitespace-pre-line text-gray-700 space-y-1">
                     <p>In the 8 Hrs / 80 Kms package, around 8–10 places can be covered.</p>
                     <p>In the 10 Hrs / 100 Kms package, around 10–12 places can be covered.</p>
                     <p>In the 12 Hrs / 120 Kms package, around 14 or more places can be covered.</p>
                     <p>For Tempo Traveller only ( 12 hrs 100 kms ) packages are available.</p>
-                    <p className="text-gray-400 text-[11px] pt-1">
+                    <p className="text-gray-600 text-[11px] pt-1">
                       (The mentioned numbers may vary depending on traffic conditions and time spent at each location.)
                     </p>
                   </div>
@@ -273,38 +273,38 @@ export default function MumbaiDarshanClient() {
 
                 {/* 3. Quick Booking Card */}
                 <div className="bg-[#fff7ed]/50 rounded-2xl border-2 border-orange-400 p-6 space-y-4 shadow-sm">
-                  <h3 className="text-lg font-black text-gray-900 flex items-center justify-between">
+                  <h2 className="text-lg font-black text-gray-900 flex items-center justify-between">
                     <span>Quick Booking</span>
-                    <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded font-extrabold">
+                    <span className="text-xs bg-orange-700 text-white px-2 py-0.5 rounded font-extrabold">
                       Instant
                     </span>
-                  </h3>
-                  <p className="text-xs text-gray-500">
+                  </h2>
+                  <p className="text-xs text-gray-600">
                     Get instant driver &amp; cab confirmation for your Mumbai Darshan
                   </p>
                   <button
                     type="button"
                     onClick={() => handleOpenBookModal({ dropCity: 'Mumbai Darshan' })}
-                    className="w-full py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-black text-base shadow-lg shadow-orange-500/20 transition cursor-pointer"
+                    className="w-full py-3.5 rounded-xl bg-orange-700 hover:bg-orange-800 text-white font-black text-base shadow-lg shadow-orange-500/20 transition cursor-pointer"
                   >
                     Book Now
                   </button>
                   <button
                     type="button"
                     onClick={() => openEnquiry()}
-                    className="w-full py-3 rounded-xl bg-white hover:bg-orange-50 text-orange-600 border border-orange-300 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full py-3 rounded-xl bg-white hover:bg-orange-50 text-orange-700 border border-orange-300 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+                    <Sparkles className="w-3.5 h-3.5 text-orange-700" aria-hidden="true" />
                     <span>Submit Enquiry Now</span>
                   </button>
-                  <div className="pt-2 text-xs text-gray-600 flex items-center justify-between border-t border-orange-200/70">
+                  <div className="pt-2 text-xs text-gray-700 flex items-center justify-between border-t border-orange-200/70">
                     <span>Or call us directly:</span>
                     <a
-                      href={`tel:+91${phone}`}
-                      className="font-bold text-[#0090ff] hover:underline flex items-center gap-1"
+                      href={telHref(phone)}
+                      className="font-bold text-[#0F6EB8] hover:underline flex items-center gap-1"
                     >
-                      <Phone className="w-3.5 h-3.5 text-[#0090ff]" />
-                      <span>+91 {phone}</span>
+                      <Phone className="w-3.5 h-3.5 text-[#0F6EB8]" aria-hidden="true" />
+                      <span>{displayIndianPhone(phone)}</span>
                     </a>
                   </div>
                 </div>

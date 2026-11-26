@@ -6,6 +6,7 @@ import { isAuthorizedBookingStaff } from '@/lib/bookingAuth';
 import { validateBooking, BookingValidationError } from '@/lib/bookingValidation.mjs';
 import { allowRequest } from '@/lib/rateLimit.mjs';
 import { notifyBooking } from '@/lib/bookingNotifications';
+import { sanitizeGclid } from '@/shared/lib/gclid';
 
 export const runtime = 'nodejs';
 const failure = (status: number, message: string) => NextResponse.json({ success:false, error:message }, {status});
@@ -55,6 +56,9 @@ export async function POST(req: Request) {
     const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unidentified';
     if (!allowRequest(ip)) return failure(429,'Too many requests. Please try again later');
     const data = validateBooking(input);
+    const rawInput =
+      input && typeof input === 'object' ? (input as Record<string, unknown>) : {};
+    const gclid = sanitizeGclid(rawInput.gclid);
     const payload = await getPayload({config});
     const bookingId = `BK-${randomUUID()}`;
     // Public Payload CMS create is disabled; only the internal server API can bypass it.
@@ -63,7 +67,10 @@ export async function POST(req: Request) {
     // Dispatch notification to n8n in background without blocking the HTTP response
     after(async () => {
       try {
-        await notifyBooking(payload, booking);
+        await notifyBooking(
+          payload,
+          gclid ? { ...booking, gclid } : booking
+        );
       } catch (notifyErr) {
         console.error('[Bookings] Background notifyBooking error:', notifyErr);
       }

@@ -14,7 +14,7 @@ import {
   User,
   Sparkles,
 } from 'lucide-react';
-import useSettingsStore from '@/store/settingsStore';
+import { useSiteSettings } from '@/store/settingsStore';
 import { displayIndianPhone, telHref, whatsappNumber } from '@/shared/lib/phone';
 import { isAnalyticsHostAllowed } from '@/shared/lib/analytics';
 
@@ -37,7 +37,7 @@ function asText(value: unknown): string {
 
 export default function BookingConfirmedClient() {
   const router = useRouter();
-  const { phone } = useSettingsStore();
+  const { phone } = useSiteSettings();
   const [booking, setBooking] = useState<BookingDetails | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const trackedBookingIds = useRef<Set<string>>(new Set());
@@ -219,10 +219,10 @@ export default function BookingConfirmedClient() {
           <a
             href={`https://wa.me/${whatsappNumber(phone)}?text=${encodeURIComponent(whatsappMessage)}`}
             target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-black text-sm transition shadow-lg"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-sm transition shadow-lg"
           >
-            <MessageCircle className="w-4 h-4" />
+            <MessageCircle className="w-4 h-4" aria-hidden="true" />
             WhatsApp
           </a>
         </div>

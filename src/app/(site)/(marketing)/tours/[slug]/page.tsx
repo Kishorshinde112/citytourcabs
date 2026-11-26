@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cache } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPayload } from 'payload';
@@ -37,7 +37,7 @@ function generateLeftHtml(details: any, fallbackLeftHtml?: string): string {
 
   parts.push(`
     <div style="margin-bottom: 2rem; text-align: left;">
-      ${guideMessage ? `<p style="font-size: 1.125rem; line-height: 1.75rem; color: #374151;"><strong><span style="color: rgb(45, 194, 107);">${escapeHtml(guideMessage)}</span></strong></p>` : ''}
+      ${guideMessage ? `<p style="font-size: 1.125rem; line-height: 1.75rem; color: #374151;"><strong><span style="color: #15803d;">${escapeHtml(guideMessage)}</span></strong></p>` : ''}
       ${description ? `<p style="font-size: 1.125rem; line-height: 1.75rem; color: #374151;">${escapeHtml(description)}</p>` : ''}
       <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0;" />
     </div>
@@ -50,7 +50,7 @@ function generateLeftHtml(details: any, fallbackLeftHtml?: string): string {
         if (!text) return '';
         return `
           <li style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; color: #374151;">
-            <span style="color: #ea580c; flex-shrink: 0; margin-top: 0.15rem; font-weight: bold;">✓</span>
+            <span style="color: #c2410c; flex-shrink: 0; margin-top: 0.15rem; font-weight: bold;">✓</span>
             <span>${escapeHtml(text)}</span>
           </li>
         `;
@@ -75,7 +75,7 @@ function generateLeftHtml(details: any, fallbackLeftHtml?: string): string {
       .map((att: any, idx: number) => {
         const emoji = att.emoji ? `${att.emoji} ` : '';
         const name = att.name || '';
-        const desc = att.desc ? ` <span style="color: #64748b; font-size: 0.9em;">(${escapeHtml(att.desc)})</span>` : '';
+        const desc = att.desc ? ` <span style="color: #475569; font-size: 0.9em;">(${escapeHtml(att.desc)})</span>` : '';
         return `
           <li style="margin-bottom: 0.5rem;">
             <strong>${idx + 1}. ${emoji}${escapeHtml(name)}</strong>${desc}
@@ -86,7 +86,7 @@ function generateLeftHtml(details: any, fallbackLeftHtml?: string): string {
 
     parts.push(`
       <div style="margin-bottom: 2rem;">
-        <h2 style="margin-bottom: 1.5rem; font-size: 26px; font-weight: bold; font-family: 'Reddit Sans', sans-serif; color: #1e293b;">${escapeHtml(attractionTitle)}</h2>
+        <h2 style="margin-bottom: 1.5rem; font-size: 26px; font-weight: bold; font-family: var(--font-reddit), sans-serif; color: #1e293b;">${escapeHtml(attractionTitle)}</h2>
         <div style="background-color: #eff6ff; border-radius: 0.75rem; padding: 1.5rem; border: 1px solid #dbeafe;">
           <ol style="margin: 0; padding-left: 1.25rem; line-height: 1.8; color: #1e293b;">
             ${attractionsList}
@@ -185,7 +185,7 @@ function generateRightHtml(details: any, fallbackRightHtml?: string): string {
   if (details.coverageDetails) {
     const coverageFormatted = escapeHtml(details.coverageDetails).replace(/\n/g, '<br/>');
     parts.push(`
-      <div style="margin-top: 1.5rem; font-size: 0.875rem; color: #4b5563; line-height: 1.6;">
+      <div style="margin-top: 1.5rem; font-size: 0.875rem; color: #374151; line-height: 1.6;">
         <p><strong>Package Coverage Details</strong><br/>${coverageFormatted}</p>
       </div>
     `);
@@ -194,7 +194,7 @@ function generateRightHtml(details: any, fallbackRightHtml?: string): string {
   return parts.join('\n');
 }
 
-async function getTourData(slug: string) {
+const getTourData = cache(async function getTourData(slug: string) {
   const fallback = (tourPagesData as Record<string, any>)[slug];
 
   try {
@@ -228,6 +228,7 @@ async function getTourData(slug: string) {
         leftHtml,
         rightHtml,
         seo: doc.seo || null,
+        startingPrice: detailsBlock?.startingPrice || doc.startingPrice || fallback?.startingPrice,
       };
     }
   } catch (err) {
@@ -235,7 +236,7 @@ async function getTourData(slug: string) {
   }
 
   return fallback || null;
-}
+});
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params;

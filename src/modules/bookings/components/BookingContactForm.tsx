@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
-import useSettingsStore from '@/store/settingsStore';
+import { useSiteSettings } from '@/store/settingsStore';
 import useBookingsStore from '@/store/bookingsStore';
 import { displayIndianPhone, telHref } from '@/lib/phone';
+import { getStoredGclid } from '@/shared/lib/gclid';
 
 const TOUR_PACKAGES_MAP: Record<string, string[]> = {
   'Mumbai Darshan': [
@@ -56,12 +57,20 @@ const DEFAULT_DESTINATIONS = Object.keys(TOUR_PACKAGES_MAP);
 export default function BookingContactForm({
   title = 'Get In Touch',
   subtitle = 'Ready to book your tour? Fill out the form and our team will get back to you shortly to confirm your booking',
+  initialDestinations = null,
+}: {
+  title?: string;
+  subtitle?: string;
+  initialDestinations?: string[] | null;
 }) {
   const router = useRouter();
-  const { phone, email, officeAddress, workingHours } = useSettingsStore();
+  const { phone, email, officeAddress, workingHours } = useSiteSettings();
   const { addBooking } = useBookingsStore();
 
-  const [destinations, setDestinations] = useState(DEFAULT_DESTINATIONS);
+  const hasInitialDestinations = Array.isArray(initialDestinations) && initialDestinations.length > 0;
+  const [destinations, setDestinations] = useState<string[]>(
+    hasInitialDestinations ? initialDestinations! : DEFAULT_DESTINATIONS
+  );
   const [formData, setFormData] = useState({
     destination: '',
     packageName: '',
@@ -79,6 +88,8 @@ export default function BookingContactForm({
   }, []);
 
   useEffect(() => {
+    if (hasInitialDestinations) return;
+
     let isMounted = true;
     async function fetchTours() {
       try {
@@ -87,10 +98,10 @@ export default function BookingContactForm({
           const data = await res.json();
           const docs = Array.isArray(data.docs) ? data.docs : (Array.isArray(data.tours) ? data.tours : []);
           if (isMounted && docs.length > 0) {
-            setDestinations(docs.map((t) => t.title));
+            setDestinations(docs.map((t: any) => t.title));
           }
         }
-      } catch (err) {
+      } catch {
         // Fallback
       }
     }
@@ -98,9 +109,9 @@ export default function BookingContactForm({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [hasInitialDestinations]);
 
-  const handleDestinationChange = (e) => {
+  const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const dest = e.target.value;
     const pkgs = dest ? (TOUR_PACKAGES_MAP[dest] || ['Standard Package']) : [];
     setFormData((prev) => ({
@@ -110,7 +121,7 @@ export default function BookingContactForm({
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submittingRef.current) return;
     setError('');
@@ -134,6 +145,8 @@ export default function BookingContactForm({
       return;
     }
 
+    const storedGclid = getStoredGclid();
+
     const bookingPayload = {
       name: formData.fullName.trim(),
       phone: cleanPhone,
@@ -149,9 +162,9 @@ export default function BookingContactForm({
       passengers: '4',
       type: 'Inquiry',
       status: 'Pending',
+      ...(storedGclid ? { gclid: storedGclid } : {}),
     };
 
-    // Only show confirmation after the server returns a saved booking ID.
     let inquiryId;
     submittingRef.current = true;
     try {
@@ -165,7 +178,6 @@ export default function BookingContactForm({
       return;
     }
 
-    // Save to sessionStorage for confirmation page
     try {
       sessionStorage.setItem(
         'last_booking',
@@ -183,7 +195,6 @@ export default function BookingContactForm({
       );
     } catch {}
 
-    // Redirect to dedicated enquiry confirmed page
     router.push('/enquiry-confirmed');
   };
 
@@ -197,10 +208,10 @@ export default function BookingContactForm({
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="mb-4 text-3xl md:text-4xl font-bold font-[Reddit_Sans] text-gray-900">
+          <h2 className="mb-4 text-3xl md:text-4xl font-bold font-display text-gray-900">
             {title || 'Get In Touch'}
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
+          <p className="text-gray-700 max-w-2xl mx-auto text-base sm:text-lg">
             {subtitle}
           </p>
         </div>
@@ -212,20 +223,20 @@ export default function BookingContactForm({
               <h3 className="mb-6 font-bold text-2xl font-display text-gray-900">
                 Contact Information
               </h3>
-              <p className="text-gray-600 mb-8 leading-relaxed">
-                We're here to help make your journey memorable. Reach out to us through any of the following channels, and our team will assist you with your tour booking.
+              <p className="text-gray-700 mb-8 leading-relaxed">
+                We&apos;re here to help make your journey memorable. Reach out to us through any of the following channels, and our team will assist you with your tour booking.
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-[rgb(26,150,235)] rounded-full flex items-center justify-center flex-shrink-0 shadow-xs">
-                    <Phone className="h-6 w-6 text-white" />
+                  <div className="w-12 h-12 bg-[#0F6EB8] rounded-full flex items-center justify-center flex-shrink-0 shadow-xs">
+                    <Phone className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1 font-medium">Phone Number</p>
+                    <p className="text-sm text-gray-600 mb-1 font-medium">Phone Number</p>
                     <a
                       href={telHref(phone)}
-                      className="text-gray-900 hover:text-[#1A96EB] transition-colors font-semibold"
+                      className="text-gray-900 hover:text-[#0F6EB8] transition-colors font-semibold"
                     >
                       {displayIndianPhone(phone)}
                     </a>
@@ -233,14 +244,14 @@ export default function BookingContactForm({
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-[rgb(26,150,235)] rounded-full flex items-center justify-center flex-shrink-0 shadow-xs">
-                    <Mail className="h-6 w-6 text-white" />
+                  <div className="w-12 h-12 bg-[#0F6EB8] rounded-full flex items-center justify-center flex-shrink-0 shadow-xs">
+                    <Mail className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1 font-medium">Email Address</p>
+                    <p className="text-sm text-gray-600 mb-1 font-medium">Email Address</p>
                     <a
                       href={`mailto:${email}`}
-                      className="text-gray-900 hover:text-[#1A96EB] transition-colors break-all font-semibold"
+                      className="text-gray-900 hover:text-[#0F6EB8] transition-colors break-all font-semibold"
                     >
                       {email}
                     </a>
@@ -248,11 +259,11 @@ export default function BookingContactForm({
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-[rgb(26,150,235)] rounded-full flex items-center justify-center flex-shrink-0 shadow-xs">
-                    <MapPin className="h-6 w-6 text-white" />
+                  <div className="w-12 h-12 bg-[#0F6EB8] rounded-full flex items-center justify-center flex-shrink-0 shadow-xs">
+                    <MapPin className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1 font-medium">Location</p>
+                    <p className="text-sm text-gray-600 mb-1 font-medium">Location</p>
                     <p className="text-gray-900 font-semibold">
                       {officeAddress || 'Office No 1102 P2 Kanjurmarg east, Mumbai 400042'}
                     </p>
@@ -272,11 +283,11 @@ export default function BookingContactForm({
             <div>
               {submitted ? (
                 <div className="bg-white p-8 rounded-lg border border-gray-200 text-center space-y-4 shadow-sm">
-                  <CheckCircle2 className="w-16 h-16 text-emerald-600 mx-auto" />
-                  <h4 className="text-2xl font-bold text-gray-900 font-display">
+                  <CheckCircle2 className="w-16 h-16 text-emerald-700 mx-auto" aria-hidden="true" />
+                  <h3 className="text-2xl font-bold text-gray-900 font-display">
                     Thank You!
-                  </h4>
-                  <p className="text-gray-600 text-sm max-w-md mx-auto">
+                  </h3>
+                  <p className="text-gray-700 text-sm max-w-md mx-auto">
                     Your inquiry has been received. Our team will contact you shortly to coordinate your booking.
                   </p>
                 </div>
@@ -290,14 +301,16 @@ export default function BookingContactForm({
 
                   {/* Destination */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label htmlFor="booking-destination" className="block text-sm font-medium text-gray-800">
                       Destination *
                     </label>
                     <select
+                      id="booking-destination"
+                      name="destination"
                       required
                       value={formData.destination}
                       onChange={handleDestinationChange}
-                      className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
+                      className="w-full bg-white border border-gray-400 focus:border-[#0F6EB8] rounded-md px-3 h-12 text-sm text-gray-900 outline-none transition-colors"
                     >
                       <option value="">Select Destination</option>
                       {destinations.map((dest, idx) => (
@@ -310,13 +323,15 @@ export default function BookingContactForm({
 
                   {/* Package */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label htmlFor="booking-package" className="block text-sm font-medium text-gray-800">
                       Package
                     </label>
                     <select
+                      id="booking-package"
+                      name="package"
                       value={formData.packageName}
                       onChange={(e) => setFormData({ ...formData, packageName: e.target.value })}
-                      className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
+                      className="w-full bg-white border border-gray-400 focus:border-[#0F6EB8] rounded-md px-3 h-12 text-sm text-gray-900 outline-none transition-colors"
                     >
                       <option value="">Select Package</option>
                       {currentPackages.map((pkg, idx) => (
@@ -329,54 +344,60 @@ export default function BookingContactForm({
 
                   {/* Full Name */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label htmlFor="booking-full-name" className="block text-sm font-medium text-gray-800">
                       Full Name *
                     </label>
                     <input
+                      id="booking-full-name"
+                      name="fullName"
                       type="text"
                       required
                       placeholder="Enter your full name"
                       value={formData.fullName}
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
+                      className="w-full bg-white border border-gray-400 focus:border-[#0F6EB8] rounded-md px-3 h-12 text-sm text-gray-900 placeholder:text-gray-600 outline-none transition-colors"
                     />
                   </div>
 
                   {/* Phone Number */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label htmlFor="booking-phone" className="block text-sm font-medium text-gray-800">
                       Phone Number *
                     </label>
                     <input
+                      id="booking-phone"
+                      name="phoneNumber"
                       type="tel"
                       required
                       maxLength={20}
                       placeholder="Enter phone number with country code (e.g. +91 9876543210)"
                       value={formData.phoneNumber}
                       onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                      className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
+                      className="w-full bg-white border border-gray-400 focus:border-[#0F6EB8] rounded-md px-3 h-12 text-sm text-gray-900 placeholder:text-gray-600 outline-none transition-colors"
                     />
                   </div>
 
                   {/* Travel Date */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label htmlFor="booking-travel-date" className="block text-sm font-medium text-gray-800">
                       Travel Date *
                     </label>
                     <input
+                      id="booking-travel-date"
+                      name="travelDate"
                       type="date"
                       required
                       min={minTravelDate || undefined}
                       value={formData.travelDate}
                       onChange={(e) => setFormData({ ...formData, travelDate: e.target.value })}
-                      className="w-full bg-white border border-gray-400 focus:border-[#1A96EB] rounded-md px-3 h-12 text-sm outline-none transition-colors"
+                      className="w-full bg-white border border-gray-400 focus:border-[#0F6EB8] rounded-md px-3 h-12 text-sm text-gray-900 outline-none transition-colors"
                     />
                   </div>
 
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium h-12 rounded-md text-base transition-all cursor-pointer shadow-sm hover:shadow"
+                    className="w-full bg-orange-700 hover:bg-orange-800 text-white font-semibold h-12 rounded-md text-base transition-all cursor-pointer shadow-sm hover:shadow"
                   >
                     Submit Inquiry
                   </button>

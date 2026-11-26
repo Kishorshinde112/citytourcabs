@@ -1,6 +1,6 @@
 import { isCmsAdmin } from '@/cms/access';
 import type { CollectionConfig } from 'payload';
-import { triggerRevalidation } from '@/cms/hooks/revalidate';
+import { CACHE_TAGS, triggerRevalidation } from '@/cms/hooks/revalidate';
 import {
   HeroBlock,
   RichTextBlock,
@@ -47,13 +47,13 @@ export const Pages: CollectionConfig = {
   hooks: {
     afterChange: [
       ({ doc }) => {
-        triggerRevalidation(doc?.slug === 'home' ? '' : doc?.slug);
+        triggerRevalidation(doc?.slug === 'home' ? '' : doc?.slug, [CACHE_TAGS.pages]);
         return doc;
       },
     ],
     afterDelete: [
       ({ doc }) => {
-        triggerRevalidation(doc?.slug === 'home' ? '' : doc?.slug);
+        triggerRevalidation(doc?.slug === 'home' ? '' : doc?.slug, [CACHE_TAGS.pages]);
         return doc;
       },
     ],

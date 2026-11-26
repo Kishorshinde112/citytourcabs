@@ -26,6 +26,7 @@ const useBookingsStore = create((set) => ({
       passengers: bookingData.passengers || bookingData.noOfPassengers || '4',
       type: bookingData.type || 'Enquiry',
       special_requirements: bookingData.special_requirements || bookingData.specialRequirements || bookingData.message || '',
+      ...(bookingData.gclid ? { gclid: bookingData.gclid } : {}),
     };
     const res = await fetch('/api/bookings',{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),

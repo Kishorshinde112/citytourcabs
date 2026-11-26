@@ -20,10 +20,18 @@ export const DEFAULT_TOUR_LINKS: TourLinkItem[] = [
   { name: 'Konkan Darshan', href: '/tours/konkan-darshan' },
 ];
 
-export default function useTourLinks(): TourLinkItem[] {
-  const [links, setLinks] = useState<TourLinkItem[]>(DEFAULT_TOUR_LINKS);
+export default function useTourLinks(initialLinks?: TourLinkItem[] | null): TourLinkItem[] {
+  const hasInitial = Array.isArray(initialLinks) && initialLinks.length > 0;
+  const [links, setLinks] = useState<TourLinkItem[]>(
+    hasInitial ? initialLinks : DEFAULT_TOUR_LINKS
+  );
 
   useEffect(() => {
+    if (hasInitial) {
+      setLinks(initialLinks);
+      return;
+    }
+
     let mounted = true;
     const controller = new AbortController();
 
@@ -55,7 +63,7 @@ export default function useTourLinks(): TourLinkItem[] {
       mounted = false;
       controller.abort();
     };
-  }, []);
+  }, [hasInitial, initialLinks]);
 
   return links;
 }

@@ -1,6 +1,6 @@
 import { isCmsAdmin } from '@/cms/access';
 import type { CollectionConfig } from 'payload';
-import { triggerRevalidation } from '@/cms/hooks/revalidate';
+import { CACHE_TAGS, triggerRevalidation } from '@/cms/hooks/revalidate';
 
 export const FAQs: CollectionConfig = {
   slug: 'faqs',
@@ -18,8 +18,8 @@ export const FAQs: CollectionConfig = {
   },
   access: { read: () => true, create: isCmsAdmin, update: isCmsAdmin, delete: isCmsAdmin },
   hooks: {
-    afterChange: [({ doc }) => { triggerRevalidation(); return doc; }],
-    afterDelete: [({ doc }) => { triggerRevalidation(); return doc; }],
+    afterChange: [({ doc }) => { triggerRevalidation(undefined, [CACHE_TAGS.faqs]); return doc; }],
+    afterDelete: [({ doc }) => { triggerRevalidation(undefined, [CACHE_TAGS.faqs]); return doc; }],
   },
   fields: [
     { name: 'question', type: 'text', required: true, label: 'Question' },

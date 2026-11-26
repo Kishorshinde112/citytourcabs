@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import useSettingsStore from '@/store/settingsStore';
+import { useSiteSettings } from '@/store/settingsStore';
 import { telHref } from '@/lib/phone';
 
 const DEFAULT_SLIDES = [
@@ -23,7 +23,7 @@ const DEFAULT_SLIDES = [
     buttonText: "Book Lonavala Trip"
   },
   {
-    image: "https://images.unsplash.com/photo-1629640890590-7836d69c5237?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTaGlyZGklMjB0ZW1wbGUlMjBJbmRpYXxlbnwxfHx8fDE3NjEzNzg4MTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    image: "https://res.cloudinary.com/o0mbamog/image/upload/v1792352407/citytourcabs/assets/tours/shirdi_p7RAPbKB9X.jpg",
     subtitle: "Seek Blessings & Peace",
     title: "Shirdi Spiritual Journey",
     description: "Visit the holy town of Shirdi with our reliable cab service and experienced drivers who ensure a comfortable and peaceful pilgrimage journey.",
@@ -32,7 +32,7 @@ const DEFAULT_SLIDES = [
   }
 ];
 
-function slideFromBlock(block) {
+function slideFromBlock(block: any) {
   const background = typeof block?.image === 'object' ? block.image?.url : block?.image;
   return {
     ...DEFAULT_SLIDES[0],
@@ -42,10 +42,16 @@ function slideFromBlock(block) {
   };
 }
 
-export default function Hero({ block = null }) {
+export default function Hero({
+  block = null,
+  isFallbackStatic = false,
+}: {
+  block?: any;
+  isFallbackStatic?: boolean;
+}) {
   const [slides, setSlides] = useState(() => (block?.title ? [slideFromBlock(block)] : DEFAULT_SLIDES));
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { phone } = useSettingsStore();
+  const { phone } = useSiteSettings();
 
   useEffect(() => {
     if (block?.title) {
@@ -53,6 +59,7 @@ export default function Hero({ block = null }) {
       setCurrentSlide(0);
       return;
     }
+    if (isFallbackStatic) return;
 
     async function loadCmsSlides() {
       try {
@@ -61,21 +68,23 @@ export default function Hero({ block = null }) {
         if (!res.ok) return;
         const data = await res.json();
         const page = data.docs?.[0];
-        const hero = page?.layout?.find((item) => item.blockType === 'hero');
+        const hero = page?.layout?.find((item: any) => item.blockType === 'hero');
         if (hero?.title) {
           const background = typeof hero.image === 'object' ? hero.image?.url : null;
-          setSlides([{...DEFAULT_SLIDES[0], title:hero.title,
-            subtitle:hero.subtitle || DEFAULT_SLIDES[0].subtitle,
-            image:background || DEFAULT_SLIDES[0].image,
+          setSlides([{
+            ...DEFAULT_SLIDES[0],
+            title: hero.title,
+            subtitle: hero.subtitle || DEFAULT_SLIDES[0].subtitle,
+            image: background || DEFAULT_SLIDES[0].image,
           }]);
           setCurrentSlide(0);
         }
-      } catch (e) {
+      } catch {
         // Fallback gracefully
       }
     }
     loadCmsSlides();
-  }, [block]);
+  }, [block, isFallbackStatic]);
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -85,82 +94,78 @@ export default function Hero({ block = null }) {
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  const slide = slides[currentSlide] || slides[0];
+
   return (
-    <section id="home" className="relative h-[600px] md:h-[700px] flex items-center overflow-hidden">
-      {slides.map((slide, idx) => {
-        const isActive = idx === currentSlide;
-        // Stabilize primary heading: slide 0 is always <h1>, secondary slides are <h2>
-        const SlideHeading = idx === 0 ? 'h1' : 'h2';
-        return (
-          <div
-            key={idx}
-            aria-hidden={!isActive}
-            className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
-          >
-            <div className="absolute inset-0">
-              <div className="relative w-full h-full">
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill
-                  priority={idx === 0}
-                  sizes="100vw"
-                  quality={80}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute inset-0 bg-black/50" />
-            </div>
+    <section id="home" className="relative h-[600px] md:h-[700px] flex items-center overflow-hidden bg-gray-900">
+      <div className="absolute inset-0">
+        <div className="relative w-full h-full">
+          <Image
+            src={slide.image}
+            alt={slide.title}
+            fill
+            priority
+            fetchPriority="high"
+            loading="eager"
+            sizes="100vw"
+            quality={75}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
 
-            <div className="container mx-auto px-4 relative z-10 h-full flex items-center">
-              <div className="max-w-3xl text-white">
-                <p
-                  className="font-handwritten text-2xl md:text-3xl mb-2 text-orange-300"
-                  style={{ fontFamily: "'Caveat', cursive" }}
-                >
-                  {slide.subtitle}
-                </p>
-                <SlideHeading
-                  className="mb-4 text-4xl md:text-5xl font-bold leading-tight"
-                  style={{ color: "white", fontFamily: "'Reddit Sans', sans-serif" }}
-                >
-                  {slide.title}
-                </SlideHeading>
-                <p className="text-lg md:text-xl mb-8 text-gray-200 max-w-2xl leading-relaxed">
-                  {slide.description}
-                </p>
+      <div className="container mx-auto px-4 relative z-10 h-full flex items-center">
+        <div className="max-w-3xl text-white">
+          <p className="font-handwritten text-2xl md:text-3xl mb-2 text-amber-200">
+            {slide.subtitle}
+          </p>
+          <h1 className="mb-4 text-4xl md:text-5xl font-bold leading-tight text-white font-display">
+            {slide.title}
+          </h1>
+          <p className="text-lg md:text-xl mb-8 text-gray-100 max-w-2xl leading-relaxed">
+            {slide.description}
+          </p>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <a href={slide.link || "#tours"}>
-                    <button className="inline-flex items-center justify-center text-base font-medium h-12 rounded-md px-7 bg-[#1A96EB] hover:bg-[#1578BC] text-white transition-colors w-full sm:w-auto cursor-pointer shadow-sm">
-                      {slide.buttonText || "Explore Tours"}
-                    </button>
-                  </a>
-                  <a href={telHref(phone)}>
-                    <button className="inline-flex items-center justify-center text-base font-medium h-12 rounded-md px-7 bg-white/10 border border-white text-white hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-colors w-full sm:w-auto cursor-pointer">
-                      Call Now
-                    </button>
-                  </a>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a
+              href={slide.link || "#tours"}
+              className="inline-flex items-center justify-center text-base font-semibold h-12 rounded-md px-7 bg-[#0F6EB8] hover:bg-[#0B5591] text-white transition-colors w-full sm:w-auto cursor-pointer shadow-sm"
+            >
+              {slide.buttonText || "Explore Tours"}
+            </a>
+            <a
+              href={telHref(phone)}
+              className="inline-flex items-center justify-center text-base font-semibold h-12 rounded-md px-7 bg-white/15 border border-white text-white hover:bg-orange-700 hover:text-white hover:border-orange-700 transition-colors w-full sm:w-auto cursor-pointer"
+            >
+              Call Now
+            </a>
           </div>
-        );
-      })}
+        </div>
+      </div>
 
       {/* Slider Controls Dots */}
       {slides.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentSlide(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={`h-3 rounded-full transition-all duration-300 cursor-pointer ${
-                idx === currentSlide ? "w-8 bg-orange-600" : "w-3 bg-white/50 hover:bg-white/70"
-              }`}
-            />
-          ))}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+          {slides.map((_, idx) => {
+            const isActive = idx === currentSlide;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                aria-current={isActive ? 'true' : undefined}
+                className="p-1.5 min-w-6 min-h-6 flex items-center justify-center cursor-pointer"
+              >
+                <span
+                  className={`block h-3 rounded-full transition-all duration-300 ${
+                    isActive ? "w-8 bg-orange-600" : "w-3 bg-white/70 hover:bg-white"
+                  }`}
+                />
+              </button>
+            );
+          })}
         </div>
       )}
     </section>

@@ -1,4 +1,5 @@
 import { isCmsAdmin } from '@/cms/access';
+import { CACHE_TAGS, triggerRevalidation } from '@/cms/hooks/revalidate';
 import type { GlobalConfig } from 'payload';
 
 export const SiteSettings: GlobalConfig = {
@@ -8,6 +9,14 @@ export const SiteSettings: GlobalConfig = {
     group: 'SETTINGS',
   },
   access: { read: () => true, update: isCmsAdmin },
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        triggerRevalidation(undefined, [CACHE_TAGS.settings]);
+        return doc;
+      },
+    ],
+  },
   fields: [
     { name: 'businessName', type: 'text', label: 'Business Name' },
     { name: 'phone', type: 'text', label: 'Primary Phone' },

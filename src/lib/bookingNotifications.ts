@@ -44,7 +44,7 @@ export async function resolveBookingNotification(
 
 export async function notifyBooking(
   payload: Payload,
-  booking: { type?: string | null },
+  booking: { type?: string | null; gclid?: string },
 ): Promise<boolean> {
   const { enabled, webhookUrl } = await resolveBookingNotification(payload, booking.type || 'Inquiry')
   if (!enabled) {

@@ -2,14 +2,26 @@
 
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { RichText } from '@payloadcms/richtext-lexical/react';
 import ScrollReveal from '@/components/common/ScrollReveal';
 
-export default function FAQSection({ title = 'Frequently Asked Questions' }) {
-  const [faqs, setFaqs] = useState([]);
+function extractLexicalText(node) {
+  if (!node) return '';
+  if (typeof node === 'string') return node;
+  if (typeof node.text === 'string') return node.text;
+  if (Array.isArray(node.children)) {
+    return node.children.map(extractLexicalText).filter(Boolean).join(' ');
+  }
+  if (node.root) return extractLexicalText(node.root);
+  return '';
+}
+
+export default function FAQSection({ title = 'Frequently Asked Questions', initialFaqs = null }) {
+  const hasInitial = Array.isArray(initialFaqs);
+  const [faqs, setFaqs] = useState(hasInitial ? initialFaqs : []);
   const [openId, setOpenId] = useState(null);
 
   useEffect(() => {
+    if (hasInitial) return;
     let mounted = true;
     const controller = new AbortController();
 
@@ -25,7 +37,7 @@ export default function FAQSection({ title = 'Frequently Asked Questions' }) {
           : Array.isArray(data.faqs)
             ? data.faqs
             : [];
-        if (mounted) setFaqs(docs.filter((faq) => faq.question && faq.answer));
+        if (mounted) setFaqs(docs.filter((faq) => faq.question && (faq.answerHtml || faq.answer)));
       } catch (err) {
         if (err?.name !== 'AbortError') {
           console.warn('Unable to load FAQs from CMS', err);
@@ -38,7 +50,7 @@ export default function FAQSection({ title = 'Frequently Asked Questions' }) {
       mounted = false;
       controller.abort();
     };
-  }, []);
+  }, [hasInitial]);
 
   if (!faqs.length) return null;
 
@@ -47,10 +59,10 @@ export default function FAQSection({ title = 'Frequently Asked Questions' }) {
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <div className="mb-10 text-center">
-            <h2 className="mb-4 text-3xl md:text-4xl font-bold font-[Reddit_Sans] text-gray-900">
+            <h2 className="mb-4 text-3xl md:text-4xl font-bold font-display text-gray-900">
               {title || 'Frequently Asked Questions'}
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
+            <p className="text-gray-700 max-w-2xl mx-auto text-base sm:text-lg">
               Quick answers to the questions we hear most often.
             </p>
           </div>
@@ -58,23 +70,29 @@ export default function FAQSection({ title = 'Frequently Asked Questions' }) {
 
         <div className="mx-auto max-w-3xl divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white">
           {faqs.map((faq, index) => {
-            const isOpen = openId === faq.id;
+            const faqId = String(faq.id || index);
+            const isOpen = openId === faqId;
             return (
-              <div key={faq.id || index}>
+              <div key={faqId}>
                 <button
                   type="button"
-                  onClick={() => setOpenId(isOpen ? null : faq.id)}
+                  onClick={() => setOpenId(isOpen ? null : faqId)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left sm:px-6"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left sm:px-6 cursor-pointer"
                 >
                   <span className="font-semibold text-gray-900">{faq.question}</span>
                   <ChevronDown
-                    className={`h-5 w-5 shrink-0 text-[#1A96EB] transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    className={`h-5 w-5 shrink-0 text-[#0F6EB8] transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 text-sm leading-relaxed text-gray-600 sm:px-6 [&_a]:text-[#1A96EB] [&_a]:underline [&_li]:ml-4 [&_ol]:list-decimal [&_p]:mb-2 [&_ul]:list-disc">
-                    <RichText data={faq.answer} />
+                  <div className="px-5 pb-5 text-sm leading-relaxed text-gray-700 sm:px-6 [&_a]:text-[#0F6EB8] [&_a]:underline [&_li]:ml-4 [&_ol]:list-decimal [&_p]:mb-2 [&_ul]:list-disc">
+                    {faq.answerHtml ? (
+                      <div dangerouslySetInnerHTML={{ __html: faq.answerHtml }} />
+                    ) : (
+                      <p>{extractLexicalText(faq.answer)}</p>
+                    )}
                   </div>
                 )}
               </div>

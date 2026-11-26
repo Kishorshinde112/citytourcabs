@@ -50,6 +50,7 @@ export const useBookingsStore = create<BookingsState>((set) => ({
       type: bookingData.type || 'Enquiry',
       special_requirements:
         bookingData.special_requirements || bookingData.specialRequirements || bookingData.message || '',
+      ...(bookingData.gclid ? { gclid: bookingData.gclid } : {}),
     };
     const res = await fetch('/api/bookings', {
       method: 'POST',

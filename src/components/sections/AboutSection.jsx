@@ -22,20 +22,20 @@ export default function AboutSection({ block = null }) {
         <div className="grid items-center gap-10 md:grid-cols-2">
           <ScrollReveal>
             <div>
-              <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-[#1A96EB]">
+              <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-[#0F6EB8]">
                 About City Tour Cabs
               </p>
-              <h2 className="mb-4 text-3xl md:text-4xl font-bold font-[Reddit_Sans] text-gray-900">
+              <h2 className="mb-4 text-3xl md:text-4xl font-bold font-display text-gray-900">
                 {block?.title || 'About City Tour Cabs'}
               </h2>
-              <p className="mb-5 text-base leading-relaxed text-gray-600 sm:text-lg">
+              <p className="mb-5 text-base leading-relaxed text-gray-700 sm:text-lg">
                 {block?.subtitle ||
                   "City Tour Cabs is Mumbai's trusted cab service for sightseeing, outstation trips, airport transfers and local rides. We combine reliable cars, experienced drivers and honest pricing so every journey is comfortable."}
               </p>
               <ul className="mb-7 space-y-3">
                 {HIGHLIGHTS.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm text-gray-700 sm:text-base">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-orange-600" />
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-orange-700" aria-hidden="true" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -44,15 +44,15 @@ export default function AboutSection({ block = null }) {
                 <button
                   type="button"
                   onClick={() => openBooking({ tripType: 'City Tour' })}
-                  className="rounded-md bg-[#1A96EB] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1578BC]"
+                  className="rounded-md bg-[#0F6EB8] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0B5591] cursor-pointer"
                 >
                   Book a Cab
                 </button>
                 <Link
                   href="/about"
-                  className="rounded-md border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition-colors hover:border-[#1A96EB] hover:text-[#1A96EB]"
+                  className="rounded-md border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition-colors hover:border-[#0F6EB8] hover:text-[#0F6EB8]"
                 >
-                  Learn More
+                  About City Tour Cabs
                 </Link>
               </div>
             </div>
@@ -67,8 +67,8 @@ export default function AboutSection({ block = null }) {
                 { value: '25+', label: 'Destinations covered' },
               ].map((stat) => (
                 <div key={stat.label} className="rounded-2xl border border-blue-100 bg-blue-50 p-6 text-center">
-                  <div className="text-3xl font-bold text-[#1A96EB]">{stat.value}</div>
-                  <div className="mt-1 text-sm font-medium text-gray-600">{stat.label}</div>
+                  <div className="text-3xl font-bold text-[#0F6EB8]">{stat.value}</div>
+                  <div className="mt-1 text-sm font-medium text-gray-700">{stat.label}</div>
                 </div>
               ))}
             </div>

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import RenderBlocks from '@/blocks/RenderBlocks';
 import { getPageBySlug } from '@/lib/cmsPages';
+import { resolveCmsRedirect } from '@/lib/cmsGlobals';
 import { createMetadata } from '@/modules/seo/metadata';
 
 export const revalidate = 300;
@@ -47,6 +48,13 @@ export default async function CmsPage({ params }: PageProps) {
   const page = await getPageBySlug(slug);
 
   if (!page) {
+    const cmsRedirect = await resolveCmsRedirect(`/${slug}`);
+    if (cmsRedirect?.destination) {
+      if (cmsRedirect.permanent) {
+        permanentRedirect(cmsRedirect.destination);
+      }
+      redirect(cmsRedirect.destination);
+    }
     notFound();
   }
 

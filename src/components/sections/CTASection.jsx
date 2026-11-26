@@ -9,9 +9,9 @@ export default function CTASection({ block = null }) {
   const href = block.buttonLink || '/tours';
 
   return (
-    <section className={`py-14 md:py-20 ${isSecondary ? 'bg-gray-900' : 'bg-[#1A96EB]'}`}>
+    <section className={`py-14 md:py-20 ${isSecondary ? 'bg-gray-900' : 'bg-[#0F6EB8]'}`}>
       <div className="container mx-auto px-4 text-center">
-        <h2 className="mx-auto max-w-3xl text-3xl font-bold text-white md:text-4xl font-[Reddit_Sans]">
+        <h2 className="mx-auto max-w-3xl text-3xl font-bold text-white md:text-4xl font-display">
           {block.headline}
         </h2>
         {block.buttonText && (
@@ -20,7 +20,7 @@ export default function CTASection({ block = null }) {
             className={`mt-7 inline-flex items-center justify-center rounded-md px-7 py-3 text-sm font-semibold transition-colors ${
               isSecondary
                 ? 'bg-white text-gray-900 hover:bg-orange-50'
-                : 'bg-white text-[#1A96EB] hover:bg-blue-50'
+                : 'bg-white text-[#0F6EB8] hover:bg-blue-50'
             }`}
           >
             {block.buttonText}

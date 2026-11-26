@@ -4,17 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { Clock, Headphones, Users, Shield, MapPin, Star } from 'lucide-react';
 import ScrollReveal from '@/components/common/ScrollReveal';
 
-const ICON_MAP = {
-  Clock,
-  Headphones,
-  Users,
-  Shield,
-  MapPin,
-  Star,
-};
-
-export default function WhyChooseUs({ block = null }) {
-  const defaultFeatures = [
+export default function WhyChooseUs({
+  block = null,
+  isFallbackStatic = false,
+}: {
+  block?: any;
+  isFallbackStatic?: boolean;
+}) {
+  const features = [
     {
       icon: Clock,
       title: "On-Time Pickup",
@@ -59,8 +56,6 @@ export default function WhyChooseUs({ block = null }) {
     }
   ];
 
-  const features = defaultFeatures;
-
   const [heading, setHeading] = useState(block?.title || 'Why Choose CityTourCabs?');
   const [subtitle, setSubtitle] = useState(
     block?.subtitle || 'Experience the difference with our commitment to excellence, reliability, and customer satisfaction.'
@@ -74,30 +69,36 @@ export default function WhyChooseUs({ block = null }) {
       );
       return;
     }
+    if (isFallbackStatic) return;
 
     let mounted = true;
-    const params = new URLSearchParams({ 'where[slug][equals]': 'home', limit:'1', depth:'1' });
-    fetch(`/api/pages?${params}`).then((res) => res.ok ? res.json() : null).then((data) => {
-      const cmsBlock = data?.docs?.[0]?.layout?.find((x) => x.blockType === 'whyChooseUs');
-      if (mounted && cmsBlock) {
-        if (cmsBlock.title) setHeading(cmsBlock.title);
-        if (cmsBlock.subtitle) setSubtitle(cmsBlock.subtitle);
-      }
-    }).catch(() => {});
-    return () => { mounted = false; };
-  }, [block]);
+    const params = new URLSearchParams({ 'where[slug][equals]': 'home', limit: '1', depth: '1' });
+    fetch(`/api/pages?${params}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const cmsBlock = data?.docs?.[0]?.layout?.find((x: any) => x.blockType === 'whyChooseUs');
+        if (mounted && cmsBlock) {
+          if (cmsBlock.title) setHeading(cmsBlock.title);
+          if (cmsBlock.subtitle) setSubtitle(cmsBlock.subtitle);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [block, isFallbackStatic]);
 
   return (
     <section id="about" className="py-16 md:py-24 bg-gradient-to-br from-orange-100 to-orange-50 text-gray-900">
       <div className="container mx-auto px-4">
-        
+
         {/* Section Header */}
         <ScrollReveal>
           <div className="mb-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-[Reddit_Sans]">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-display">
               {heading}
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-base sm:text-lg">
+            <p className="text-gray-700 max-w-2xl mx-auto text-base sm:text-lg">
               {subtitle}
             </p>
           </div>
@@ -109,26 +110,24 @@ export default function WhyChooseUs({ block = null }) {
             const Icon = feat.icon;
             return (
               <ScrollReveal key={idx} delay={idx * 0.1}>
-                <div
-                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow h-full"
-                >
+                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow h-full">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                      <Icon className="h-6 w-6 text-orange-600" />
+                      <Icon className="h-6 w-6 text-orange-700" aria-hidden="true" />
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="mb-2 font-bold text-gray-900 font-[Reddit_Sans] text-lg">
+                      <h3 className="mb-2 font-bold text-gray-900 font-display text-lg">
                         {feat.title}
                       </h3>
                       <p className="text-sm text-gray-600 mb-3">
                         {feat.desc}
                       </p>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-orange-600 font-bold text-xl" style={{ fontFamily: "Poppins, sans-serif" }}>
+                        <span className="text-orange-700 font-bold text-xl font-sans">
                           {feat.stat}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-600">
                           {feat.statLabel}
                         </span>
                       </div>

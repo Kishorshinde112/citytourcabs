@@ -1,6 +1,6 @@
 import { isCmsAdmin } from '@/cms/access';
 import type { CollectionConfig } from 'payload';
-import { triggerRevalidation } from '@/cms/hooks/revalidate';
+import { CACHE_TAGS, triggerRevalidation } from '@/cms/hooks/revalidate';
 
 export const Fleet: CollectionConfig = {
   slug: 'fleet',
@@ -34,8 +34,8 @@ export const Fleet: CollectionConfig = {
         return data;
       },
     ],
-    afterChange: [({ doc }) => { triggerRevalidation(); return doc; }],
-    afterDelete: [({ doc }) => { triggerRevalidation(); return doc; }],
+    afterChange: [({ doc }) => { triggerRevalidation(undefined, [CACHE_TAGS.fleet]); return doc; }],
+    afterDelete: [({ doc }) => { triggerRevalidation(undefined, [CACHE_TAGS.fleet]); return doc; }],
   },
   fields: [
     {

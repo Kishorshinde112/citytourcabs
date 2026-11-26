@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Quote } from 'lucide-react';
 import ScrollReveal from '@/components/common/ScrollReveal';
-import { TESTIMONIALS_DATA } from '@/data/testimonialsData';
 
 const DEFAULT_REVIEWS = [
   {
@@ -29,12 +28,19 @@ const DEFAULT_REVIEWS = [
 export default function Testimonials({
   title = 'What Our Customers Say',
   subtitle = "Don't just take our word for it - hear from our satisfied customers.",
+  initialReviews = null,
+}: {
+  title?: string;
+  subtitle?: string;
+  initialReviews?: any[] | null;
 }) {
-  const [reviews, setReviews] = useState(DEFAULT_REVIEWS);
+  const hasInitial = Array.isArray(initialReviews) && initialReviews.length > 0;
+  const [reviews, setReviews] = useState(hasInitial ? initialReviews : DEFAULT_REVIEWS);
 
-  const sectionRef = React.useRef(null);
+  const sectionRef = React.useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    if (hasInitial) return;
     let active = true;
 
     async function loadTestimonials() {
@@ -49,7 +55,7 @@ export default function Testimonials({
               : [];
           if (docs.length > 0) {
             setReviews(
-              docs.map((item) => ({
+              docs.map((item: any) => ({
                 name: item.name,
                 location: item.location || '',
                 text: item.text || item.comment,
@@ -58,7 +64,7 @@ export default function Testimonials({
             );
           }
         }
-      } catch (err) {
+      } catch {
         // Fallback gracefully
       }
     }
@@ -81,22 +87,19 @@ export default function Testimonials({
     } else {
       loadTestimonials();
     }
-  }, []);
+  }, [hasInitial]);
 
   return (
     <section ref={sectionRef} className="py-16 md:py-24 bg-white text-gray-900 lazy-render-scroll">
       <div className="container mx-auto px-4">
-        
+
         {/* Section Header */}
         <ScrollReveal>
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-[Reddit_Sans]">
+            <h2 className="mb-4 text-3xl md:text-4xl font-bold text-gray-900 font-display">
               {title || 'What Our Customers Say'}
             </h2>
-            <p
-              className="text-gray-600 max-w-2xl mx-auto font-handwritten"
-              style={{ fontSize: "1.25rem", fontFamily: "'Caveat', cursive" }}
-            >
+            <p className="text-gray-700 max-w-2xl mx-auto font-handwritten text-xl md:text-2xl">
               {subtitle}
             </p>
           </div>
@@ -104,35 +107,36 @@ export default function Testimonials({
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {reviews.slice(0, 3).map((rev, idx) => (
-            <ScrollReveal key={idx} delay={idx * 0.15} className="h-full">
-              <div
-                className="bg-white rounded-xl border border-gray-200 p-6 relative flex flex-col justify-between hover:shadow-md transition-shadow h-full"
-              >
-                <div>
-                  <Quote className="h-8 w-8 text-orange-600 opacity-20 mb-4" />
-                  
-                  {/* Stars */}
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(Math.min(5, rev.rating || 5))].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-orange-400 text-orange-400" />
-                    ))}
+          {reviews.slice(0, 3).map((rev: any, idx: number) => {
+            const ratingCount = Math.min(5, Math.max(1, Number(rev.rating) || 5));
+            return (
+              <ScrollReveal key={idx} delay={idx * 0.15} className="h-full">
+                <div className="bg-white rounded-xl border border-gray-200 p-6 relative flex flex-col justify-between hover:shadow-md transition-shadow h-full">
+                  <div>
+                    <Quote className="h-8 w-8 text-orange-700 opacity-20 mb-4" aria-hidden="true" />
+
+                    {/* Stars */}
+                    <div className="flex gap-1 mb-4" aria-label={`${ratingCount} out of 5 stars`}>
+                      {[...Array(ratingCount)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-amber-500 text-amber-500" aria-hidden="true" />
+                      ))}
+                    </div>
+
+                    {/* Review Text */}
+                    <p className="text-gray-700 mb-6 italic text-sm sm:text-base leading-relaxed">
+                      &ldquo;{rev.text}&rdquo;
+                    </p>
                   </div>
 
-                  {/* Review Text */}
-                  <p className="text-gray-600 mb-6 italic text-sm sm:text-base leading-relaxed">
-                    "{rev.text}"
-                  </p>
+                  {/* Author */}
+                  <div>
+                    <p className="font-semibold text-gray-900 font-display">{rev.name}</p>
+                    <p className="text-sm text-gray-600">{rev.location}</p>
+                  </div>
                 </div>
-
-                {/* Author */}
-                <div>
-                  <p className="font-semibold text-gray-900 font-[Reddit_Sans]">{rev.name}</p>
-                  <p className="text-sm text-gray-500">{rev.location}</p>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            );
+          })}
         </div>
 
       </div>

@@ -4,12 +4,22 @@ import { useEffect, useState } from 'react';
 
 /**
  * Lightweight reader for public Payload globals (navigation, footer, ...).
- * The server-provided fallback stays visible if the CMS is unreachable.
+ * Skips client fetching when SSR initialData was provided.
  */
-export default function useCmsGlobal<T = any>(slug: string, fallback: T = null as any): T {
-  const [data, setData] = useState<T>(fallback);
+export default function useCmsGlobal<T = any>(
+  slug: string,
+  fallback: T = null as any,
+  initialData?: T | null
+): T {
+  const hasInitial = initialData !== undefined && initialData !== null;
+  const [data, setData] = useState<T>(hasInitial ? initialData : fallback);
 
   useEffect(() => {
+    if (hasInitial) {
+      setData(initialData);
+      return;
+    }
+
     let mounted = true;
     const controller = new AbortController();
 
@@ -33,7 +43,7 @@ export default function useCmsGlobal<T = any>(slug: string, fallback: T = null a
       mounted = false;
       controller.abort();
     };
-  }, [slug]);
+  }, [slug, hasInitial, initialData]);
 
   return data;
 }

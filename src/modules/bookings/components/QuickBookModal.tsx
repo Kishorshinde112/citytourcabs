@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, ChevronDown, CheckCircle2, AlertCircle } from 'lucide-react';
-import useSettingsStore from '@/store/settingsStore';
+import { useSiteSettings } from '@/store/settingsStore';
 import useBookingsStore from '@/store/bookingsStore';
+import { getStoredGclid } from '@/shared/lib/gclid';
 
 const DEFAULT_DESTINATIONS = [
   'Mumbai Darshan',
@@ -88,12 +89,13 @@ export default function QuickBookModal({
   initialData = {},
 }: QuickBookModalProps) {
   const router = useRouter();
-  const { phone: supportPhone, promoPopup } = useSettingsStore();
+  const { promoPopup } = useSiteSettings();
   const { addBooking } = useBookingsStore();
 
   const isEnquiry = Boolean(initialData.isEnquiry || initialData.type === 'Inquiry');
 
   const [destinations, setDestinations] = useState(DEFAULT_DESTINATIONS);
+  const toursFetchedRef = useRef(false);
   const [destination, setDestination] = useState('');
   const [packageName, setPackageName] = useState('');
   const [carType, setCarType] = useState('');
@@ -111,9 +113,12 @@ export default function QuickBookModal({
   const [success, setSuccess] = useState(false);
   const submittingRef = useRef(false);
 
-  // Fetch dynamic tours from API
+  // Lazy-fetch dynamic tours from API only when the modal opens (zero mount waterfall)
   useEffect(() => {
+    if (!isOpen || toursFetchedRef.current) return;
     let isMounted = true;
+    toursFetchedRef.current = true;
+
     async function loadTours() {
       try {
         const res = await fetch('/api/tours');
@@ -121,10 +126,10 @@ export default function QuickBookModal({
           const data = await res.json();
           const docs = Array.isArray(data.docs) ? data.docs : (Array.isArray(data.tours) ? data.tours : []);
           if (isMounted && docs.length > 0) {
-            setDestinations(docs.map((t) => t.title));
+            setDestinations(docs.map((t: any) => t.title));
           }
         }
-      } catch (err) {
+      } catch {
         // Fallback to DEFAULT_DESTINATIONS
       }
     }
@@ -132,7 +137,19 @@ export default function QuickBookModal({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isOpen]);
+
+  // Dismiss modal on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loading) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, loading, onClose]);
 
   // Sync state when modal opens or initialData changes
   useEffect(() => {
@@ -209,7 +226,6 @@ export default function QuickBookModal({
     if (submittingRef.current) return;
     setError('');
 
-    // Validation
     if (!destination) {
       setError('Please select a destination.');
       return;
@@ -241,6 +257,7 @@ export default function QuickBookModal({
     setLoading(true);
 
     const cleanWhatsapp = whatsappNumber.trim().replace(/[^0-9+]/g, '');
+    const storedGclid = getStoredGclid();
 
     const bookingPayload = {
       name: fullName.trim(),
@@ -258,10 +275,10 @@ export default function QuickBookModal({
       special_requirements: specialRequirements.trim(),
       type: isEnquiry ? 'Enquiry' : 'Booking',
       status: 'Pending',
+      ...(storedGclid ? { gclid: storedGclid } : {}),
     };
 
     try {
-      // 1. Save to SQLite DB & Admin (server automatically forwards to internal n8n)
       const result = await addBooking(bookingPayload);
       const refId = result.booking.id;
       try {
@@ -283,7 +300,6 @@ export default function QuickBookModal({
 
       setSuccess(true);
 
-      // Close modal and redirect
       setTimeout(() => {
         onClose();
         router.push(isEnquiry ? '/enquiry-confirmed' : '/booking-confirmed');
@@ -300,6 +316,7 @@ export default function QuickBookModal({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="quick-book-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-fadeIn"
     >
 
@@ -315,39 +332,39 @@ export default function QuickBookModal({
           type="button"
           onClick={onClose}
           disabled={loading}
-          aria-label="Close"
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1.5 rounded-lg transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Close booking dialog"
+          className="absolute top-4 right-4 text-slate-600 hover:text-slate-900 hover:bg-slate-100 p-1.5 rounded-lg transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" aria-hidden="true" />
         </button>
 
         {/* Header */}
         <div className="mb-6">
           {isEnquiry ? (
-            <div className="text-center">
+            <div className="text-center px-7">
               {promoPopup?.discountBadge && (
-                <span className="mb-2 inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-orange-700">
+                <span className="mb-2 inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-orange-800">
                   {promoPopup.discountBadge}
                 </span>
               )}
-              <h2 className="text-xl md:text-2xl font-bold text-orange-600 mb-1 leading-snug">
+              <h2 id="quick-book-modal-title" className="text-xl md:text-2xl font-bold text-orange-700 mb-1 leading-snug">
                 {promoPopup?.headline || 'Get 5% to 10% Discount and free Tour ITINERARY on your first ride'}
               </h2>
               <p className="text-base font-semibold text-slate-800">
                 {promoPopup?.subtext || 'Submit your Enquiry Now!'}
               </p>
               {promoPopup?.couponCode && (
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="mt-2 text-sm text-slate-700">
                   Use code <strong className="text-orange-700">{promoPopup.couponCode}</strong>
                 </p>
               )}
             </div>
           ) : (
-            <div>
-              <h2 className="text-2xl font-bold font-[Reddit_Sans] text-slate-900 leading-tight">
+            <div className="pr-8">
+              <h2 id="quick-book-modal-title" className="text-2xl font-bold font-display text-slate-900 leading-tight">
                 Book Your Tour Now
               </h2>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-slate-600 mt-1">
                 Fill out the form below and our team will get back to you shortly to confirm your booking.
               </p>
             </div>
@@ -357,15 +374,15 @@ export default function QuickBookModal({
         {/* Error Banner */}
         {error && (
           <div className="mb-5 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" aria-hidden="true" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Success Banner */}
         {success && (
-          <div className="mb-5 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+          <div className="mb-5 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700" aria-hidden="true" />
             <span>Request received! Redirecting to confirmation...</span>
           </div>
         )}
@@ -374,8 +391,8 @@ export default function QuickBookModal({
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           {/* 1. Destination Field */}
           <div>
-            <label htmlFor="destination" className="block text-xs font-semibold text-slate-700 mb-1">
-              Destination <span className="text-rose-500">*</span>
+            <label htmlFor="destination" className="block text-xs font-semibold text-slate-800 mb-1">
+              Destination <span className="text-rose-600">*</span>
             </label>
             <div className="relative">
               <select
@@ -384,7 +401,7 @@ export default function QuickBookModal({
                 required
                 value={destination}
                 onChange={handleDestinationChange}
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition appearance-none cursor-pointer text-slate-900"
               >
                 <option value="">Select Destination</option>
                 {destinationOptions.map((dest, idx) => (
@@ -393,8 +410,8 @@ export default function QuickBookModal({
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                <ChevronDown className="w-4 h-4" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-600">
+                <ChevronDown className="w-4 h-4" aria-hidden="true" />
               </div>
             </div>
           </div>
@@ -404,7 +421,7 @@ export default function QuickBookModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Package Dropdown */}
               <div>
-                <label htmlFor="package" className="block text-xs font-semibold text-slate-700 mb-1">
+                <label htmlFor="package" className="block text-xs font-semibold text-slate-800 mb-1">
                   Package
                 </label>
                 <div className="relative">
@@ -413,7 +430,7 @@ export default function QuickBookModal({
                     name="package"
                     value={packageName}
                     onChange={(e) => setPackageName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
+                    className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition appearance-none cursor-pointer text-slate-900"
                   >
                     <option value="">Select Package</option>
                     {currentPackages.map((pkg, idx) => (
@@ -422,16 +439,16 @@ export default function QuickBookModal({
                       </option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                    <ChevronDown className="w-4 h-4" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-600">
+                    <ChevronDown className="w-4 h-4" aria-hidden="true" />
                   </div>
                 </div>
               </div>
 
               {/* Car Type Dropdown */}
               <div>
-                <label htmlFor="carType" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Car Type <span className="text-rose-500">*</span>
+                <label htmlFor="carType" className="block text-xs font-semibold text-slate-800 mb-1">
+                  Car Type <span className="text-rose-600">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -440,7 +457,7 @@ export default function QuickBookModal({
                     required
                     value={carType}
                     onChange={(e) => setCarType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
+                    className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition appearance-none cursor-pointer text-slate-900"
                   >
                     <option value="">Select Car Type</option>
                     {availableCarTypes.map((car, idx) => (
@@ -449,8 +466,8 @@ export default function QuickBookModal({
                       </option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                    <ChevronDown className="w-4 h-4" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-600">
+                    <ChevronDown className="w-4 h-4" aria-hidden="true" />
                   </div>
                 </div>
               </div>
@@ -459,8 +476,8 @@ export default function QuickBookModal({
 
           {/* 3. Full Name */}
           <div>
-            <label htmlFor="fullName" className="block text-xs font-semibold text-slate-700 mb-1">
-              Full Name <span className="text-rose-500">*</span>
+            <label htmlFor="fullName" className="block text-xs font-semibold text-slate-800 mb-1">
+              Full Name <span className="text-rose-600">*</span>
             </label>
             <input
               id="fullName"
@@ -470,15 +487,15 @@ export default function QuickBookModal({
               placeholder="Enter your full name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
+              className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 placeholder:text-slate-600"
             />
           </div>
 
           {/* 4. Phone & WhatsApp */}
           {isEnquiry ? (
             <div>
-              <label htmlFor="phoneNumber" className="block text-xs font-semibold text-slate-700 mb-1">
-                Phone Number <span className="text-rose-500">*</span>
+              <label htmlFor="phoneNumber" className="block text-xs font-semibold text-slate-800 mb-1">
+                Phone Number <span className="text-rose-600">*</span>
               </label>
               <input
                 id="phoneNumber"
@@ -489,14 +506,14 @@ export default function QuickBookModal({
                 placeholder="Enter phone number with country code (e.g. +91 9876543210)"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 placeholder:text-slate-600"
               />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="phoneNumber" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Phone Number <span className="text-rose-500">*</span>
+                <label htmlFor="phoneNumber" className="block text-xs font-semibold text-slate-800 mb-1">
+                  Phone Number <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="phoneNumber"
@@ -507,12 +524,12 @@ export default function QuickBookModal({
                   placeholder="Enter phone number (e.g. +91 9876543210)"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 placeholder:text-slate-600"
                 />
               </div>
 
               <div>
-                <label htmlFor="whatsappNumber" className="block text-xs font-semibold text-slate-700 mb-1">
+                <label htmlFor="whatsappNumber" className="block text-xs font-semibold text-slate-800 mb-1">
                   Whatsapp Number
                 </label>
                 <input
@@ -523,9 +540,9 @@ export default function QuickBookModal({
                   placeholder="WhatsApp number with country code"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 placeholder:text-slate-600"
                 />
-                <span className="block text-[11px] text-slate-400 mt-1">To share driver details</span>
+                <span className="block text-[11px] text-slate-600 mt-1">To share driver details</span>
               </div>
             </div>
           )}
@@ -533,8 +550,8 @@ export default function QuickBookModal({
           {/* 5. Passengers & Date & Time (for Full Booking) */}
           {!isEnquiry && (
             <div>
-              <label htmlFor="passengers" className="block text-xs font-semibold text-slate-700 mb-1">
-                Number of Passengers <span className="text-rose-500">*</span>
+              <label htmlFor="passengers" className="block text-xs font-semibold text-slate-800 mb-1">
+                Number of Passengers <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
                 <select
@@ -543,7 +560,7 @@ export default function QuickBookModal({
                   required
                   value={passengers}
                   onChange={(e) => setPassengers(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition appearance-none cursor-pointer text-slate-900"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition appearance-none cursor-pointer text-slate-900"
                 >
                   <option value="">Select Passengers</option>
                   {PASSENGER_OPTIONS.map((count) => (
@@ -552,8 +569,8 @@ export default function QuickBookModal({
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                  <ChevronDown className="w-4 h-4" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-600">
+                  <ChevronDown className="w-4 h-4" aria-hidden="true" />
                 </div>
               </div>
             </div>
@@ -562,8 +579,8 @@ export default function QuickBookModal({
           {/* 6. Travel Date & Pickup Time */}
           {isEnquiry ? (
             <div>
-              <label htmlFor="travelDate" className="block text-xs font-semibold text-slate-700 mb-1">
-                Travel Date <span className="text-rose-500">*</span>
+              <label htmlFor="travelDate" className="block text-xs font-semibold text-slate-800 mb-1">
+                Travel Date <span className="text-rose-600">*</span>
               </label>
               <input
                 id="travelDate"
@@ -573,14 +590,14 @@ export default function QuickBookModal({
                 min={getTodayString()}
                 value={travelDate}
                 onChange={(e) => setTravelDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 cursor-pointer"
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 cursor-pointer"
               />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="travelDate" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Travel Date <span className="text-rose-500">*</span>
+                <label htmlFor="travelDate" className="block text-xs font-semibold text-slate-800 mb-1">
+                  Travel Date <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="travelDate"
@@ -590,13 +607,13 @@ export default function QuickBookModal({
                   min={getTodayString()}
                   value={travelDate}
                   onChange={(e) => setTravelDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 cursor-pointer"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 cursor-pointer"
                 />
               </div>
 
               <div>
-                <label htmlFor="pickupTime" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Pickup Time <span className="text-rose-500">*</span>
+                <label htmlFor="pickupTime" className="block text-xs font-semibold text-slate-800 mb-1">
+                  Pickup Time <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="pickupTime"
@@ -605,7 +622,7 @@ export default function QuickBookModal({
                   required
                   value={pickupTime}
                   onChange={(e) => setPickupTime(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 cursor-pointer"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 cursor-pointer"
                 />
               </div>
             </div>
@@ -615,8 +632,8 @@ export default function QuickBookModal({
           {!isEnquiry && (
             <>
               <div>
-                <label htmlFor="pickupAddress" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Pickup Address <span className="text-rose-500">*</span>
+                <label htmlFor="pickupAddress" className="block text-xs font-semibold text-slate-800 mb-1">
+                  Pickup Address <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="pickupAddress"
@@ -626,12 +643,12 @@ export default function QuickBookModal({
                   placeholder="Enter your pickup address (Hotel / Airport / Home)"
                   value={pickupAddress}
                   onChange={(e) => setPickupAddress(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 placeholder:text-slate-600"
                 />
               </div>
 
               <div>
-                <label htmlFor="specialRequirements" className="block text-xs font-semibold text-slate-700 mb-1">
+                <label htmlFor="specialRequirements" className="block text-xs font-semibold text-slate-800 mb-1">
                   Special Requirements (Optional)
                 </label>
                 <textarea
@@ -641,7 +658,7 @@ export default function QuickBookModal({
                   placeholder="Any special requests or requirements for your tour..."
                   value={specialRequirements}
                   onChange={(e) => setSpecialRequirements(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition text-slate-900 placeholder:text-slate-400 leading-relaxed"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-lg outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition text-slate-900 placeholder:text-slate-600 leading-relaxed"
                 />
               </div>
             </>
@@ -653,14 +670,14 @@ export default function QuickBookModal({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition cursor-pointer disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition cursor-pointer disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-lg shadow-sm hover:shadow transition cursor-pointer disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-orange-700 hover:bg-orange-800 rounded-lg shadow-sm hover:shadow transition cursor-pointer disabled:opacity-50"
             >
               {loading ? 'Submitting...' : isEnquiry ? 'Submit Enquiry' : 'Book Now'}
             </button>

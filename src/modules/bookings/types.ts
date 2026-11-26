@@ -9,6 +9,7 @@ export interface BookingPayload {
   passengers?: string;
   type?: 'Booking' | 'Inquiry';
   notes?: string;
+  gclid?: string;
 }
 
 export interface BookingResponse {

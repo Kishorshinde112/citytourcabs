@@ -5,6 +5,8 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   images: {
+    loader: 'custom',
+    loaderFile: './src/lib/imageLoader.ts',
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2592000,
     remotePatterns: [

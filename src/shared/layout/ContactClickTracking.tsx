@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { isAnalyticsHostAllowed } from '@/shared/lib/analytics';
+import { captureGclidFromUrl, getStoredGclid } from '@/shared/lib/gclid';
 
 type ContactEvent = 'phone_click' | 'whatsapp_click';
 type DebugStatus =
@@ -42,6 +43,7 @@ function getContactEvent(url: URL): ContactEvent | null {
 
 export default function ContactClickTracking() {
   useEffect(() => {
+    captureGclidFromUrl();
     if (!isAnalyticsHostAllowed()) return;
 
     let lastClickKey = '';
@@ -148,6 +150,25 @@ export default function ContactClickTracking() {
         window.dataLayer.push(payload);
       } catch {
         report('data_layer_push_failed');
+      }
+
+      const storedGclid = getStoredGclid();
+      if (storedGclid) {
+        fetch('/api/conversion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            gclid: storedGclid,
+            conversionName:
+              event === 'phone_click' ? 'Phone Click' : 'WhatsApp Click',
+            value: 1.0,
+            currency: 'INR',
+            time: new Date().toISOString(),
+            page,
+            eventId,
+          }),
+          keepalive: true,
+        }).catch(() => {});
       }
     }
 
