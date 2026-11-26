@@ -22,7 +22,9 @@ export function CarCard({ car, onBookClick }: CarCardProps) {
             src={car.image || FALLBACK_CAR_IMAGE}
             alt={car.name}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            quality={70}
+            fetchPriority="low"
+            sizes="(max-width: 640px) 384px, (max-width: 768px) 640px, (max-width: 1024px) 50vw, 384px"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
           {car.tag && (

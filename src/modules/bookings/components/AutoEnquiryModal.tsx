@@ -3,7 +3,7 @@
 import React from 'react';
 import QuickBookModal from './QuickBookModal';
 
-export default function AutoEnquiryModal({ isOpen, onClose, initialData = {} }) {
+export default function AutoEnquiryModal({ isOpen, onClose, initialData = {}, initialDestinations = null }) {
   if (!isOpen) return null;
 
   return (
@@ -11,6 +11,7 @@ export default function AutoEnquiryModal({ isOpen, onClose, initialData = {} }) 
       isOpen={isOpen}
       onClose={onClose}
       initialData={{ isEnquiry: true, type: 'Inquiry', ...initialData }}
+      initialDestinations={initialDestinations}
     />
   );
 }

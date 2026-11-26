@@ -81,21 +81,26 @@ export interface QuickBookModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialData?: Record<string, any>;
+  initialDestinations?: string[] | null;
 }
 
 export default function QuickBookModal({
   isOpen,
   onClose,
   initialData = {},
+  initialDestinations = null,
 }: QuickBookModalProps) {
   const router = useRouter();
   const { promoPopup } = useSiteSettings();
   const { addBooking } = useBookingsStore();
 
   const isEnquiry = Boolean(initialData.isEnquiry || initialData.type === 'Inquiry');
+  const hasInitialDestinations = Array.isArray(initialDestinations) && initialDestinations.length > 0;
 
-  const [destinations, setDestinations] = useState(DEFAULT_DESTINATIONS);
-  const toursFetchedRef = useRef(false);
+  const [destinations, setDestinations] = useState(
+    hasInitialDestinations ? initialDestinations : DEFAULT_DESTINATIONS
+  );
+  const toursFetchedRef = useRef(hasInitialDestinations);
   const [destination, setDestination] = useState('');
   const [packageName, setPackageName] = useState('');
   const [carType, setCarType] = useState('');

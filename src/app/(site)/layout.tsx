@@ -7,21 +7,21 @@ import ContactClickTracking from '@/shared/layout/ContactClickTracking';
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '600', '700'],
   variable: '--font-poppins',
   display: 'swap',
 });
 
 const redditSans = Reddit_Sans({
   subsets: ['latin'],
-  weight: ['600', '700'],
+  weight: ['700'],
   variable: '--font-reddit',
   display: 'swap',
 });
 
 const caveat = Caveat({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400'],
   variable: '--font-caveat',
   display: 'swap',
 });
@@ -91,8 +91,8 @@ export const metadata: Metadata = {
     images: ['https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png'],
   },
   icons: {
-    icon: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
-    apple: 'https://res.cloudinary.com/o0mbamog/image/upload/v1792351861/citytourcabs/assets/2fb8d36e68b18567546da82e33c3bec544da2220-BkfUJrnl.png',
+    icon: '/favicon-32x32.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -103,7 +103,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       className={`scroll-smooth ${poppins.variable} ${redditSans.variable} ${caveat.variable}`}
     >
       <head>
-        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         {/* Synchronous dataLayer / gtag stub so early events queue before afterInteractive scripts load */}
         <script dangerouslySetInnerHTML={{ __html: DATALAYER_STUB }} />
         {/* LocalBusiness JSON-LD Schema */}
@@ -150,8 +150,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${poppins.className} bg-white text-gray-900 font-sans antialiased selection:bg-[#0F6EB8] selection:text-white`}>
         {/* GTM, GA4 (G-E6E794WM68), Google Ads (AW-18526387794), and Umami Analytics.
-            Host-gated to production hostnames so localhost and staging do not emit analytics traffic. */}
-        <Script id="google-tags-init" strategy="afterInteractive">
+            Loaded lazyOnload so conversion tags never block FCP/LCP/TBT while DATALAYER_STUB
+            in <head> queues any early clicks or booking events; host-gated to production. */}
+        <Script id="google-tags-init" strategy="lazyOnload">
           {`
             (function () {
               var host = window.location.hostname.toLowerCase();

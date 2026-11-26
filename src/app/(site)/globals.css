@@ -373,9 +373,6 @@
   color: #0F6EB8;
 }
 
-/* Scroll-triggered content visibility optimization (zero layout shift, defers offscreen painting) */
-.lazy-render-scroll {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 600px;
-}
+/* Kept as a hook class without content-visibility: auto so section bounding boxes stay exact */
+.lazy-render-scroll {}
 
