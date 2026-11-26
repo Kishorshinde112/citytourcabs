@@ -54,12 +54,7 @@ export default function Hero({
   const { phone } = useSiteSettings();
 
   useEffect(() => {
-    if (block?.title) {
-      setSlides([slideFromBlock(block)]);
-      setCurrentSlide(0);
-      return;
-    }
-    if (isFallbackStatic) return;
+    if (block?.title || isFallbackStatic) return;
 
     async function loadCmsSlides() {
       try {
@@ -107,6 +102,7 @@ export default function Hero({
             priority
             fetchPriority="high"
             loading="eager"
+            decoding="sync"
             sizes="100vw"
             quality={65}
             className="w-full h-full object-cover"

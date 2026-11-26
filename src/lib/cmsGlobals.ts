@@ -99,66 +99,132 @@ function sanitizeSiteSettings(raw: any): PublicSiteSettings | null {
   };
 }
 
+const DEFAULT_PUBLIC_SITE_SETTINGS: PublicSiteSettings = {
+  businessName: 'City Tour Cabs',
+  siteName: 'City Tour Cabs',
+  phone: '7021001921',
+  helpPhone: '9967672660',
+  email: 'citytourcabs1@gmail.com',
+  whatsapp: '917021001921',
+  officeAddress: 'Office No 1102 P2 Kanjurmarg east, Mumbai 400042',
+  workingHours: '24/7 Available (Open All 365 Days)',
+  announcement: {
+    enabled: true,
+    text: 'Available 24/7 for your convenience',
+  },
+  promoPopup: {
+    enabled: true,
+    delaySeconds: 7,
+    headline: 'Special Tour Offer!',
+    subtext: 'Get Flat 15% OFF on advance bookings for Mumbai Sightseeing and Outstation Tours.',
+    discountBadge: 'FLAT 15% OFF',
+    couponCode: 'CITY15',
+  },
+  footer: {
+    bio: "City Tour Cabs is Mumbai's trusted cab service. Clean sanitized cabs, experienced polite chauffeurs, and transparent flat pricing for Mumbai Darshan and outstation trips.",
+    copyright: '© 2026 City Tour Cabs. All rights reserved.',
+    facebookUrl: '',
+    instagramUrl: '',
+  },
+};
+
+const DEFAULT_PUBLIC_NAVIGATION = {
+  links: [
+    { label: 'Home', url: '/' },
+    { label: 'Tour Packages', url: '/tours' },
+    { label: 'Our Fleet', url: '/fleet' },
+    { label: 'About Us', url: '/about' },
+    { label: 'Contact', url: '/contact' },
+  ],
+};
+
+const DEFAULT_PUBLIC_FOOTER = {
+  groups: [
+    {
+      title: 'Quick Links',
+      links: [
+        { label: 'Home', url: '/' },
+        { label: 'About Us', url: '/about' },
+        { label: 'Tour Packages', url: '/tours' },
+        { label: 'Our Fleet', url: '/fleet' },
+        { label: 'Contact Us', url: '/contact' },
+      ],
+    },
+  ],
+};
+
 const fetchCachedSiteSettings = unstable_cache(
-  async (): Promise<PublicSiteSettings | null> => {
-    try {
-      const payload = await getPayload({ config });
-      const data = await payload.findGlobal({
-        slug: 'site-settings',
-        depth: 1,
-        overrideAccess: false,
-      });
-      return sanitizeSiteSettings(data);
-    } catch (error) {
-      console.warn('[CMS] Unable to load site-settings:', error instanceof Error ? error.message : error);
-      return null;
-    }
+  async (): Promise<PublicSiteSettings> => {
+    const payload = await getPayload({ config });
+    const data = await payload.findGlobal({
+      slug: 'site-settings',
+      depth: 1,
+      overrideAccess: true,
+    });
+    const sanitized = sanitizeSiteSettings(data);
+    if (!sanitized) throw new Error('Empty site-settings global');
+    return sanitized;
   },
   ['cms-site-settings'],
   { revalidate: 300, tags: [CACHE_TAGS.settings] }
 );
 
-export const getSiteSettings = cache(async () => fetchCachedSiteSettings());
+export const getSiteSettings = cache(async (): Promise<PublicSiteSettings> => {
+  try {
+    return await fetchCachedSiteSettings();
+  } catch (error) {
+    console.warn('[CMS] Unable to load site-settings:', error instanceof Error ? error.message : error);
+    return DEFAULT_PUBLIC_SITE_SETTINGS;
+  }
+});
 
 const fetchCachedNavigation = unstable_cache(
-  async (): Promise<any | null> => {
-    try {
-      const payload = await getPayload({ config });
-      return await payload.findGlobal({
-        slug: 'navigation',
-        depth: 1,
-        overrideAccess: false,
-      });
-    } catch (error) {
-      console.warn('[CMS] Unable to load navigation:', error instanceof Error ? error.message : error);
-      return null;
-    }
+  async (): Promise<any> => {
+    const payload = await getPayload({ config });
+    const nav = await payload.findGlobal({
+      slug: 'navigation',
+      depth: 1,
+      overrideAccess: true,
+    });
+    if (!nav || typeof nav !== 'object') throw new Error('Empty navigation global');
+    return nav;
   },
   ['cms-navigation'],
   { revalidate: 300, tags: [CACHE_TAGS.navigation] }
 );
 
-export const getNavigation = cache(async () => fetchCachedNavigation());
+export const getNavigation = cache(async () => {
+  try {
+    return await fetchCachedNavigation();
+  } catch (error) {
+    console.warn('[CMS] Unable to load navigation:', error instanceof Error ? error.message : error);
+    return DEFAULT_PUBLIC_NAVIGATION;
+  }
+});
 
 const fetchCachedFooter = unstable_cache(
-  async (): Promise<any | null> => {
-    try {
-      const payload = await getPayload({ config });
-      return await payload.findGlobal({
-        slug: 'footer',
-        depth: 1,
-        overrideAccess: false,
-      });
-    } catch (error) {
-      console.warn('[CMS] Unable to load footer:', error instanceof Error ? error.message : error);
-      return null;
-    }
+  async (): Promise<any> => {
+    const payload = await getPayload({ config });
+    const footer = await payload.findGlobal({
+      slug: 'footer',
+      depth: 1,
+      overrideAccess: true,
+    });
+    if (!footer || typeof footer !== 'object') throw new Error('Empty footer global');
+    return footer;
   },
   ['cms-footer'],
   { revalidate: 300, tags: [CACHE_TAGS.footer] }
 );
 
-export const getFooter = cache(async () => fetchCachedFooter());
+export const getFooter = cache(async () => {
+  try {
+    return await fetchCachedFooter();
+  } catch (error) {
+    console.warn('[CMS] Unable to load footer:', error instanceof Error ? error.message : error);
+    return DEFAULT_PUBLIC_FOOTER;
+  }
+});
 
 const fetchCachedTestimonials = unstable_cache(
   async (): Promise<CmsTestimonial[]> => {

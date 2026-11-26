@@ -4,9 +4,6 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
-  experimental: {
-    inlineCss: true,
-  },
   webpack: (config, { dev, isServer, webpack }) => {
     // Next 15's SWC async-to-generator transform on fetch-server-response leaves
     // require('../../dev/hot-reloader/app/hot-reloader-app') visible to Webpack's parser
