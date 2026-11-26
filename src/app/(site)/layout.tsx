@@ -24,6 +24,7 @@ const caveat = Caveat({
   weight: ['400'],
   variable: '--font-caveat',
   display: 'swap',
+  preload: false,
 });
 
 const GTM_CONTAINER_ID = 'GTM-PS2XBSRK';
