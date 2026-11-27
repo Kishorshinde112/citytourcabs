@@ -112,9 +112,9 @@ export default function TourPackages({
                       src={tour.image}
                       alt={tour.title}
                       fill
-                      quality={70}
+                      quality={60}
                       fetchPriority="low"
-                      sizes="(max-width: 640px) 360px, (max-width: 768px) 640px, (max-width: 1024px) 50vw, 384px"
+                      sizes="(max-width: 640px) 216px, (max-width: 1024px) 220px, 384px"
                       className="object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
