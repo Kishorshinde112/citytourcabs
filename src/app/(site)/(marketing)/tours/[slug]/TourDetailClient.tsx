@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
+import './tour-detail.css';
 import { useBooking } from '@/components/booking/BookingContext';
 import { useSiteSettings } from '@/store/settingsStore';
 import { displayIndianPhone, telHref } from '@/shared/lib/phone';

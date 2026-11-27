@@ -1,0 +1,143 @@
+/* Tour Flex Layout */
+.tour-flex-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+@media (min-width: 1024px) {
+  .tour-flex-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+  .tour-flex-left {
+    flex-basis: 60%;
+    max-width: 60%;
+    min-width: 0;
+  }
+  .tour-flex-right {
+    flex-basis: 40%;
+    max-width: 40%;
+    min-width: 0;
+  }
+}
+
+/* Tour Content & Typography Alignment */
+.tour-content {
+  text-align: left;
+  line-height: 1.75;
+  color: #1f2937;
+}
+
+.tour-content h1,
+.tour-content h2,
+.tour-content h3,
+.tour-content h4,
+.tour-content h5,
+.tour-content h6,
+.tour-content p,
+.tour-content div,
+.tour-content span,
+.tour-content ul,
+.tour-content ol,
+.tour-content li {
+  text-align: left !important;
+}
+
+.tour-content h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.tour-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #111827;
+}
+
+.tour-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.tour-content p {
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.tour-content ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+}
+
+.tour-content li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.tour-content hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.75rem 0;
+}
+
+/* Rate Table Styles */
+.rate-table-html table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+  font-size: 1rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  table-layout: fixed;
+}
+.rate-table-html th, .rate-table-html td {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  word-break: break-word;
+}
+.rate-table-html th {
+  background: #0F6EB8;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.rate-table-html tr:last-child td {
+  border-bottom: none;
+}
+.rate-table-html tr:hover td {
+  background: #e0f2fe;
+}
+.rate-table-html td {
+  color: #374151;
+}
+@media (max-width: 640px) {
+  .rate-table-html {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  .rate-table-html table {
+    font-size: 0.85rem;
+  }
+  .rate-table-html th, .rate-table-html td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  .rate-table-html th {
+    font-size: 0.9rem;
+  }
+}

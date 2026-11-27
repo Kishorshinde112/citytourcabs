@@ -79,7 +79,7 @@ export default function Navbar({
                 alt=""
                 width={56}
                 height={56}
-                priority
+                loading="eager"
                 className="h-14 w-auto object-contain"
               />
               <span className="text-[#0F6EB8] font-display font-bold text-[24px]">

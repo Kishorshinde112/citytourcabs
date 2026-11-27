@@ -17,6 +17,7 @@ const redditSans = Reddit_Sans({
   weight: ['700'],
   variable: '--font-reddit',
   display: 'swap',
+  preload: false,
 });
 
 const caveat = Caveat({
