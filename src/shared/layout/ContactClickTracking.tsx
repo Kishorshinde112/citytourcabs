@@ -146,9 +146,9 @@ export default function ContactClickTracking() {
 
       try {
         window.dataLayer ??= [];
+        (window as { __loadCtcTags?: () => void }).__loadCtcTags?.();
         report('data_layer_push_started');
         window.dataLayer.push(payload);
-        (window as { __loadCtcTags?: () => void }).__loadCtcTags?.();
       } catch {
         report('data_layer_push_failed');
       }

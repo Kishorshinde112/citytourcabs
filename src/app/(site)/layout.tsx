@@ -153,7 +153,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <body className={`${poppins.className} bg-white text-gray-900 font-sans antialiased selection:bg-[#0F6EB8] selection:text-white`}>
         {/* GTM, GA4 (G-E6E794WM68), Google Ads (AW-18526387794), and Umami Analytics.
             - Ad clicks (?gclid/gbraid/wbraid/utm_), confirmation pages, and queued conversion
-              events load tags immediately on load.
+              events load tags immediately after hydration so tags are ready before tel: clicks.
             - Normal page visits defer tag scripts until first user interaction (scroll/tap/
               pointer/key) or 10s idle so third-party scripts never block FCP/LCP/TBT, while
               DATALAYER_STUB in <head> queues any early events and gclid synchronously. */}
@@ -222,11 +222,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
               } catch (e) {}
 
               if (isConfirmation || hasCampaignParam || hasStoredGclid || (window.dataLayer && window.dataLayer.length > 0)) {
-                if (document.readyState === 'complete') {
-                  loadTags();
-                } else {
-                  window.addEventListener('load', loadTags, { once: true });
-                }
+                loadTags();
                 return;
               }
 
